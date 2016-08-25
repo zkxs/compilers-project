@@ -1,0 +1,16 @@
+# Binary outputs
+bin/
+target/
+*.class
+*.jar
+*.war
+
+# Temporary files
+*.tmp
+*.bak
+.cache-main
+
+# IDE files
+.settings/
+.classpath
+.project
