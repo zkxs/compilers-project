@@ -1,0 +1,12 @@
+..    ARRAYRANGE  
+=     RELOP       EQUALS
+<>    RELOP       NOTEQUALS
+<     RELOP       LESSTHAN
+<=    RELOP       LESSTHANEQUALS
+>=    RELOP       GREATERTHANEQUALS
+>     RELOP       GREATERTHAN
++     ADDOP       ADD
+-     ADDOP       SUBTRACT
+*     MULOP       MULTIPLY
+/     MULOP       DIVIDE
+:=    ASSIGNOP    
