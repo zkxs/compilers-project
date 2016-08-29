@@ -1,35 +1,35 @@
-and
-array
-begin
-case
-const
-div
-do
-downto
-else
-end
-file
-for
-function
-goto
-if
-in
-label
-mod
-nil
-not
-of
-or
-packed
-procedure
-program
-record
-repeat
-set
-then
-to
-type
-until
-var
-while
-with
+and         MULOP      AND
+array       ARRAY
+begin       BEGIN
+case        CASE
+const       CONST
+div         DIV
+do          DO
+downto      DOWNTO
+else        ELSE
+end         END
+file        FILE
+for         FOR
+function    FUNCTION
+goto        GOTO
+if          IF
+in          IN
+label       LABEL
+mod         MOD
+nil         NIL
+not         NOT
+of          OF
+or          ADDOP      OR
+packed      PACKED
+procedure   PROCEDURE
+program     PROGRAM
+record      RECORD
+repeat      REPEAT
+set         SET
+then        THEN
+to          TO
+type        TYPE
+until       UNTIL
+var         VAR
+while       WHILE
+with        WITH
