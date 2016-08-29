@@ -21,7 +21,7 @@ class Token(val lexeme: String, val token: String, val attribute: Option[String]
   
   override def equals(o: Any): Boolean = {
     o match {
-      case o: ReservedWord => o.lexeme equalsIgnoreCase this.lexeme
+      case o: ReservedWord => (o.token equalsIgnoreCase this.token) && (o.attribute == this.attribute)
       case _ => false
     }
   }
