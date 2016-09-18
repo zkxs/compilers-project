@@ -1,6 +1,6 @@
 package net.michaelripley.pascalcompiler
 
-class Operator(lexeme: String, tokenName: String, attribute: String) extends Token(lexeme, tokenName, attribute) {
+class Operator(tokenName: String, attribute: String) extends PartialToken(tokenName, attribute) {
   
 }
 
@@ -14,7 +14,7 @@ object Operator {
   def load() = {
     Source.fromFile(filename).getLines().map {
       line => line match {
-        case pattern(lexeme, token, attribute) => new ReservedWord(lexeme, token, attribute)
+        case pattern(lexeme, token, attribute) => new Operator(token, attribute)
         case _ => throw new IllegalArgumentException(s"""Invalid line "$line" in $filename""")
       }
     }

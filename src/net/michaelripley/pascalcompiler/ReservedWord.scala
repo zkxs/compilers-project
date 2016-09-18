@@ -1,6 +1,6 @@
 package net.michaelripley.pascalcompiler
 
-class ReservedWord(lexeme: String, tokenName: String, attribute: String) extends Token(lexeme, tokenName, attribute) {
+class ReservedWord(tokenName: String, attribute: String) extends PartialToken(tokenName, attribute) {
   
 }
 
@@ -14,7 +14,7 @@ object ReservedWord {
   def load() = {
     Source.fromFile(filename).getLines().map {
       line => line match {
-        case pattern(lexeme, token, attribute) => new ReservedWord(lexeme, token, attribute)
+        case pattern(lexeme, token, attribute) => new ReservedWord(token, attribute)
         case _ => throw new IllegalArgumentException(s"""Invalid line "$line" in $filename""")
       }
     }

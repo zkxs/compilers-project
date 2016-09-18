@@ -1,22 +1,27 @@
 package net.michaelripley.pascalcompiler
 
-class Token(val lexeme: String, val token: String, val attribute: Option[String]) {
+/*
+ * Contains lexeme information in addition to the token information
+ */
+
+class Token(token: String, attribute: Option[String], val lexeme: Lexeme) extends PartialToken(token, attribute) {
   
-  def this(lexeme: String, token: String, attributeString: String) = {
-    this(lexeme, token, 
+  def this(token: String, attributeString: String, lexeme: Lexeme) = {
+    this(token, 
       if (attributeString.isEmpty()) {
         None
       } else {
         Option(attributeString)
-      }
+      },
+      lexeme
     )
   }
   
   /**
    * Duplicate this token but using a different lexeme
    */
-  def duplicate(lexeme: String) = {
-    new Token(lexeme, token, attribute)
+  def duplicate(lexeme: Lexeme) = {
+    new Token(token, attribute, lexeme)
   }
   
   override def equals(o: Any): Boolean = {
