@@ -13,8 +13,8 @@ object Lexer {
   }
   
   val integerToken = new PartialToken("INTEGER", None)
-  val integerErrorTooLong = new PartialToken("LEXERR", Some("Integer too long"))
-  val integerErrorLeadingZero = new PartialToken("LEXERR", Some("Integer has leading zeros"))
+  val integerErrorTooLong     = new PartialErrorToken("LEXERR", Some("Integer too long"))
+  val integerErrorLeadingZero = new PartialErrorToken("LEXERR", Some("Integer has leading zeros"))
   
   val integerTokenizer = new SimpleTokenizer("""\d+""".r, integerToken) {
     override def checkError(matchResult: Match, lexeme: Lexeme): Option[Token] = {
@@ -30,9 +30,9 @@ object Lexer {
   }
   
   val realToken = new PartialToken("REAL", None)
-  val realErrorTooLong = new PartialToken("LEXERR", Some("Real too long"))
-  val realErrorLeadingZero = new PartialToken("LEXERR", Some("Real has leading zeros"))
-  val realErrorTrailingZero = new PartialToken("LEXERR", Some("Real has trailing zeros"))
+  val realErrorTooLong      = new PartialErrorToken("LEXERR", Some("Real too long"))
+  val realErrorLeadingZero  = new PartialErrorToken("LEXERR", Some("Real has leading zeros"))
+  val realErrorTrailingZero = new PartialErrorToken("LEXERR", Some("Real has trailing zeros"))
   val realTokenizer = new SimpleTokenizer("""(\d+)\.(\d+)""".r, realToken) {
     override def checkError(matchResult: Match, lexeme: Lexeme): Option[Token] = {
       val integerPart    = matchResult.group(1)
@@ -51,11 +51,11 @@ object Lexer {
   }
   
   val longRealToken = new PartialToken("LONGREAL", None)
-  val longRealErrorTooLong = new PartialToken("LEXERR", Some("LongReal too long"))
-  val longRealErrorLeadingZero = new PartialToken("LEXERR", Some("LongReal has leading zeros"))
-  val longRealErrorTrailingZero = new PartialToken("LEXERR", Some("LongReal fractional part has trailing zeros"))
-  val longRealErrorExponentZero = new PartialToken("LEXERR", Some("LongReal exponent is zero"))
-  val longRealErrorExponentLeadingZero = new PartialToken("LEXERR", Some("LongReal exponent has leading zeros"))
+  val longRealErrorTooLong             = new PartialErrorToken("LEXERR", Some("LongReal too long"))
+  val longRealErrorLeadingZero         = new PartialErrorToken("LEXERR", Some("LongReal has leading zeros"))
+  val longRealErrorTrailingZero        = new PartialErrorToken("LEXERR", Some("LongReal fractional part has trailing zeros"))
+  val longRealErrorExponentZero        = new PartialErrorToken("LEXERR", Some("LongReal exponent is zero"))
+  val longRealErrorExponentLeadingZero = new PartialErrorToken("LEXERR", Some("LongReal exponent has leading zeros"))
   
   val longRealTokenizer = new SimpleTokenizer("""(\d+)\.(\d+)[Ee]([-+]?)(\d+)""".r, longRealToken) {
     override def checkError(matchResult: Match, lexeme: Lexeme): Option[Token] = {
