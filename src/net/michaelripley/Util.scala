@@ -1,3 +1,5 @@
+package net.michaelripley
+
 object Util {
   private def prime = 41 // prime for use creating aggregate hashcodes
   
