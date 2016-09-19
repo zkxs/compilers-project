@@ -8,10 +8,10 @@ object IntegerTokenizer {
 import IntegerTokenizer._
 
 class IntegerTokenizer extends Tokenizer {
-  def extractTokenImpl(lineNumber: Int, offset: Int, line: String): Option[Token] = {
+  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token] = {
     pattern.findFirstIn(line) match {
       case Some(numberString) => {
-        val lexeme = new Lexeme(numberString, lineNumber, offset)
+        val lexeme = new Lexeme(numberString, lineNumber, columnOffset)
         Some(numberToken.makeToken(lexeme))
       }
       case None => None

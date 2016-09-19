@@ -7,7 +7,7 @@ class ReservedWordTokenizer(tokenName: String, attribute: String) extends Tokeni
   // valid reserved word characters
   val validChars = ('a' to 'z')
   
-  def extractTokenImpl(lineNumber: Int, offset: Int, line: String): Option[Token] = {
+  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token] = {
     
     val lowerCaseLine = line.toLowerCase()
     
@@ -32,11 +32,11 @@ class ReservedWordTokenizer(tokenName: String, attribute: String) extends Tokeni
     } else if (possibleReservedWords.size == 1) {
       // this block is executed when we find a reserved word in the line
       
-      val rword = possibleReservedWords(0)                // we found one match. get it.
-      val lexeme = new Lexeme(rword, lineNumber, offset)  // now create the lexeme
-      val partialToken = reservedWordMap(rword)           // grab the partial token from the table
-      val token = partialToken.makeToken(lexeme)          // add the lexeme to the token
-      Some(token)                                         // return it
+      val rword = possibleReservedWords(0)                     // we found one match. get it.
+      val lexeme = new Lexeme(rword, lineNumber, columnOffset) // now create the lexeme
+      val partialToken = reservedWordMap(rword)                // grab the partial token from the table
+      val token = partialToken.makeToken(lexeme)               // add the lexeme to the token
+      Some(token)                                              // return it
     } else { // implies more than one match
       throw new IllegalArgumentException("Ambiguous reserved word? Shouldn't be possible.")
     }
