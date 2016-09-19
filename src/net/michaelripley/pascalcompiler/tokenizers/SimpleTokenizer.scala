@@ -1,14 +1,15 @@
-package net.michaelripley.pascalcompiler
+package net.michaelripley.pascalcompiler.tokenizers
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
+import net.michaelripley.pascalcompiler.tokens._
 
 /**
  * Simple fill-in-the-blanks Tokenizer implementation that should work for most use cases
  * @param pattern Pattern that matches the lexeme for this type of token
  * @param tokenCreator Method to create token if match had no errors (see {@link #checkError})
  */
-class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => Token) extends Tokenizer {
+class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => AttributeToken) extends Tokenizer {
   
   /**
    * Alternate constructor that is useful for lexemes that always tokenize
@@ -16,11 +17,11 @@ class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => T
    * @param pattern Pattern that matches the lexeme for this type of token
    * @param partialToken Partial token to add the lexeme to
    */
-  def this(pattern: Regex, partialToken: PartialToken) = {
+  def this(pattern: Regex, partialToken: PartialAttributeToken) = {
     this(pattern, (m, l) => partialToken.makeToken(l))
   }
     
-  final def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token] = {
+  final def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[AttributeToken] = {
     pattern.findFirstMatchIn(line) match {
       case Some(matchResult) => {                    // there was a match
         val lexeme = new Lexeme(matchResult.matched, lineNumber, columnOffset) // create the lexeme
@@ -39,7 +40,7 @@ class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => T
    * Check a match to see if it is valid. By default, all matches are valid.
    * @return A token representing the error, or None if there was no error.
    */
-  def checkError(matchResult: Match, lexeme: Lexeme): Option[Token] = {
+  def checkError(matchResult: Match, lexeme: Lexeme): Option[AttributeToken] = {
     None
   }
 }
