@@ -1,8 +1,8 @@
 package net.michaelripley.pascalcompiler
 
-import ReservedWordTokenizer.{reservedWords, reservedWordMap}
+import ReservedWord.{reservedWords, reservedWordMap}
 
-class ReservedWordTokenizer(tokenName: String, attribute: String) extends Tokenizer {
+class ReservedWord(tokenName: String, attribute: String) {
   
   // valid reserved word characters
   val validChars = ('a' to 'z')
@@ -45,7 +45,7 @@ class ReservedWordTokenizer(tokenName: String, attribute: String) extends Tokeni
 
 import scala.io.Source
 
-object ReservedWordTokenizer {
+object ReservedWord {
   
   private val pattern = """^([^\s]+)\s+([^\s]+)\s*([^\s]*)\s*$""".r
   private val filename = "reservedwords.dat"
