@@ -2,7 +2,7 @@ package net.michaelripley.pascalcompiler.tokens
 
 import java.util.Objects
 
-class AttributeToken(token: String, attribute: Option[String], val lexeme: Lexeme) extends PartialAttributeToken(token, attribute) {
+class AttributeToken(tokenName: String, attribute: Option[String], val lexeme: Lexeme) extends PartialAttributeToken(tokenName, attribute) {
   
   def this(token: String, attributeString: String, lexeme: Lexeme) = {
     this(token, 
@@ -30,7 +30,7 @@ class AttributeToken(token: String, attribute: Option[String], val lexeme: Lexem
     other match {
       case other: AttributeToken => {
         (other canEqual this) && ((other eq this) || (
-            other.token == token
+            other.tokenName == tokenName
             && other.attribute == attribute
             && other.lexeme == lexeme
         ))
@@ -40,13 +40,13 @@ class AttributeToken(token: String, attribute: Option[String], val lexeme: Lexem
   }
   
   override def hashCode(): Int = {
-    Objects.hash(token, attribute, lexeme)
+    Objects.hash(tokenName, attribute, lexeme)
   }
   
   override def toString: String = {
     attribute match {
-      case Some(attributeString) => s"($lexeme, $token, $attributeString)"
-      case None => s"($lexeme, $token)"
+      case Some(attributeString) => s"($lexeme, $tokenName, $attributeString)"
+      case None => s"($lexeme, $tokenName)"
     }
   }
 }

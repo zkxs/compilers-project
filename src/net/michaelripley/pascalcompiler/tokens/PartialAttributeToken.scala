@@ -18,7 +18,7 @@ class PartialAttributeToken(tokenName: String, val attribute: Option[String]) ex
    * Duplicate this token, but using a different lexeme
    */
   def makeToken(lexeme: Lexeme) = {
-    new AttributeToken(token, attribute, lexeme)
+    new AttributeToken(tokenName, attribute, lexeme)
   }
   
   override def canEqual(other: Any): Boolean = {
@@ -29,7 +29,7 @@ class PartialAttributeToken(tokenName: String, val attribute: Option[String]) ex
     other match {
       case other: PartialAttributeToken => {
         (other canEqual this) && ((other eq this) || (
-            other.token == token
+            other.tokenName == tokenName
             && other.attribute == attribute
         ))
       }
