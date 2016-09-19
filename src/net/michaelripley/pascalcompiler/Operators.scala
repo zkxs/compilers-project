@@ -1,12 +1,12 @@
 package net.michaelripley.pascalcompiler
 
-class Operator(tokenName: String, attribute: String) extends PartialToken(tokenName, attribute) {
+class Operators(tokenName: String, attribute: String) extends PartialToken(tokenName, attribute) {
   
 }
 
 import scala.io.Source
 
-object Operator {
+object Operators {
   
   private val pattern = """^([^\s]+)\s+([^\s]+)\s*([^\s]*)\s*$""".r
   private val filename = "operators.dat"
@@ -14,7 +14,7 @@ object Operator {
   def load() = {
     Source.fromFile(filename).getLines().map {
       line => line match {
-        case pattern(lexeme, token, attribute) => new Operator(token, attribute)
+        case pattern(lexeme, token, attribute) => new Operators(token, attribute)
         case _ => throw new IllegalArgumentException(s"""Invalid line "$line" in $filename""")
       }
     }
