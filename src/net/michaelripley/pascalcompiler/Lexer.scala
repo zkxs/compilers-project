@@ -5,7 +5,10 @@ import scala.util.matching.Regex.Match
 
 object Lexer {
   def main(args: Array[String]): Unit = {
-    val lexer = new Lexer(Source.fromFile("test.pas"))
+    val lexer = new Lexer(
+        Source.fromFile("test.pas"),
+        Source.fromFile("reservedwords.dat")
+    )
     lexer.lex()
   }
   
@@ -82,9 +85,9 @@ object Lexer {
   
 } // end of object block
 
-class Lexer(val source: Source) {
+class Lexer(val sourceFile: Source, val reservedWordFile: Source) {
   def lex(): Unit = {
-    source.getLines().zipWithIndex.foreach {
+    sourceFile.getLines().zipWithIndex.foreach {
       case (line, index) => {
         println(f"${index + 1}%5d: $line")
       }
