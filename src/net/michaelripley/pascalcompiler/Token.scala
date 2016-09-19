@@ -1,6 +1,6 @@
 package net.michaelripley.pascalcompiler
 
-/*
+/**
  * Contains lexeme information in addition to the token information
  */
 
@@ -18,15 +18,15 @@ class Token(token: String, attribute: Option[String], val lexeme: Lexeme) extend
   }
   
   /**
-   * Duplicate this token but using a different lexeme
+   * @return Size of the lexeme
    */
-  def duplicate(lexeme: Lexeme) = {
-    new Token(token, attribute, lexeme)
+  def size() = {
+    lexeme.size
   }
   
   override def equals(o: Any): Boolean = {
     o match {
-      case o: ReservedWord => (o.token equalsIgnoreCase this.token) && (o.attribute == this.attribute)
+      case o: Token => (o.token equalsIgnoreCase this.token) && (o.attribute == this.attribute)
       case _ => false
     }
   }
