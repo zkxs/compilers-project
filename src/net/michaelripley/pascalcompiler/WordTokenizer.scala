@@ -10,11 +10,12 @@ import WordTokenizer._
 /**
  * Tokenizes both identifers and reserved words
  */
-class WordTokenizer extends Tokenizer {
+class WordTokenizer(private val reservedWords: ReservedWords) extends Tokenizer {
   def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token] = {
     
     pattern.findFirstIn(line) match {
-      case Some(wordString) => {
+      case Some(wordString) => { // check if the line starts with an identifier
+        // it does! it's either a reserved word or an identifier.
         val lexeme = new Lexeme(wordString, lineNumber, columnOffset)
         Some(wordToken.makeToken(lexeme))
       }
