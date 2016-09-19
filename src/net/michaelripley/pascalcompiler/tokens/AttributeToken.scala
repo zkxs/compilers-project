@@ -1,6 +1,6 @@
 package net.michaelripley.pascalcompiler.tokens
 
-import java.util.Objects
+import net.michaelripley.Util
 
 class AttributeToken(tokenName: String, attribute: Option[String], val lexeme: Lexeme) extends PartialAttributeToken(tokenName, attribute) {
   
@@ -40,7 +40,7 @@ class AttributeToken(tokenName: String, attribute: Option[String], val lexeme: L
   }
   
   override def hashCode(): Int = {
-    Objects.hash(tokenName, attribute, lexeme)
+    Util.hash(tokenName, attribute, lexeme)
   }
   
   override def toString: String = {

@@ -1,5 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
+import net.michaelripley.Util
+
 class PartialErrorToken(tokenName: String, attribute: Option[String]) extends PartialAttributeToken(tokenName, attribute) {
   
   override def makeToken(lexeme: Lexeme) = {
@@ -20,6 +22,10 @@ class PartialErrorToken(tokenName: String, attribute: Option[String]) extends Pa
       }
       case _ => false
     }
+  }
+  
+  override def hashCode(): Int = {
+    Util.hash(tokenName, attribute)
   }
   
 }

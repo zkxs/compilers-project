@@ -1,5 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
+import net.michaelripley.Util
+
 class ErrorToken(tokenName: String, attribute: Option[String], lexeme: Lexeme) extends AttributeToken(tokenName, attribute, lexeme) {
   
   override def canEqual(other: Any): Boolean = {
@@ -17,5 +19,9 @@ class ErrorToken(tokenName: String, attribute: Option[String], lexeme: Lexeme) e
       }
       case _ => false
     }
+  }
+  
+  override def hashCode(): Int = {
+    Util.hash(tokenName, attribute, lexeme)
   }
 }

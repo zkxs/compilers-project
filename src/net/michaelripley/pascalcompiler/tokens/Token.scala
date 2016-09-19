@@ -20,4 +20,8 @@ abstract class Token(val tokenName: String) {
     }
   }
   
+  override def hashCode(): Int = {
+    tokenName.hashCode()
+  }
+  
 }

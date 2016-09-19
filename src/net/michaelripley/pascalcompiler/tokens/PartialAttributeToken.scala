@@ -1,5 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
+import net.michaelripley.Util
+
 /**
  * Only contains the token name and attribute. It is missing the lexeme.
  */
@@ -35,6 +37,10 @@ class PartialAttributeToken(tokenName: String, val attribute: Option[String]) ex
       }
       case _ => false
     }
+  }
+  
+  override def hashCode(): Int = {
+    Util.hash(tokenName, attribute)
   }
   
 }
