@@ -3,7 +3,7 @@ package net.michaelripley.pascalcompiler
 import scala.io.Source
 import net.michaelripley.pascalcompiler.tokens.PartialAttributeToken
 
-object ReservedWords {
+object ReservedStrings {
   
   private val pattern = """^([^\s]+)\s+([^\s]+)\s*([^\s]*)\s*$""".r
   
@@ -17,9 +17,9 @@ object ReservedWords {
   }
 }
 
-import ReservedWords._
+import ReservedStrings._
 
-class ReservedWords(reservedWordSource: Source) {
+class ReservedStrings(reservedWordSource: Source) {
    private val reservedWordMap = load(reservedWordSource)
    
    def get(lexeme: String) = {

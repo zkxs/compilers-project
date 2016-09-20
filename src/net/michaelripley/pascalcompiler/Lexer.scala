@@ -2,9 +2,9 @@ package net.michaelripley.pascalcompiler
 
 import scala.io.Source
 import scala.util.matching.Regex.Match
-import net.michaelripley.pascalcompiler.tokens._
+import net.michaelripley.pascalcompiler.identifiers.SymbolTable
 import net.michaelripley.pascalcompiler.tokenizers._
-import net.michaelripley.pascalcompiler.ReservedWords
+import net.michaelripley.pascalcompiler.tokens._
 
 object Lexer {
   def main(args: Array[String]): Unit = {
@@ -90,8 +90,10 @@ object Lexer {
 } // end of object block
 
 class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Source) {
-  private val reservedWords = new ReservedWords(reservedWordFile)
-  private val operators = new ReservedWords(operatorsFile)
+  private val reservedWords = new ReservedStrings(reservedWordFile)
+  private val operators = new ReservedStrings(operatorsFile)
+  
+  private val symbolTable = new SymbolTable()
   
   def lex(): Unit = {
     sourceFile.getLines().zipWithIndex.foreach {
