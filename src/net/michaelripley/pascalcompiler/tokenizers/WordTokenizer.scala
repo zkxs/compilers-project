@@ -7,6 +7,7 @@ object WordTokenizer {
 
 import WordTokenizer._
 import net.michaelripley.pascalcompiler.tokens._
+import net.michaelripley.pascalcompiler.ReservedWords
 
 /**
  * Tokenizes both identifers and reserved words

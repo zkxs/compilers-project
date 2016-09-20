@@ -1,4 +1,4 @@
-package net.michaelripley.pascalcompiler.tokenizers
+package net.michaelripley.pascalcompiler
 
 import scala.io.Source
 import net.michaelripley.pascalcompiler.tokens.PartialAttributeToken

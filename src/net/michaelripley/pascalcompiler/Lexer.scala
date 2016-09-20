@@ -4,6 +4,7 @@ import scala.io.Source
 import scala.util.matching.Regex.Match
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.tokenizers._
+import net.michaelripley.pascalcompiler.ReservedWords
 
 object Lexer {
   def main(args: Array[String]): Unit = {
