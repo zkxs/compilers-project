@@ -6,13 +6,14 @@ object WordTokenizer {
 }
 
 import WordTokenizer._
+import net.michaelripley.pascalcompiler.identifiers.SymbolTable
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.ReservedStrings
 
 /**
  * Tokenizes both identifers and reserved words
  */
-class WordTokenizer(private val reservedWords: ReservedStrings) extends Tokenizer {
+class WordTokenizer(private val reservedWords: ReservedStrings, private val symbolTable: SymbolTable) extends Tokenizer {
   def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[AttributeToken] = {
     
     pattern.findFirstIn(line) match {
