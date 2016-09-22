@@ -1,0 +1,10 @@
+(     PAREN          OPEN
+)     PAREN          CLOSE
+;     SEMICOLON
+.     FULLSTOP
+,     COMMA
+:     COLON
+[     SQUAREBRACKET  OPEN
+]     SQUAREBRACKET  CLOSE
+{     CURLYBRACE     OPEN
+}     CURLYBRACE     CLOSE

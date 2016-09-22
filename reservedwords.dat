@@ -8,12 +8,14 @@ else        ELSE
 end         END
 function    FUNCTION
 if          IF
+integer     TYPENAME   INTEGER
 mod         MOD
 not         NOT
 of          OF
 or          ADDOP      OR
 procedure   PROCEDURE
 program     PROGRAM
+real        TYPENAME   REAL
 then        THEN
 var         VAR
 while       WHILE
