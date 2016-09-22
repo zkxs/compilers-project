@@ -1,5 +1,6 @@
 package net.michaelripley.pascalcompiler
 
+import scala.collection.mutable.MutableList
 import scala.io.Source
 import scala.util.matching.Regex.Match
 import net.michaelripley.pascalcompiler.identifiers.SymbolTable
@@ -18,7 +19,11 @@ object Lexer {
   }
   
   // EOF token
-  private val eofToken = new Token("EOF"){}
+  private val eofToken = new Token("EOF"){
+    override def toString(): String = {
+      tokenName
+    }
+  }
   
   // tokenizes garbage
   private val garbageTokenizer = new CatchAllTokenizer()
@@ -178,23 +183,27 @@ class Lexer(
       garbageTokenizer)
   }
   
-  def lex(): Unit = {
+  def lex(): List[Token] = {
+    val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
-        lexLine(line, lineNumber)
+        tokens ++= lexLine(line, lineNumber)
       }
     }
+    tokens.toList
   }
   
-  private def lexLine(line: String, lineNumber: Int) = {
+  private def lexLine(line: String, lineNumber: Int): List[Token] = {
     
     // First, output the line to the listing
     println(f"${lineNumber + 1}%5d: $line")
     
     // Now, tokenize the line
-    tokenizeLine(line, lineNumber).foreach(println)    
+    val tokens = tokenizeLine(line, lineNumber)
     
+    tokens.foreach(println)
     
+    tokens
   }
   
   /**
