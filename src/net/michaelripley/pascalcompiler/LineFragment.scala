@@ -20,12 +20,20 @@ case class LineFragment(contents: String, location: LineLocation) {
     }
   }
   
-  def removeLeadingSpace = {
+  def removeLeadingSpace() = {
     val length = LineFragment.spacePattern.findFirstIn(contents) match {
       case Some(space) => space.length
       case None => 0
     }
     offset(length)
+  }
+  
+  def length() = {
+    contents.length()
+  }
+  
+  def isEmpty() = {
+    contents.isEmpty()
   }
   
 }

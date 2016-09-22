@@ -174,16 +174,40 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
     println(f"${lineNumber + 1}%5d: $line")
     
     // Now, tokenize the line
-    
+    println(tokenizeLine(line, lineNumber))
     
     
   }
   
-  private def tokenizeLine(line: String, lineNumber: Int) = {
-    
+  /**
+   * Tokenize line, starting from beginning
+   */
+  private def tokenizeLine(line: String, lineNumber: Int): List[Token] = {
+    tokenizeLine(LineFragment(line, LineLocation(lineNumber, 0)), List.empty)
   }
   
-  private def tokenizeLine(line: String, lineLocation: LineLocation) = {
+  import scala.annotation.tailrec
+  
+  /**
+   * Tokenize line, starting from given location
+   */
+  @tailrec
+  private def tokenizeLine(line: LineFragment, priorTokens: List[Token]): List[Token] = {
     
+    val spacelessLine = line.removeLeadingSpace
+    
+    if (spacelessLine.isEmpty()) {
+      priorTokens
+    } else {
+      
+      val token = anythingTokenizer.extractToken(line).get
+      val length = token match {
+        case token: AttributeToken  => token.lexeme.size()
+        case token: IdentifierToken => token.lexeme.size()
+      }
+      
+      tokenizeLine(line.offset(length), priorTokens :+ token)
+    }
   }
+  
 }

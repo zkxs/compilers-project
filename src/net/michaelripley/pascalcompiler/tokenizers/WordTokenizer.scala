@@ -34,7 +34,7 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
             val identifier = symbolTable.registerSymbol(lowerCaseWordString)
             
             // create a new token for this id
-            Some(new IdentifierToken(identifierTokenName, identifier))
+            Some(new IdentifierToken(identifierTokenName, identifier, lexeme))
           }
         }
       }
