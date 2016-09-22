@@ -11,7 +11,8 @@ object Lexer {
     val lexer = new Lexer(
         Source.fromFile("test.pas"),
         Source.fromFile("reservedwords.dat"),
-        Source.fromFile("operators.dat")
+        Source.fromFile("operators.dat"),
+        Source.fromFile("punctuation.dat")
     )
     lexer.lex()
   }
@@ -120,14 +121,33 @@ object Lexer {
   
 } // end of object block
 
-class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Source) {
-  private val reservedWords = new ReservedStrings(reservedWordFile)
-  private val operators = new ReservedStrings(operatorsFile)
+import Lexer._
+
+class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Source, punctuationFile: Source) {
   
+  // create new symbol table
   private val symbolTable = new SymbolTable()
   
-  // numberTokenizer is a value of the Lexer object
-  private val wordTokenizer = new WordTokenizer(reservedWords, symbolTable)
+  // create tokenizer that can tokenize anything
+  private val anythingTokenizer = {
+    // load words in from files
+    val reservedWords = new ReservedStrings(reservedWordFile)
+    val operators = new ReservedStrings(operatorsFile)
+    val punctuation = new ReservedStrings(punctuationFile)
+    
+    // create tokenizers for each type of token
+    val wordTokenizer = new WordTokenizer(reservedWords, symbolTable)
+    val operatorTokenizer = new StringTokenizer(operators)
+    val punctuationTokenizer = new StringTokenizer(punctuation)
+    // numberTokenizer is a value of the Lexer object
+    
+    // lump all the tokenizers together, in order of priority
+    new CompoundTokenizer(
+      wordTokenizer,
+      numberTokenizer,
+      operatorTokenizer,
+      punctuationTokenizer)
+  }
   
   def lex(): Unit = {
     sourceFile.getLines().zipWithIndex.foreach {
