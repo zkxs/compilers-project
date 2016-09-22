@@ -23,7 +23,15 @@ class ReservedStrings(reservedWordSource: Source) {
    private val reservedWordMap = load(reservedWordSource)
    
    /**
-    * Get the token associated with a specific lexeme
+    * Get the token associated with a specific lexeme,
+    * throwing an exception if it cannot be found
+    */
+   def apply(lexeme: String) = {
+     get(lexeme).get
+   }
+   
+   /**
+    * Optionally get the token associated with a specific lexeme
     */
    def get(lexeme: String) = {
      reservedWordMap.get(lexeme)
