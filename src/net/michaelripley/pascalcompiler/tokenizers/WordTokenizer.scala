@@ -6,6 +6,7 @@ private object WordTokenizer {
   private val pattern = """[a-z][a-z0-9]*""".r
   private val identifierTokenName = "ID"
   private val IdentifierTooLongError = new PartialErrorToken("LEXERR", "Identifier too long")
+  private val maxIdentifierLength = 10
 }
 
 import WordTokenizer._
@@ -27,8 +28,8 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
         
         val lexeme = Lexeme(wordString, line.location)
         
-        if (wordString.length() > 10) {
-          Some(IdentifierTooLongError.makeToken(lexeme)
+        if (wordString.length() > maxIdentifierLength) {
+          Some(IdentifierTooLongError.makeToken(lexeme))
         } else {
           val lowerCaseWordString = wordString.toLowerCase()
           
