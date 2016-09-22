@@ -22,7 +22,17 @@ import ReservedStrings._
 class ReservedStrings(reservedWordSource: Source) {
    private val reservedWordMap = load(reservedWordSource)
    
+   /**
+    * Get the token associated with a specific lexeme
+    */
    def get(lexeme: String) = {
      reservedWordMap.get(lexeme)
+   }
+   
+   /**
+    * Get a set of all strings in this ReservedStrings
+    */
+   def getStrings() = {
+     reservedWordMap.keySet
    }
 }
