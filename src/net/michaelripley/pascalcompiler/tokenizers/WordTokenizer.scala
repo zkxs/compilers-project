@@ -1,13 +1,15 @@
 package net.michaelripley.pascalcompiler.tokenizers
 
-object WordTokenizer {
-  val pattern = """[a-z][a-z0-9]*""".r
-  val identifierTokenName = "ID"
+import net.michaelripley.pascalcompiler.tokens._
+
+private object WordTokenizer {
+  private val pattern = """[a-z][a-z0-9]*""".r
+  private val identifierTokenName = "ID"
+  private val IdentifierTooLongError = new PartialErrorToken("LEXERR", "Identifier too long")
 }
 
 import WordTokenizer._
 import net.michaelripley.pascalcompiler.identifiers.SymbolTable
-import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.ReservedStrings
 import net.michaelripley.pascalcompiler.Lexeme
 import net.michaelripley.pascalcompiler.LineFragment
@@ -24,17 +26,22 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
         // it does! it's either a reserved word or an identifier.
         
         val lexeme = Lexeme(wordString, line.location)
-        val lowerCaseWordString = wordString.toLowerCase()
         
-        reservedWords.get(lowerCaseWordString) match { // check if word is reserved
-          case Some(token) => Some(token.makeToken(lexeme)) // it is! return the token we got back
-          case None => { // it is not, so it's an identifier
-            
-            // add identifier to table
-            val identifier = symbolTable.registerSymbol(lowerCaseWordString)
-            
-            // create a new token for this id
-            Some(new IdentifierToken(identifierTokenName, identifier, lexeme))
+        if (wordString.length() > 10) {
+          Some(IdentifierTooLongError.makeToken(lexeme)
+        } else {
+          val lowerCaseWordString = wordString.toLowerCase()
+          
+          reservedWords.get(lowerCaseWordString) match { // check if word is reserved
+            case Some(token) => Some(token.makeToken(lexeme)) // it is! return the token we got back
+            case None => { // it is not, so it's an identifier
+              
+              // add identifier to table
+              val identifier = symbolTable.registerSymbol(lowerCaseWordString)
+              
+              // create a new token for this id
+              Some(new IdentifierToken(identifierTokenName, identifier, lexeme))
+            }
           }
         }
       }
