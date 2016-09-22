@@ -17,6 +17,9 @@ object Lexer {
     lexer.lex()
   }
   
+  // tokenizes garbage
+  private val garbageTokenizer = new CatchAllTokenizer()
+  
   // tokenizes any number
   private val numberTokenizer = {
     
@@ -139,14 +142,14 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
     val wordTokenizer = new WordTokenizer(reservedWords, symbolTable)
     val operatorTokenizer = new StringTokenizer(operators)
     val punctuationTokenizer = new StringTokenizer(punctuation)
-    // numberTokenizer is a value of the Lexer object
     
     // lump all the tokenizers together, in order of priority
     new CompoundTokenizer(
       wordTokenizer,
       numberTokenizer,
       operatorTokenizer,
-      punctuationTokenizer)
+      punctuationTokenizer,
+      garbageTokenizer)
   }
   
   /* TODO: write to files
@@ -158,13 +161,28 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
   
   def lex(): Unit = {
     sourceFile.getLines().zipWithIndex.foreach {
-      case (line, index) => { // extract fields from tuple
-        lexLine(line, index)
+      case (line, lineNumber) => { // extract fields from tuple
+        lexLine(line, lineNumber)
       }
     }
   }
   
-  private def lexLine(line: String, index: Int) = {
-    println(f"${index + 1}%5d: $line")
+  private def lexLine(line: String, lineNumber: Int) = {
+    
+    // First, output the line to the listing
+    println(f"${lineNumber + 1}%5d: $line")
+    
+    // Now, tokenize the line
+    
+    
+    
+  }
+  
+  private def tokenizeLine(line: String, lineNumber: Int) = {
+    
+  }
+  
+  private def tokenizeLine(line: String, lineLocation: LineLocation) = {
+    
   }
 }
