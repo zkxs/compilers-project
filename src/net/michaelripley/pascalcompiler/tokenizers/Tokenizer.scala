@@ -1,11 +1,11 @@
 package net.michaelripley.pascalcompiler.tokenizers
 
-import net.michaelripley.pascalcompiler.tokens.AttributeToken
+import net.michaelripley.pascalcompiler.tokens.Token
 
 trait Tokenizer {
   
   /**
    * Extract a token. Will not have leading space.
    */
-  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[AttributeToken];
+  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token];
 }
