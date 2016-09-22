@@ -25,6 +25,7 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
           case Some(token) => Some(token.makeToken(lexeme)) // it is! return the token we got back
           case None => { // it is not, so it's an identifier
             //FIXME: add to id table
+            //FIXME: return IdentifierToken
             
             // get id number from id table
             Some(new AttributeToken(identifierTokenName, "FIXME", lexeme)) // create a new token for this id
