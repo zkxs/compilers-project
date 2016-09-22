@@ -17,6 +17,9 @@ object Lexer {
     lexer.lex()
   }
   
+  // EOF token
+  private val eofToken = new Token("EOF"){}
+  
   // tokenizes garbage
   private val garbageTokenizer = new CatchAllTokenizer()
   
@@ -78,6 +81,7 @@ object Lexer {
             // check for leading zeros
             Some(realErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
+              && fractionalPart.charAt(fractionalPart.length - 1) == '0') {
             // check for trailing zeros
             Some(realErrorTrailingZero.makeToken(lexeme))
           } else {
