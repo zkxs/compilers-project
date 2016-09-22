@@ -1,6 +1,6 @@
 package net.michaelripley.pascalcompiler.tokenizers
 
-import net.michaelripley.pascalcompiler.tokens.AttributeToken
+import net.michaelripley.pascalcompiler.tokens.Token
 
 /**
  * A tokenizer made of several tokenizers stuck together.
@@ -8,7 +8,7 @@ import net.michaelripley.pascalcompiler.tokens.AttributeToken
  */
 class CompoundTokenizer(val tokenizers: Tokenizer*) extends Tokenizer {
   
-  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[AttributeToken] = {
+  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token] = {
     val iter = tokenizers.iterator
     
     while (iter.hasNext) {
