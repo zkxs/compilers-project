@@ -10,20 +10,20 @@ import net.michaelripley.pascalcompiler.identifiers.SymbolTable
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.ReservedStrings
 import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineLocation
+import net.michaelripley.pascalcompiler.LineFragment
 
 /**
  * Tokenizes both identifiers and reserved words
  */
 class WordTokenizer(private val reservedWords: ReservedStrings, private val symbolTable: SymbolTable) extends Tokenizer {
   
-  def extractToken(line: String, lineLocation: LineLocation): Option[Token] = {
+  def extractToken(line: LineFragment): Option[Token] = {
     
-    pattern.findFirstIn(line) match {
+    pattern.findFirstIn(line.contents) match {
       case Some(wordString) => { // check if the line starts with an identifier
         // it does! it's either a reserved word or an identifier.
         
-        val lexeme = Lexeme(wordString, lineLocation)
+        val lexeme = Lexeme(wordString, line.location)
         val lowerCaseWordString = wordString.toLowerCase()
         
         reservedWords.get(lowerCaseWordString) match { // check if word is reserved

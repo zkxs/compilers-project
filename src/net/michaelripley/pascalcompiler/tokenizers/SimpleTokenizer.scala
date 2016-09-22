@@ -4,7 +4,7 @@ import scala.util.matching.Regex
 import scala.util.matching.Regex.Match
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineLocation
+import net.michaelripley.pascalcompiler.LineFragment
 
 /**
  * Simple fill-in-the-blanks Tokenizer implementation that should work for most use cases
@@ -23,18 +23,18 @@ class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => A
     this(pattern, (m, l) => partialToken.makeToken(l))
   }
     
-  final def extractToken(line: String, lineLocation: LineLocation): Option[AttributeToken] = {
-    pattern.findFirstMatchIn(line) match {
-      case Some(matchResult) => {                              // there was a match
-        val lexeme = Lexeme(matchResult.matched, lineLocation) // create the lexeme
-        checkError(matchResult, lexeme) match {                // check for lexical errors in the math (e.g. number too long)
-          case Some(errorToken) => Some(errorToken)            // There was an error. Return its token.
-          case None => {                                       // There was no error.
-            Some(tokenCreator(matchResult, lexeme))            // create the token for the match
+  final def extractToken(line: LineFragment): Option[AttributeToken] = {
+    pattern.findFirstMatchIn(line.contents) match {
+      case Some(matchResult) => {                               // there was a match
+        val lexeme = Lexeme(matchResult.matched, line.location) // create the lexeme
+        checkError(matchResult, lexeme) match {                 // check for lexical errors in the math (e.g. number too long)
+          case Some(errorToken) => Some(errorToken)             // There was an error. Return its token.
+          case None => {                                        // There was no error.
+            Some(tokenCreator(matchResult, lexeme))             // create the token for the match
           }
         }
       }
-      case None => None                                        // There was no match :(
+      case None => None                                         // There was no match :(
     }
   }
   

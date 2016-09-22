@@ -1,3 +1,3 @@
 package net.michaelripley.pascalcompiler
 
-case class LineLocation(val lineNumber: Int, val columnOffset: Int)
+case class LineLocation(lineNumber: Int, columnOffset: Int)

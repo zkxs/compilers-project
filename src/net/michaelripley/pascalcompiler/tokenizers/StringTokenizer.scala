@@ -48,16 +48,16 @@ import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.ReservedStrings
 import StringTokenizer._
 import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineLocation
+import net.michaelripley.pascalcompiler.LineFragment
 
 class StringTokenizer(private val reservedStrings: ReservedStrings) extends Tokenizer {
   
   private val reservedStringKeys = reservedStrings.getStrings()
   
-  def extractToken(line: String, lineLocation: LineLocation): Option[AttributeToken] = {
+  def extractToken(line: LineFragment): Option[AttributeToken] = {
     
     // get all reserved strings that prefix line
-    val matchingStrings = reservedStringKeys.filter(rString => line.startsWith(rString))
+    val matchingStrings = reservedStringKeys.filter(rString => line.contents.startsWith(rString))
     
     // get the longest string, if there is one
     val longestString = getLongest(matchingStrings)
@@ -65,7 +65,7 @@ class StringTokenizer(private val reservedStrings: ReservedStrings) extends Toke
     longestString match {
       case Some(string) => {
         // if there WAS a longest string, tokenize and return it
-        val lexeme = Lexeme(string, lineLocation)
+        val lexeme = Lexeme(string, line.location)
         Some(reservedStrings(string).makeToken(lexeme))
       }
       case None => None // if there was no longest string, we couldn't get a token

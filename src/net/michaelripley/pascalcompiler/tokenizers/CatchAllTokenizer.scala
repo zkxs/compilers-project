@@ -9,16 +9,16 @@ private object CatchAllTokenizer {
 
 import CatchAllTokenizer._
 import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineLocation
+import net.michaelripley.pascalcompiler.LineFragment
 
 class CatchAllTokenizer extends Tokenizer {
-  def extractToken(line: String, lineLocation: LineLocation): Option[AttributeToken] = {
+  def extractToken(line: LineFragment): Option[AttributeToken] = {
     
     // get a single character worth of garbage
-    val garbage = line.head.toString()
+    val garbage = line.contents.head.toString()
     
     // make the lexeme
-    val lexeme = Lexeme(garbage, lineLocation)
+    val lexeme = Lexeme(garbage, line.location)
     
     // make and return the token
     Some(garbageError.makeToken(lexeme))
