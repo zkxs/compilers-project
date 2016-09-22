@@ -14,13 +14,14 @@ import net.michaelripley.pascalcompiler.ReservedStrings
  * Tokenizes both identifiers and reserved words
  */
 class WordTokenizer(private val reservedWords: ReservedStrings, private val symbolTable: SymbolTable) extends Tokenizer {
-  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[Token] = {
+  
+  def extractToken(line: String, lineLocation: LineLocation): Option[Token] = {
     
     pattern.findFirstIn(line) match {
       case Some(wordString) => { // check if the line starts with an identifier
         // it does! it's either a reserved word or an identifier.
         
-        val lexeme = new Lexeme(wordString, lineNumber, columnOffset)
+        val lexeme = Lexeme(wordString, lineLocation)
         val lowerCaseWordString = wordString.toLowerCase()
         
         reservedWords.get(lowerCaseWordString) match { // check if word is reserved
@@ -38,4 +39,5 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
       case None => None
     }
   }
+  
 }

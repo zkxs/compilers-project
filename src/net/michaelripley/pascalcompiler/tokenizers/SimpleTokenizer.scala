@@ -21,18 +21,18 @@ class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => A
     this(pattern, (m, l) => partialToken.makeToken(l))
   }
     
-  final def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[AttributeToken] = {
+  final def extractToken(line: String, lineLocation: LineLocation): Option[AttributeToken] = {
     pattern.findFirstMatchIn(line) match {
-      case Some(matchResult) => {                    // there was a match
-        val lexeme = new Lexeme(matchResult.matched, lineNumber, columnOffset) // create the lexeme
-        checkError(matchResult, lexeme) match {              // check for lexical errors in the math (e.g. number too long)
-          case Some(errorToken) => Some(errorToken)  // There was an error. Return its token.
-          case None => {                             // There was no error.
-            Some(tokenCreator(matchResult, lexeme))   // create the token for the match
+      case Some(matchResult) => {                              // there was a match
+        val lexeme = Lexeme(matchResult.matched, lineLocation) // create the lexeme
+        checkError(matchResult, lexeme) match {                // check for lexical errors in the math (e.g. number too long)
+          case Some(errorToken) => Some(errorToken)            // There was an error. Return its token.
+          case None => {                                       // There was no error.
+            Some(tokenCreator(matchResult, lexeme))            // create the token for the match
           }
         }
       }
-      case None => None                              // There was no match :(
+      case None => None                                        // There was no match :(
     }
   }
   

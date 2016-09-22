@@ -52,7 +52,7 @@ class StringTokenizer(private val reservedStrings: ReservedStrings) extends Toke
   
   private val reservedStringKeys = reservedStrings.getStrings()
   
-  def extractToken(line: String, lineNumber: Int, columnOffset: Int): Option[AttributeToken] = {
+  def extractToken(line: String, lineLocation: LineLocation): Option[AttributeToken] = {
     
     // get all reserved strings that prefix line
     val matchingStrings = reservedStringKeys.filter(rString => line.startsWith(rString))
@@ -63,7 +63,7 @@ class StringTokenizer(private val reservedStrings: ReservedStrings) extends Toke
     longestString match {
       case Some(string) => {
         // if there WAS a longest string, tokenize and return it
-        val lexeme = new Lexeme(string, lineNumber, columnOffset)
+        val lexeme = Lexeme(string, lineLocation)
         Some(reservedStrings(string).makeToken(lexeme))
       }
       case None => None // if there was no longest string, we couldn't get a token
