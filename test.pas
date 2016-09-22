@@ -10,3 +10,6 @@ begin
 	read(x, y);
 	write(gcd(x, y))
 end.
+
+test := 0
+test := 0.00E1
