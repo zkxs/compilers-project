@@ -1,21 +1,21 @@
 package net.michaelripley.pascalcompiler.identifiers
 
-import java.util.concurrent.atomic.AtomicInteger
+
 import scala.collection.mutable.Map
 
 class SymbolTable {
-  private val symbolTable = Map[Identifier, Int]()
-  private val nextNumber = new AtomicInteger()
+  private val symbolTable = Map[String, Identifier]()
+ 
   
-  def registerSymbol(id: Identifier): Unit = {
-    symbolTable.getOrElseUpdate(id, getUniqueNumber)
+  /**
+   * Register a symbol if it is unregistered, otherwise do nothing
+   */
+  def registerSymbol(idName: String) = {
+    symbolTable.getOrElseUpdate(idName, new Identifier(idName))
   }
   
-  def getSymbolNumber(id: Identifier): Int = {
-    symbolTable(id)
+  def getSymbolNumber(idName: String): Int = {
+    symbolTable(idName).number
   }
   
-  private def getUniqueNumber(): Int = {
-    nextNumber.getAndIncrement()
-  }
 }
