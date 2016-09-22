@@ -4,8 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable.Map
 
 class SymbolTable {
-  val symbolTable = Map[Identifier, Int]()
-  val nextNumber = new AtomicInteger()
+  private val symbolTable = Map[Identifier, Int]()
+  private val nextNumber = new AtomicInteger()
   
   def registerSymbol(id: Identifier): Unit = {
     symbolTable.getOrElseUpdate(id, getUniqueNumber)
