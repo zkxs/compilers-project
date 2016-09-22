@@ -8,12 +8,16 @@ object ReservedStrings {
   private val pattern = """^([^\s]+)\s+([^\s]+)\s*([^\s]*)\s*$""".r
   
   private def load(reservedWordSource: Source): Map[String, PartialAttributeToken] = {
-    reservedWordSource.getLines().map {
+    val map = reservedWordSource.getLines().map {
       line => line match {
         case pattern(lexeme, token, attribute) => (lexeme, new PartialAttributeToken(token, attribute))
         case _ => throw new IllegalArgumentException(s"""Invalid line "$line" in $reservedWordSource""")
       }
     }.toMap
+    
+    reservedWordSource.close()
+    
+    map
   }
 }
 
