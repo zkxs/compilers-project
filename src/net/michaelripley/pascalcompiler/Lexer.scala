@@ -149,11 +149,22 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
       punctuationTokenizer)
   }
   
+  /* TODO: write to files
+   * 1. listing file
+   * 2. token file
+   * 
+   * TODO: save tokens to list for future use
+   */
+  
   def lex(): Unit = {
     sourceFile.getLines().zipWithIndex.foreach {
-      case (line, index) => {
-        println(f"${index + 1}%5d: $line")
+      case (line, index) => { // extract fields from tuple
+        lexLine(line, index)
       }
     }
+  }
+  
+  private def lexLine(line: String, index: Int) = {
+    println(f"${index + 1}%5d: $line")
   }
 }
