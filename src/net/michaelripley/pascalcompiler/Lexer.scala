@@ -95,6 +95,8 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
   
   private val symbolTable = new SymbolTable()
   
+  private val wordTokenizer = new WordTokenizer(reservedWords, symbolTable)
+  
   def lex(): Unit = {
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, index) => {
