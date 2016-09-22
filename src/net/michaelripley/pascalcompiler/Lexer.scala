@@ -39,7 +39,7 @@ object Lexer {
           val intString = matchResult.matched
           if (intString.length() > 10) {           // check if integer is too long
             Some(integerErrorTooLong.makeToken(lexeme))
-          } else if (intString.charAt(0) == '0') { // check if integer has leading zeros
+          } else if (intString.length > 1 && intString.head == '0') { // check if integer has leading zeros
             Some(integerErrorLeadingZero.makeToken(lexeme))
           } else {
             None
@@ -66,7 +66,7 @@ object Lexer {
           val fractionalPart = matchResult.group(2)
           if (integerPart.length > 5 || fractionalPart.length > 5) { // check if parts are too long
             Some(realErrorTooLong.makeToken(lexeme))
-          } else if (integerPart.charAt(0) == '0') { // check for leading zeros
+          } else if (integerPart.length > 1 && integerPart.head == '0') { // check for leading zeros
             Some(realErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
               && fractionalPart.charAt(fractionalPart.length - 1) == '0') { // check for trailing zeros
@@ -102,7 +102,7 @@ object Lexer {
             || fractionalPart.length > 5
             || exponentPart.length > 2) { // check if parts are too long
             Some(longRealErrorTooLong.makeToken(lexeme))
-          } else if (integerPart.charAt(0) == '0') { // check for leading zeros
+          } else if (integerPart.length > 1 && integerPart.head == '0') { // check for leading zeros
             Some(longRealErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
               && fractionalPart.charAt(fractionalPart.length - 1) == '0') { // check for trailing zeros
