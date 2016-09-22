@@ -124,6 +124,7 @@ object Lexer {
   
 } // end of object block
 
+// only Lexer._ is imported here. All other imports are above the object.
 import Lexer._
 
 class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Source, punctuationFile: Source) {

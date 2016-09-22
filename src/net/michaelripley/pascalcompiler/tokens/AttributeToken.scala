@@ -1,7 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
 import net.michaelripley.Util
-import net.michaelripley.pascalcompiler.tokenizers.Lexeme
+import net.michaelripley.pascalcompiler.Lexeme
 
 class AttributeToken(tokenName: String, attribute: Option[String], val lexeme: Lexeme) extends PartialAttributeToken(tokenName, attribute) {
   

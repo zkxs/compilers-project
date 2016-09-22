@@ -1,6 +1,4 @@
-package net.michaelripley.pascalcompiler.tokenizers
-
-import net.michaelripley.pascalcompiler.tokens.LineLocation
+package net.michaelripley.pascalcompiler
 
 final case class Lexeme(val lexeme: String, val lineLocation: LineLocation) {
   

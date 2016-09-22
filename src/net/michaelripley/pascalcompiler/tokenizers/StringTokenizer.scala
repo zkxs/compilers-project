@@ -47,6 +47,8 @@ private object StringTokenizer {
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.ReservedStrings
 import StringTokenizer._
+import net.michaelripley.pascalcompiler.Lexeme
+import net.michaelripley.pascalcompiler.LineLocation
 
 class StringTokenizer(private val reservedStrings: ReservedStrings) extends Tokenizer {
   

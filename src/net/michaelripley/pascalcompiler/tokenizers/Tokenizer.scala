@@ -1,6 +1,7 @@
 package net.michaelripley.pascalcompiler.tokenizers
 
 import net.michaelripley.pascalcompiler.tokens._
+import net.michaelripley.pascalcompiler.LineLocation
 
 trait Tokenizer {
   
