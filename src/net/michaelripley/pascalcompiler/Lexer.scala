@@ -1,5 +1,6 @@
 package net.michaelripley.pascalcompiler
 
+import java.io.PrintWriter
 import scala.collection.mutable.MutableList
 import scala.io.Source
 import scala.util.matching.Regex.Match
@@ -13,7 +14,9 @@ object Lexer {
         Source.fromFile("test.pas"),
         Source.fromFile("reservedwords.dat"),
         Source.fromFile("operators.dat"),
-        Source.fromFile("punctuation.dat")
+        Source.fromFile("punctuation.dat"),
+        new PrintWriter("test.listing.txt"),
+        new PrintWriter("test.tokens.txt")
     )
     lexer.lex()
   }
@@ -21,7 +24,7 @@ object Lexer {
   // EOF token
   private val eofToken = new Token("EOF"){
     override def toString(): String = {
-      tokenName
+      s"                                   $tokenName"
     }
   }
   
@@ -157,7 +160,9 @@ class Lexer(
     val sourceFile: Source,
     reservedWordFile: Source,
     operatorsFile: Source,
-    punctuationFile: Source) {
+    punctuationFile: Source,
+    listWriter: PrintWriter,
+    tokenWriter: PrintWriter) {
   
   // create new symbol table
   private val symbolTable = new SymbolTable()
@@ -184,24 +189,41 @@ class Lexer(
   }
   
   def lex(): List[Token] = {
+    tokenWriter.println("Line No.    Lexeme                 Token-Type      Attribute")
+    
     val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
         tokens ++= lexLine(line, lineNumber)
       }
     }
+    
+    tokens += eofToken
+    tokenWriter.println(eofToken)
+    
+    listWriter.close()
+    tokenWriter.close()
+    
     tokens.toList
   }
   
   private def lexLine(line: String, lineNumber: Int): List[Token] = {
     
     // First, output the line to the listing
-    println(f"${lineNumber + 1}%5d: $line")
+    listWriter.println(f"${lineNumber + 1}%5d: $line")
     
     // Now, tokenize the line
     val tokens = tokenizeLine(line, lineNumber)
     
-    tokens.foreach(println)
+    tokens.foreach( token => {
+      tokenWriter.println(token)
+      
+      token match {
+        case error: ErrorToken => listWriter.println(error.errorString())
+        case _ =>
+      }
+      
+    })
     
     tokens
   }

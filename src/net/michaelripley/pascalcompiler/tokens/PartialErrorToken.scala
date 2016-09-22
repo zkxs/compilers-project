@@ -15,7 +15,7 @@ class PartialErrorToken(tokenName: String, attribute: Option[String]) extends Pa
     )
   }
   
-  override def makeToken(lexeme: Lexeme) = {
+  override def makeToken(lexeme: Lexeme): ErrorToken = {
     new ErrorToken(tokenName, attribute, lexeme)
   }
   

@@ -17,3 +17,7 @@ target/
 .settings/
 .classpath
 .project
+
+# Program output
+*.listing.txt
+*.tokens.txt

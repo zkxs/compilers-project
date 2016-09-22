@@ -12,4 +12,4 @@ begin
 end.
 
 test := 0
-test := 0.00E1
+test := 0.00E0 @

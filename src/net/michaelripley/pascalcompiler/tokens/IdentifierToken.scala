@@ -28,7 +28,7 @@ class IdentifierToken(tokenName: String, val identifier: Identifier, val lexeme:
   }
   
   override def toString: String = {
-    s"(${lexeme.lexeme}, $tokenName, loc${identifier.number})"
+    f"${lexeme.location.lineNumber}%4d        ${lexeme.lexeme}%-15s        $tokenName%-8s        loc${identifier.number}"
   }
   
 }

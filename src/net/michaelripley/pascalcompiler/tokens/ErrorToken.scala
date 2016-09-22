@@ -1,7 +1,12 @@
 package net.michaelripley.pascalcompiler.tokens
 
+private object ErrorToken {
+  private val emptyString = ""
+}
+
 import net.michaelripley.Util
 import net.michaelripley.pascalcompiler.Lexeme
+import ErrorToken._
 
 class ErrorToken(tokenName: String, attribute: Option[String], lexeme: Lexeme) extends AttributeToken(tokenName, attribute, lexeme) {
   
@@ -24,5 +29,14 @@ class ErrorToken(tokenName: String, attribute: Option[String], lexeme: Lexeme) e
   
   override def hashCode(): Int = {
     Util.hash(tokenName, attribute, lexeme)
+  }
+  
+  def errorString(): String = {
+    val str = attribute match {
+      case Some(attr) => s"^ $tokenName: $attr"
+      case None       => s"^ $tokenName"
+    }
+    
+    " " * (lexeme.location.columnOffset + 7) + str
   }
 }

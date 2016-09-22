@@ -3,7 +3,7 @@ package net.michaelripley.pascalcompiler
 import scala.io.Source
 import net.michaelripley.pascalcompiler.tokens.PartialAttributeToken
 
-object ReservedStrings {
+private object ReservedStrings {
   
   private val pattern = """^([^\s]+)\s+([^\s]+)\s*([^\s]*)\s*$""".r
   
