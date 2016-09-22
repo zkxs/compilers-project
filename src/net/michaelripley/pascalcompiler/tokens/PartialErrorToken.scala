@@ -1,6 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
 import net.michaelripley.Util
+import net.michaelripley.pascalcompiler.tokenizers.Lexeme
 
 class PartialErrorToken(tokenName: String, attribute: Option[String]) extends PartialAttributeToken(tokenName, attribute) {
   

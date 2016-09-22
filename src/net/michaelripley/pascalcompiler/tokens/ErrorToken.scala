@@ -1,6 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
 import net.michaelripley.Util
+import net.michaelripley.pascalcompiler.tokenizers.Lexeme
 
 class ErrorToken(tokenName: String, attribute: Option[String], lexeme: Lexeme) extends AttributeToken(tokenName, attribute, lexeme) {
   
