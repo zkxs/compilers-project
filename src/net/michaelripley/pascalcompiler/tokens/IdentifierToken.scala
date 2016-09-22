@@ -27,4 +27,8 @@ class IdentifierToken(tokenName: String, val identifier: Identifier, val lexeme:
     Util.hash(tokenName, identifier, lexeme)
   }
   
+  override def toString: String = {
+    s"(${lexeme.lexeme}, $tokenName, loc${identifier.number})"
+  }
+  
 }

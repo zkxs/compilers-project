@@ -46,8 +46,8 @@ class AttributeToken(tokenName: String, attribute: Option[String], val lexeme: L
   
   override def toString: String = {
     attribute match {
-      case Some(attributeString) => s"($lexeme, $tokenName, $attributeString)"
-      case None => s"($lexeme, $tokenName)"
+      case Some(attributeString) => s"(${lexeme.lexeme}, $tokenName, $attributeString)"
+      case None => s"(${lexeme.lexeme}, $tokenName)"
     }
   }
 }
