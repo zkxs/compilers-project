@@ -23,6 +23,10 @@ object Lexer {
   // tokenizes any number
   private val numberTokenizer = {
     
+    val maxIntegerLength = 10
+    val maxRealPartLength = 5
+    val maxExponentLength = 2
+    
     // tokenizes integers
     val integerTokenizer = {
       
@@ -37,9 +41,11 @@ object Lexer {
       new SimpleTokenizer("""\d+""".r, integerToken) {
         override def checkError(matchResult: Match, lexeme: Lexeme): Option[AttributeToken] = {
           val intString = matchResult.matched
-          if (intString.length() > 10) {           // check if integer is too long
+          if (intString.length() > maxIntegerLength) {
+            // check if integer is too long
             Some(integerErrorTooLong.makeToken(lexeme))
-          } else if (intString.length > 1 && intString.head == '0') { // check if integer has leading zeros
+          } else if (intString.length > 1 && intString.head == '0') {
+            // check if integer has leading zeros
             Some(integerErrorLeadingZero.makeToken(lexeme))
           } else {
             None
@@ -64,12 +70,15 @@ object Lexer {
         override def checkError(matchResult: Match, lexeme: Lexeme): Option[AttributeToken] = {
           val integerPart    = matchResult.group(1)
           val fractionalPart = matchResult.group(2)
-          if (integerPart.length > 5 || fractionalPart.length > 5) { // check if parts are too long
+          if (integerPart.length > maxRealPartLength
+              || fractionalPart.length > maxRealPartLength) {
+            // check if parts are too long
             Some(realErrorTooLong.makeToken(lexeme))
-          } else if (integerPart.length > 1 && integerPart.head == '0') { // check for leading zeros
+          } else if (integerPart.length > 1 && integerPart.head == '0') {
+            // check for leading zeros
             Some(realErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
-              && fractionalPart.charAt(fractionalPart.length - 1) == '0') { // check for trailing zeros
+            // check for trailing zeros
             Some(realErrorTrailingZero.makeToken(lexeme))
           } else {
             None
@@ -85,11 +94,16 @@ object Lexer {
       val longRealToken = new PartialAttributeToken("LONGREAL")
       
       // error tokens
-      val longRealErrorTooLong             = new PartialErrorToken("LEXERR", "LongReal too long")
-      val longRealErrorLeadingZero         = new PartialErrorToken("LEXERR", "LongReal has leading zeros")
-      val longRealErrorTrailingZero        = new PartialErrorToken("LEXERR", "LongReal fractional part has trailing zeros")
-      val longRealErrorExponentZero        = new PartialErrorToken("LEXERR", "LongReal exponent is zero")
-      val longRealErrorExponentLeadingZero = new PartialErrorToken("LEXERR", "LongReal exponent has leading zeros")
+      val longRealErrorTooLong
+          = new PartialErrorToken("LEXERR", "LongReal too long")
+      val longRealErrorLeadingZero
+          = new PartialErrorToken("LEXERR", "LongReal has leading zeros")
+      val longRealErrorTrailingZero
+          = new PartialErrorToken("LEXERR", "LongReal fractional part has trailing zeros")
+      val longRealErrorExponentZero
+          = new PartialErrorToken("LEXERR", "LongReal exponent is zero")
+      val longRealErrorExponentLeadingZero
+          = new PartialErrorToken("LEXERR", "LongReal exponent has leading zeros")
       
       // tokenizer implementation
       new SimpleTokenizer("""(\d+)\.(\d+)[Ee]([-+]?)(\d+)""".r, longRealToken) {
@@ -98,18 +112,21 @@ object Lexer {
           val fractionalPart = matchResult.group(2)
           //  sign           = matchResult.group(3) // currently unused
           val exponentPart   = matchResult.group(4)
-          if (integerPart.length > 5
-            || fractionalPart.length > 5
-            || exponentPart.length > 2) { // check if parts are too long
+          if (integerPart.length > maxRealPartLength
+              || fractionalPart.length > maxRealPartLength
+              || exponentPart.length > maxExponentLength) {
+            // check if parts are too long
             Some(longRealErrorTooLong.makeToken(lexeme))
-          } else if (integerPart.length > 1 && integerPart.head == '0') { // check for leading zeros
+          } else if (integerPart.length > 1 && integerPart.head == '0') {
+            // check for leading zeros
             Some(longRealErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
-              && fractionalPart.charAt(fractionalPart.length - 1) == '0') { // check for trailing zeros
+              && fractionalPart.tail == '0') {
+            // check for trailing zeros
             Some(longRealErrorTrailingZero.makeToken(lexeme))
           } else if (exponentPart == "0") {
             Some(longRealErrorExponentZero.makeToken(lexeme))
-          } else if (exponentPart.charAt(0) == '0') {
+          } else if (exponentPart.head == '0') {
             Some(longRealErrorExponentLeadingZero.makeToken(lexeme))
           } else {
             None
@@ -127,7 +144,11 @@ object Lexer {
 // only Lexer._ is imported here. All other imports are above the object.
 import Lexer._
 
-class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Source, punctuationFile: Source) {
+class Lexer(
+    val sourceFile: Source,
+    reservedWordFile: Source,
+    operatorsFile: Source,
+    punctuationFile: Source) {
   
   // create new symbol table
   private val symbolTable = new SymbolTable()
@@ -152,13 +173,6 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
       punctuationTokenizer,
       garbageTokenizer)
   }
-  
-  /* TODO: write to files
-   * 1. listing file
-   * 2. token file
-   * 
-   * TODO: save tokens to list for future use
-   */
   
   def lex(): Unit = {
     sourceFile.getLines().zipWithIndex.foreach {
