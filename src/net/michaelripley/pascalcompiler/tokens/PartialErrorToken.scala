@@ -4,6 +4,16 @@ import net.michaelripley.Util
 
 class PartialErrorToken(tokenName: String, attribute: Option[String]) extends PartialAttributeToken(tokenName, attribute) {
   
+  def this(token: String, attributeString: String) = {
+    this(token, 
+      if (attributeString.isEmpty()) {
+        None
+      } else {
+        Option(attributeString)
+      }
+    )
+  }
+  
   override def makeToken(lexeme: Lexeme) = {
     new ErrorToken(tokenName, attribute, lexeme)
   }

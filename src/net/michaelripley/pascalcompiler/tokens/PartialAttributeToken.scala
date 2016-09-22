@@ -6,6 +6,7 @@ import net.michaelripley.Util
  * Only contains the token name and attribute. It is missing the lexeme.
  */
 class PartialAttributeToken(tokenName: String, val attribute: Option[String]) extends Token(tokenName) {
+  
   def this(token: String, attributeString: String) = {
     this(token, 
       if (attributeString.isEmpty()) {
@@ -14,6 +15,10 @@ class PartialAttributeToken(tokenName: String, val attribute: Option[String]) ex
         Option(attributeString)
       }
     )
+  }
+  
+  def this(token: String) = {
+    this(token, None)
   }
   
   /**
