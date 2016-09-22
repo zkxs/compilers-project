@@ -19,7 +19,7 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
   
   def extractToken(line: LineFragment): Option[Token] = {
     
-    pattern.findFirstIn(line.contents) match {
+    pattern.findPrefixOf(line.contents) match {
       case Some(wordString) => { // check if the line starts with an identifier
         // it does! it's either a reserved word or an identifier.
         

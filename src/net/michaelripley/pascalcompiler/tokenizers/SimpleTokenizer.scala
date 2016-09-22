@@ -24,7 +24,7 @@ class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => A
   }
     
   final def extractToken(line: LineFragment): Option[AttributeToken] = {
-    pattern.findFirstMatchIn(line.contents) match {
+    pattern.findPrefixMatchOf(line.contents) match {
       case Some(matchResult) => {                               // there was a match
         val lexeme = Lexeme(matchResult.matched, line.location) // create the lexeme
         checkError(matchResult, lexeme) match {                 // check for lexical errors in the math (e.g. number too long)

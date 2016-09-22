@@ -174,7 +174,7 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
     println(f"${lineNumber + 1}%5d: $line")
     
     // Now, tokenize the line
-    println(tokenizeLine(line, lineNumber))
+    tokenizeLine(line, lineNumber).foreach(println)    
     
     
   }
@@ -200,13 +200,13 @@ class Lexer(val sourceFile: Source, reservedWordFile: Source, operatorsFile: Sou
       priorTokens
     } else {
       
-      val token = anythingTokenizer.extractToken(line).get
+      val token = anythingTokenizer.extractToken(spacelessLine).get
       val length = token match {
         case token: AttributeToken  => token.lexeme.size()
         case token: IdentifierToken => token.lexeme.size()
       }
       
-      tokenizeLine(line.offset(length), priorTokens :+ token)
+      tokenizeLine(spacelessLine.offset(length), priorTokens :+ token)
     }
   }
   
