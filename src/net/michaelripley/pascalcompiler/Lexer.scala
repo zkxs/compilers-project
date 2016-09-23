@@ -1,5 +1,6 @@
 package net.michaelripley.pascalcompiler
 
+import java.io.FileNotFoundException
 import java.io.PrintWriter
 import scala.collection.mutable.MutableList
 import scala.io.Source
@@ -200,7 +201,19 @@ class Lexer(
   def lex(filename: String): List[Token] = {
     val symbolTable = new SymbolTable()
     val superTokenizer = getSuperTokenizer(symbolTable)
-    val sourceFile = Source.fromFile(filename)
+    
+    
+    val sourceFile:Source = try {
+      Source.fromFile(filename)
+    } catch {
+      case e: FileNotFoundException => {
+        println(s"${e.getClass.getSimpleName}: ${e.getMessage}")
+        System.exit(1)
+        null
+      }
+    }
+    
+    
     val listWriter = new PrintWriter(filename + ".listing")
     val tokenWriter = new PrintWriter(filename + ".tokens")
     
