@@ -9,6 +9,7 @@
 \usepackage{fancyhdr} % Custom headers and footers
 \usepackage{nameref} % reference named things by labels. Must be imported before hyperref
 \usepackage{hyperref} % allows creation of hyperlinks
+\usepackage{enumitem} % for tinkering with spacing between list items
 
 
 % ------------------------------------------------------------------------------
@@ -24,6 +25,7 @@
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
 \setlength{\parskip}{1em} % Set spacing before paragraphs
 
+\setlist{noitemsep}
 
 % ------------------------------------------------------------------------------
 % Set up sections
@@ -163,7 +165,15 @@ Finally, there is a catch-all machine that will grab a single character. As this
 
 \section{Implementation}\label{impl}
 
+I chose to use Scala as the main programming language for this project.  Scala compiles to JVM bytecode, meaning it can run anywhere Java can, and it can seamlessly make calls to Java libraries.  It sort of fits into the ``better Java'' niche, aiming to have all of Java's strong points while incorporating more modern language features.
 
+My decision to use Scala was made for several reasons.  While the language I am most comfortable with is Java, I've been interested in Scala for a while and I feel I won't learn it unless I make a write a large project using it.  As I am already familiar with C, pointers, and manual memory management, I felt that I could use this opportunity better learning a new language than than revisiting all the pointer aritmetic and memory management of my past experiences.  
+
+Due to the size of this project, it merited doing a certain amount of planning ahead of time.  I drew out a flow chart of the general structure of the major components of the program, then made some pseudocode to help my wrap my mind around how the machines would be called.  I could have done more planning ahead of time, which would have saved me some time as I scrapped some work that was going down the wrong path.
+
+When working on a large project, I like to begin with the smallest pieces possible, gradually combining them as I add functionality.  I've noticed that when programming in this order, I have more opportunity to notice flaws in my initial design and adjust before I've invested too much time in them.
+
+I began by defining the simple data elements, such as tokens and lexemes. Working my way up, I began work on the machines.  Noticing that the machine classes had very similar structure, I created a generic machine that I could sort of fill-in-the-blanks with.  This dramatically reduced the boilerplate in most my machines. Some machines were special cases, such as the ``word'' machine that produces both reserved word and identifier tokens.  Continuing to work upwards, I implemented the symbol table, then the logic to feed lines to machines.  Finally, I added logic to print to the token file, and added error printing functionality to the listing file.
 
 \section{Discussion and Conclusions}\label{conclusions}
 
@@ -171,7 +181,11 @@ Finally, there is a catch-all machine that will grab a single character. As this
 
 \section{References}\label{ref}
 
-Ain't got none.
+\begin{itemize}
+    \item Handouts and lextures from class
+    \item API documentation for both Java and Scala
+    \item Discussions between myself, Steven Buchele, and James Rogers
+\end{itemize}
 
 \section{Appendix I: Sample Inputs and Outputs}\label{sample}
 
