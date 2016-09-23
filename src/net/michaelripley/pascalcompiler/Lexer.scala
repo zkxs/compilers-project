@@ -87,7 +87,7 @@ object Lexer {
           = new PartialErrorToken("LEXERR", "Real has trailing zeros")
       
       // tokenizer implementation
-      new SimpleTokenizer("""(\d+)\.(\d*)""".r, realToken) {
+      new SimpleTokenizer("""(\d+)\.(\d+)""".r, realToken) {
         override def checkError(matchResult: Match, lexeme: Lexeme):
             Option[AttributeToken] = {
           val integerPart    = matchResult.group(1)
