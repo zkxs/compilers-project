@@ -195,7 +195,7 @@ class Lexer(
   
   def lex(filename: String): List[Token] = {
     val sourceFile = Source.fromFile(filename)
-    		val listWriter = new PrintWriter(filename + ".listing")
+    val listWriter = new PrintWriter(filename + ".listing")
     val tokenWriter = new PrintWriter(filename + ".tokens")
     
     tokenWriter.println(
@@ -204,7 +204,7 @@ class Lexer(
     val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
-        tokens ++= lexLine(tokenWriter, listWriter, line, lineNumber)
+        tokens ++= lexLine(listWriter, tokenWriter, line, lineNumber)
       }
     }
     
