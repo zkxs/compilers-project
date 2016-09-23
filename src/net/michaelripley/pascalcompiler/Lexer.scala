@@ -10,13 +10,18 @@ import net.michaelripley.pascalcompiler.tokens._
 
 object Lexer {
   def main(args: Array[String]): Unit = {
+    
     val lexer = new Lexer(
-        Source.fromFile("reservedwords.dat"),
-        Source.fromFile("operators.dat"),
-        Source.fromFile("punctuation.dat")
+        resource("/reservedwords.dat"),
+        resource("/operators.dat"),
+        resource("/punctuation.dat")
     )
-    lexer.lex("test1_correct.pas")
-    lexer.lex("test2_errors.pas")
+    
+    args.foreach(lexer.lex)
+  }
+  
+  private def resource(path: String): Source = {
+    Source.fromInputStream(getClass.getResourceAsStream(path))
   }
   
   // EOF token
