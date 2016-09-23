@@ -11,14 +11,12 @@ import net.michaelripley.pascalcompiler.tokens._
 object Lexer {
   def main(args: Array[String]): Unit = {
     val lexer = new Lexer(
-        Source.fromFile("test.pas"),
         Source.fromFile("reservedwords.dat"),
         Source.fromFile("operators.dat"),
-        Source.fromFile("punctuation.dat"),
-        new PrintWriter("test.listing.txt"),
-        new PrintWriter("test.tokens.txt")
+        Source.fromFile("punctuation.dat")
     )
-    lexer.lex()
+    lexer.lex("test1_correct.pas")
+    lexer.lex("test2_errors.pas")
   }
   
   // EOF token
@@ -167,12 +165,9 @@ object Lexer {
 import Lexer._
 
 class Lexer(
-    val sourceFile: Source,
     reservedWordFile: Source,
     operatorsFile: Source,
-    punctuationFile: Source,
-    listWriter: PrintWriter,
-    tokenWriter: PrintWriter) {
+    punctuationFile: Source) {
   
   // create new symbol table
   private val symbolTable = new SymbolTable()
@@ -198,14 +193,18 @@ class Lexer(
       garbageTokenizer)
   }
   
-  def lex(): List[Token] = {
+  def lex(filename: String): List[Token] = {
+    val sourceFile = Source.fromFile(filename)
+    		val listWriter = new PrintWriter(filename + ".listing")
+    val tokenWriter = new PrintWriter(filename + ".tokens")
+    
     tokenWriter.println(
         "Line No.    Lexeme                 Token-Type      Attribute")
     
     val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
-        tokens ++= lexLine(line, lineNumber)
+        tokens ++= lexLine(tokenWriter, listWriter, line, lineNumber)
       }
     }
     
@@ -218,7 +217,11 @@ class Lexer(
     tokens.toList
   }
   
-  private def lexLine(line: String, lineNumber: Int): List[Token] = {
+  private def lexLine(
+      listWriter: PrintWriter,
+      tokenWriter: PrintWriter,
+      line: String,
+      lineNumber: Int): List[Token] = {
     
     // First, output the line to the listing
     listWriter.println(f"${lineNumber + 1}%5d: $line")
@@ -252,8 +255,8 @@ class Lexer(
    * Tokenize line, starting from given location
    */
   @tailrec
-  private def tokenizeLine(
-      line: LineFragment, priorTokens: List[Token]): List[Token] = {
+  private def tokenizeLine(line: LineFragment, priorTokens: List[Token]):
+      List[Token] = {
     
     val spacelessLine = line.removeLeadingSpace
     

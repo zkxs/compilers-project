@@ -19,5 +19,5 @@ target/
 .project
 
 # Program output
-*.listing.txt
-*.tokens.txt
+*.listing
+*.tokens
