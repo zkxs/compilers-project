@@ -169,20 +169,19 @@ class Lexer(
     operatorsFile: Source,
     punctuationFile: Source) {
   
-  // create new symbol table
-  private val symbolTable = new SymbolTable()
+  // load words in from files
+  val reservedWords = new ReservedStrings(reservedWordFile)
+  val operators = new ReservedStrings(operatorsFile)
+  val punctuation = new ReservedStrings(punctuationFile)
+  
+  // create tokenizer for each type of token
+  val operatorTokenizer = new StringTokenizer(operators)
+  val punctuationTokenizer = new StringTokenizer(punctuation)
   
   // create tokenizer that can tokenize anything
-  private val anythingTokenizer = {
-    // load words in from files
-    val reservedWords = new ReservedStrings(reservedWordFile)
-    val operators = new ReservedStrings(operatorsFile)
-    val punctuation = new ReservedStrings(punctuationFile)
-    
-    // create tokenizers for each type of token
+  private def getSuperTokenizer(symbolTable: SymbolTable) = {
+    // create tokenizer for identifiers/reserved words
     val wordTokenizer = new WordTokenizer(reservedWords, symbolTable)
-    val operatorTokenizer = new StringTokenizer(operators)
-    val punctuationTokenizer = new StringTokenizer(punctuation)
     
     // lump all the tokenizers together, in order of priority
     new CompoundTokenizer(
@@ -194,6 +193,8 @@ class Lexer(
   }
   
   def lex(filename: String): List[Token] = {
+    val symbolTable = new SymbolTable()
+    val superTokenizer = getSuperTokenizer(symbolTable)
     val sourceFile = Source.fromFile(filename)
     val listWriter = new PrintWriter(filename + ".listing")
     val tokenWriter = new PrintWriter(filename + ".tokens")
@@ -204,7 +205,13 @@ class Lexer(
     val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
-        tokens ++= lexLine(listWriter, tokenWriter, line, lineNumber)
+        tokens ++= lexLine(
+            superTokenizer,
+            listWriter,
+            tokenWriter,
+            line,
+            lineNumber
+        )
       }
     }
     
@@ -218,6 +225,7 @@ class Lexer(
   }
   
   private def lexLine(
+      superTokenizer: Tokenizer,
       listWriter: PrintWriter,
       tokenWriter: PrintWriter,
       line: String,
@@ -227,7 +235,7 @@ class Lexer(
     listWriter.println(f"${lineNumber + 1}%5d: $line")
     
     // Now, tokenize the line
-    val tokens = tokenizeLine(line, lineNumber)
+    val tokens = tokenizeLine(superTokenizer, line, lineNumber)
     
     tokens.foreach( token => {
       tokenWriter.println(token)
@@ -245,8 +253,14 @@ class Lexer(
   /**
    * Tokenize line, starting from beginning
    */
-  private def tokenizeLine(line: String, lineNumber: Int): List[Token] = {
-    tokenizeLine(LineFragment(line, LineLocation(lineNumber, 0)), List.empty)
+  private def tokenizeLine(
+      superTokenizer: Tokenizer,
+      line: String,
+      lineNumber: Int): List[Token] = {
+    
+    tokenizeLine(superTokenizer,
+        LineFragment(line, LineLocation(lineNumber, 0)),
+        List.empty)
   }
   
   import scala.annotation.tailrec
@@ -255,8 +269,10 @@ class Lexer(
    * Tokenize line, starting from given location
    */
   @tailrec
-  private def tokenizeLine(line: LineFragment, priorTokens: List[Token]):
-      List[Token] = {
+  private def tokenizeLine(
+      superTokenizer: Tokenizer,
+      line: LineFragment,
+      priorTokens: List[Token]): List[Token] = {
     
     val spacelessLine = line.removeLeadingSpace
     
@@ -264,13 +280,17 @@ class Lexer(
       priorTokens
     } else {
       
-      val token = anythingTokenizer.extractToken(spacelessLine).get
+      val token = superTokenizer.extractToken(spacelessLine).get
       val length = token match {
         case token: AttributeToken  => token.lexeme.size()
         case token: IdentifierToken => token.lexeme.size()
       }
       
-      tokenizeLine(spacelessLine.offset(length), priorTokens :+ token)
+      tokenizeLine(
+          superTokenizer,
+          spacelessLine.offset(length),
+          priorTokens :+ token
+      )
     }
   }
   
