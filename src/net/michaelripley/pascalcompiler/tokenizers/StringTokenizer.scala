@@ -12,7 +12,7 @@ private object StringTokenizer {
       return None
     }
     
-		var currentElem:String = null
+    var currentElem:String = null
     var currentLength = -1
     var countWithLength = 0
     
