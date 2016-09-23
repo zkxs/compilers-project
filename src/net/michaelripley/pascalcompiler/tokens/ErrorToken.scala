@@ -40,6 +40,6 @@ class ErrorToken(
       case None       => s"^ $tokenName"
     }
     
-    " " * (lexeme.location.columnOffset + 7) + str
+    " " * (lexeme.location.columnOffset + 7) + s"""$str: "${lexeme.lexeme}""""
   }
 }
