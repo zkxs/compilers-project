@@ -36,7 +36,8 @@ class WordTokenizer(
         } else {
           val lowerCaseWordString = wordString.toLowerCase()
           
-          reservedWords.get(lowerCaseWordString) match { // check if word is reserved
+          // check if word is reserved
+          reservedWords.get(lowerCaseWordString) match {
             // it is! return the token we got back
             case Some(token) => Some(token.makeToken(lexeme))
             
