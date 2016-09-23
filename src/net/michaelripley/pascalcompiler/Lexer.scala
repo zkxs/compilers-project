@@ -28,7 +28,7 @@ object Lexer {
   // EOF token
   private val eofToken = new Token("EOF"){
     override def toString(): String = {
-      f"                                   $tokenName%-8s        NULL"
+      f"                                   $tokenName%-10s        NULL"
     }
   }
   
@@ -218,7 +218,7 @@ class Lexer(
     val tokenWriter = new PrintWriter(filename + ".tokens")
     
     tokenWriter.println(
-        "Line No.    Lexeme                 Token-Type      Attribute")
+        "Line No.    Lexeme                 Token-Type        Attribute")
     
     val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
