@@ -94,7 +94,7 @@ object Lexer {
             // check for leading zeros
             Some(realErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
-              && fractionalPart.charAt(fractionalPart.length - 1) == '0') {
+              && fractionalPart.last == '0') {
             // check for trailing zeros
             Some(realErrorTrailingZero.makeToken(lexeme))
           } else {
@@ -141,7 +141,7 @@ object Lexer {
             // check for leading zeros
             Some(longRealErrorLeadingZero.makeToken(lexeme))
           } else if (fractionalPart.length > 1 
-              && fractionalPart.tail == '0') {
+              && fractionalPart.last == '0') {
             // check for trailing zeros
             Some(longRealErrorTrailingZero.makeToken(lexeme))
           } else if (exponentPart == "0") {
