@@ -189,7 +189,7 @@ I'm glad that I chose to program this in Scala, as I feel I've already learned a
 
 \section{Appendix I: Sample Inputs and Outputs}\label{sample}
 
-Two source programs were ran through the lexer. The first, ``test1\_correct.pas'', has no lexical errors.  The second, ``test2\_error.pas'', has every lexical error possible.
+Three source programs were ran through the lexer. The first, ``test1\_correct.pas'', has no lexical errors.  The second, ``test2\_error.pas'', has every lexical error possible.  The third ``test3\_reals.pas'' was provided by Dr. Shenoi to ensure numbers are ``cut'' correctly.
 
 \filelisting[language=pascal]{test1_correct.pas}
 \filelisting{test1_correct.pas.listing}
@@ -197,12 +197,15 @@ Two source programs were ran through the lexer. The first, ``test1\_correct.pas'
 \filelisting[language=pascal]{test2_errors.pas}
 \filelisting{test2_errors.pas.listing}
 \filelisting{test2_errors.pas.tokens}
+\filelisting[language=pascal]{test3_reals.pas}
+\filelisting{test3_reals.pas.listing}
+\filelisting{test3_reals.pas.tokens}
 
 \section{Appendix II: Program Listings}\label{code}
 
-\datalisting{operators.dat}
-\datalisting{punctuation.dat}
-\datalisting{reservedwords.dat}
+\datalisting{resources/operators.dat}
+\datalisting{resources/punctuation.dat}
+\datalisting{resources/reservedwords.dat}
 
 \scalalisting{net/michaelripley/Util.scala}
 \scalalisting{net/michaelripley/pascalcompiler/Lexeme.scala}
