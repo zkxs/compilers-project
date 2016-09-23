@@ -52,7 +52,7 @@ class AttributeToken(
       case Some(attributeString) =>
         f"${lexeme.location.lineNumber}%4d        ${lexeme.lexeme}%-15s        $tokenName%-8s        $attributeString"
       case None =>
-        f"${lexeme.location.lineNumber}%4d        ${lexeme.lexeme}%-15s        $tokenName%-8s"
+        f"${lexeme.location.lineNumber}%4d        ${lexeme.lexeme}%-15s        $tokenName%-8s        NULL"
     }
   }
 }

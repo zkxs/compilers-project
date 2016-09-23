@@ -3,7 +3,7 @@ package net.michaelripley.pascalcompiler.tokenizers
 import net.michaelripley.pascalcompiler.tokens._
 
 private object WordTokenizer {
-  private val pattern = """[a-z][a-z0-9]*""".r
+  private val pattern = """(?i)[a-z][a-z0-9]*""".r
   private val identifierTokenName = "ID"
   private val IdentifierTooLongError
       = new PartialErrorToken("LEXERR", "Identifier too long")

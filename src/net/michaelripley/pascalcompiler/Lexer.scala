@@ -28,7 +28,7 @@ object Lexer {
   // EOF token
   private val eofToken = new Token("EOF"){
     override def toString(): String = {
-      s"                                   $tokenName"
+      f"                                   $tokenName%-8s        NULL"
     }
   }
   
