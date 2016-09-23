@@ -17,6 +17,7 @@ target/
 .settings/
 .classpath
 .project
+/manifest.mf
 
 # Program output
 *.listing
