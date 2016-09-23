@@ -1,0 +1,182 @@
+\documentclass[paper=letter, fontsize=11pt, oneside, titlepage]{scrartcl}
+
+\usepackage[T1]{fontenc} % 8-bit encoding using fonts that have 256 glyphs
+\usepackage{beramono} % A version of Bitstream Vera Mono slightly enhanced for use with TEX
+\usepackage{listings} % Required for \lstinputlisting
+\usepackage{xcolor} % Required for \definecolor
+\usepackage[font=bf,skip=\baselineskip]{caption} % used to set caption style
+%\usepackage{sectsty} % Allows customizing section commands
+\usepackage{fancyhdr} % Custom headers and footers
+\usepackage{nameref} % reference named things by labels. Must be imported before hyperref
+\usepackage{hyperref} % allows creation of hyperlinks
+
+
+% ------------------------------------------------------------------------------
+% Set up page
+
+\addtolength{\textheight}{0.5 in} % make bottom margin a bit smaller
+
+% make side margins a bit smaller
+\addtolength{\oddsidemargin}{-0.1in}
+\addtolength{\evensidemargin}{-0.1in}
+\addtolength{\textwidth}{0.2in}
+
+
+% ------------------------------------------------------------------------------
+% Set up sections
+
+%\allsectionsfont{\centering} % Make all sections centered
+
+
+% ------------------------------------------------------------------------------
+% Set up code listings
+
+\captionsetup[lstlisting]{font={footnotesize,tt}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{myStyle}{
+  frame=tb,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=true,
+  columns=flexible,
+  basicstyle={\footnotesize\ttfamily}, % gives us at least 80 characters per line
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  rulecolor=\color{black},
+  frame=single,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4,
+  keepspaces=true,
+}
+
+\newcommand{\scalalisting}[2][]{
+    \lstinputlisting[style=myStyle, language=scala, caption={\texttt{\detokenize{#2}}},#1]{../src/#2}
+}
+
+\newcommand{\datalisting}[2][]{
+    \lstinputlisting[style=myStyle, caption={\texttt{\detokenize{#2}}},#1]{../#2}
+}
+
+\newcommand{\filelisting}[2][]{
+    \lstinputlisting[style=myStyle, title={\texttt{\detokenize{#2}}},#1]{../#2}
+}
+
+
+% ------------------------------------------------------------------------------
+% Set up title
+
+\newcommand{\ptitle}{Project 1 Report}
+\newcommand{\pauthor}{Michael Ripley}
+\newcommand{\pschool}{University of Tulsa}
+\newcommand{\pteacher}{Dr. Shenoi}
+\newcommand{\pclass}{CS-4013-01: Compiler Construction}
+\newcommand{\pdate}{\today} %TODO: use \today
+
+% Create horizontal rule command with 1 argument of height
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 
+
+\title{
+\vspace{1.8 in} \normalfont \normalsize 
+\textsc{\pschool} \\ [25pt] % Your university, school and/or department name(s)
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge \ptitle \\ % The assignment title
+\horrule{0.5pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+\author{\pauthor} % Your name
+\date{
+    \normalsize
+    \pteacher \endgraf
+    \pclass \endgraf
+    \pdate
+} % Today's date or a custom date
+
+
+% ------------------------------------------------------------------------------
+% Set up headers and footers
+
+
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+
+% ------------------------------------------------------------------------------
+% Set up hyperef (pdf metadata and hyperlinks)
+
+\hypersetup{
+    colorlinks          =    {true},        % hyperlinks will be colored
+    urlcolor            =    {Blue},        % url hyperlinks will be blue
+    urlbordercolor      =    {0 0 1},       % url borders will be blue
+    linkcolor           =    {Black},       % link color is black
+    linkbordercolor     =    {0 0 0},       % link border is black
+    pdftitle            =    {\ptitle}, 
+    pdfauthor           =    {\pauthor},
+    pdfcreator          =    {\pauthor},
+    pdfproducer         =    {pdfLaTeX},
+    pdfdisplaydoctitle  =    {true},
+    pdfkeywords         =    {\pauthor} {Assignment} {Computer Science} {Compiler},
+    bookmarks           =    {true},
+    bookmarksopen       =    {false},
+    pdfpagemode         =    {UseNone}
+}
+
+
+\begin{document}
+
+\pdfbookmark[1]{Title Page}{title} % Add PDF bookmark to to of document
+
+\maketitle
+
+\section{Introduction}\label{intro}
+
+Blah blah blah.
+
+\section{Methodology}\label{meth}
+\section{Implementation}\label{impl}
+\section{Discussion and Conclusions}\label{conclusions}
+\section{References}\label{ref}
+\section{Appendix I: Sample Inputs and Outputs}\label{sample}
+
+\filelisting[language=pascal]{test.pas}
+
+\section{Appendix II: Program Listings}\label{code}
+
+\datalisting{operators.dat}
+\datalisting{punctuation.dat}
+\datalisting{reservedwords.dat}
+
+\scalalisting{net/michaelripley/Util.scala}
+\scalalisting{net/michaelripley/pascalcompiler/Lexeme.scala}
+\scalalisting{net/michaelripley/pascalcompiler/Lexer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/LineFragment.scala}
+\scalalisting{net/michaelripley/pascalcompiler/LineLocation.scala}
+\scalalisting{net/michaelripley/pascalcompiler/ReservedStrings.scala}
+\scalalisting{net/michaelripley/pascalcompiler/identifiers/Identifier.scala}
+\scalalisting{net/michaelripley/pascalcompiler/identifiers/SymbolTable.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokenizers/CatchAllTokenizer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokenizers/CompoundTokenizer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokenizers/SimpleTokenizer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokenizers/StringTokenizer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokenizers/Tokenizer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokenizers/WordTokenizer.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokens/AttributeToken.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokens/ErrorToken.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokens/IdentifierToken.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokens/PartialAttributeToken.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokens/PartialErrorToken.scala}
+\scalalisting{net/michaelripley/pascalcompiler/tokens/Token.scala}
+
+\end{document}
