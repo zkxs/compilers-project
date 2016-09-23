@@ -4,7 +4,8 @@ package net.michaelripley.pascalcompiler.tokenizers
 import net.michaelripley.pascalcompiler.tokens._
 
 private object CatchAllTokenizer {
-  private val garbageError = new PartialErrorToken("LEXERR", "Unknown character")
+  private val garbageError
+      = new PartialErrorToken("LEXERR", "Unknown character")
 }
 
 import CatchAllTokenizer._

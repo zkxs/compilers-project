@@ -22,7 +22,8 @@ object Util {
   }
   
   /**
-   * Allows us to pull out certain types we don't like the default hashing for and screw with them
+   * Allows us to pull out certain types we don't like the default hashing for
+   * and screw with them
    */
   private def hashAny(thing: Any): Int = {
     thing match {

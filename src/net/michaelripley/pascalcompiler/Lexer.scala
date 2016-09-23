@@ -45,12 +45,15 @@ object Lexer {
       val integerToken = new PartialAttributeToken("INTEGER")
       
       // error tokens
-      val integerErrorTooLong     = new PartialErrorToken("LEXERR", "Integer too long")
-      val integerErrorLeadingZero = new PartialErrorToken("LEXERR", "Integer has leading zeros")
+      val integerErrorTooLong
+          = new PartialErrorToken("LEXERR", "Integer too long")
+      val integerErrorLeadingZero
+          = new PartialErrorToken("LEXERR", "Integer has leading zeros")
       
       // tokenizer implementation
       new SimpleTokenizer("""\d+""".r, integerToken) {
-        override def checkError(matchResult: Match, lexeme: Lexeme): Option[AttributeToken] = {
+        override def checkError(matchResult: Match, lexeme: Lexeme): 
+            Option[AttributeToken] = {
           val intString = matchResult.matched
           if (intString.length() > maxIntegerLength) {
             // check if integer is too long
@@ -72,13 +75,17 @@ object Lexer {
       val realToken = new PartialAttributeToken("REAL")
       
       // error tokens
-      val realErrorTooLong      = new PartialErrorToken("LEXERR", "Real too long")
-      val realErrorLeadingZero  = new PartialErrorToken("LEXERR", "Real has leading zeros")
-      val realErrorTrailingZero = new PartialErrorToken("LEXERR", "Real has trailing zeros")
+      val realErrorTooLong
+          = new PartialErrorToken("LEXERR", "Real too long")
+      val realErrorLeadingZero
+          = new PartialErrorToken("LEXERR", "Real has leading zeros")
+      val realErrorTrailingZero
+          = new PartialErrorToken("LEXERR", "Real has trailing zeros")
       
       // tokenizer implementation
       new SimpleTokenizer("""(\d+)\.(\d+)""".r, realToken) {
-        override def checkError(matchResult: Match, lexeme: Lexeme): Option[AttributeToken] = {
+        override def checkError(matchResult: Match, lexeme: Lexeme):
+            Option[AttributeToken] = {
           val integerPart    = matchResult.group(1)
           val fractionalPart = matchResult.group(2)
           if (integerPart.length > maxRealPartLength
@@ -111,15 +118,18 @@ object Lexer {
       val longRealErrorLeadingZero
           = new PartialErrorToken("LEXERR", "LongReal has leading zeros")
       val longRealErrorTrailingZero
-          = new PartialErrorToken("LEXERR", "LongReal fractional part has trailing zeros")
+          = new PartialErrorToken(
+              "LEXERR", "LongReal fractional part has trailing zeros")
       val longRealErrorExponentZero
           = new PartialErrorToken("LEXERR", "LongReal exponent is zero")
       val longRealErrorExponentLeadingZero
-          = new PartialErrorToken("LEXERR", "LongReal exponent has leading zeros")
+          = new PartialErrorToken(
+              "LEXERR", "LongReal exponent has leading zeros")
       
       // tokenizer implementation
       new SimpleTokenizer("""(\d+)\.(\d+)[Ee]([-+]?)(\d+)""".r, longRealToken) {
-        override def checkError(matchResult: Match, lexeme: Lexeme): Option[AttributeToken] = {
+        override def checkError(matchResult: Match, lexeme: Lexeme):
+            Option[AttributeToken] = {
           val integerPart    = matchResult.group(1)
           val fractionalPart = matchResult.group(2)
           //  sign           = matchResult.group(3) // currently unused
@@ -189,7 +199,8 @@ class Lexer(
   }
   
   def lex(): List[Token] = {
-    tokenWriter.println("Line No.    Lexeme                 Token-Type      Attribute")
+    tokenWriter.println(
+        "Line No.    Lexeme                 Token-Type      Attribute")
     
     val tokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
@@ -241,7 +252,8 @@ class Lexer(
    * Tokenize line, starting from given location
    */
   @tailrec
-  private def tokenizeLine(line: LineFragment, priorTokens: List[Token]): List[Token] = {
+  private def tokenizeLine(
+      line: LineFragment, priorTokens: List[Token]): List[Token] = {
     
     val spacelessLine = line.removeLeadingSpace
     

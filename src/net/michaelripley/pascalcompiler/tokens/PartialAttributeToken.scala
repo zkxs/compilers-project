@@ -6,7 +6,9 @@ import net.michaelripley.pascalcompiler.Lexeme
 /**
  * Only contains the token name and attribute. It is missing the lexeme.
  */
-class PartialAttributeToken(tokenName: String, val attribute: Option[String]) extends Token(tokenName) {
+class PartialAttributeToken(
+    tokenName: String,
+    val attribute: Option[String]) extends Token(tokenName) {
   
   def this(token: String, attributeString: String) = {
     this(token, 

@@ -5,7 +5,8 @@ import net.michaelripley.pascalcompiler.tokens._
 private object WordTokenizer {
   private val pattern = """[a-z][a-z0-9]*""".r
   private val identifierTokenName = "ID"
-  private val IdentifierTooLongError = new PartialErrorToken("LEXERR", "Identifier too long")
+  private val IdentifierTooLongError
+      = new PartialErrorToken("LEXERR", "Identifier too long")
   private val maxIdentifierLength = 10
 }
 
@@ -18,7 +19,9 @@ import net.michaelripley.pascalcompiler.LineFragment
 /**
  * Tokenizes both identifiers and reserved words
  */
-class WordTokenizer(private val reservedWords: ReservedStrings, private val symbolTable: SymbolTable) extends Tokenizer {
+class WordTokenizer(
+    private val reservedWords: ReservedStrings,
+    private val symbolTable: SymbolTable) extends Tokenizer {
   
   def extractToken(line: LineFragment): Option[Token] = {
     
@@ -34,8 +37,11 @@ class WordTokenizer(private val reservedWords: ReservedStrings, private val symb
           val lowerCaseWordString = wordString.toLowerCase()
           
           reservedWords.get(lowerCaseWordString) match { // check if word is reserved
-            case Some(token) => Some(token.makeToken(lexeme)) // it is! return the token we got back
-            case None => { // it is not, so it's an identifier
+            // it is! return the token we got back
+            case Some(token) => Some(token.makeToken(lexeme))
+            
+            // it is not, so it's an identifier
+            case None => {
               
               // add identifier to table
               val identifier = symbolTable.registerSymbol(lowerCaseWordString)

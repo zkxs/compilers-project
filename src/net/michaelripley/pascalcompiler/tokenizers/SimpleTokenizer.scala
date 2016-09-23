@@ -7,11 +7,14 @@ import net.michaelripley.pascalcompiler.Lexeme
 import net.michaelripley.pascalcompiler.LineFragment
 
 /**
- * Simple fill-in-the-blanks Tokenizer implementation that should work for most use cases
+ * Simple fill-in-the-blanks Tokenizer implementation that should work for most
+ * use cases
  * @param pattern Pattern that matches the lexeme for this type of token
- * @param tokenCreator Method to create token if match had no errors (see {@link #checkError})
+ * @param tokenCreator Method to create token if match had no errors
+ *        (see {@link #checkError})
  */
-class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => AttributeToken) extends Tokenizer {
+class SimpleTokenizer(val pattern: Regex, val tokenCreator:
+    (Match, Lexeme) => AttributeToken) extends Tokenizer {
   
   /**
    * Alternate constructor that is useful for lexemes that always tokenize
@@ -25,16 +28,20 @@ class SimpleTokenizer(val pattern: Regex, val tokenCreator: (Match, Lexeme) => A
     
   final def extractToken(line: LineFragment): Option[AttributeToken] = {
     pattern.findPrefixMatchOf(line.contents) match {
-      case Some(matchResult) => {                               // there was a match
-        val lexeme = Lexeme(matchResult.matched, line.location) // create the lexeme
-        checkError(matchResult, lexeme) match {                 // check for lexical errors in the math (e.g. number too long)
-          case Some(errorToken) => Some(errorToken)             // There was an error. Return its token.
-          case None => {                                        // There was no error.
-            Some(tokenCreator(matchResult, lexeme))             // create the token for the match
+      case Some(matchResult) => {
+        // there was a match; create the lexeme
+        val lexeme = Lexeme(matchResult.matched, line.location)
+        // check for lexical errors in the match (e.g. number too long)
+        checkError(matchResult, lexeme) match {
+          // There was an error. Return its token.
+          case Some(errorToken) => Some(errorToken)
+          case None => { // There was no error.
+            // create the token for the match
+            Some(tokenCreator(matchResult, lexeme)) 
           }
         }
       }
-      case None => None                                         // There was no match :(
+      case None => None // There was no match :(
     }
   }
   

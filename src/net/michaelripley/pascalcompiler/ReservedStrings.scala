@@ -10,8 +10,11 @@ private object ReservedStrings {
   private def load(reservedWordSource: Source): Map[String, PartialAttributeToken] = {
     val map = reservedWordSource.getLines().map {
       line => line match {
-        case pattern(lexeme, token, attribute) => (lexeme, new PartialAttributeToken(token, attribute))
-        case _ => throw new IllegalArgumentException(s"""Invalid line "$line" in $reservedWordSource""")
+        case pattern(lexeme, token, attribute) =>
+            (lexeme, new PartialAttributeToken(token, attribute))
+            
+        case _ => throw new IllegalArgumentException(
+            s"""Invalid line "$line" in $reservedWordSource""")
       }
     }.toMap
     

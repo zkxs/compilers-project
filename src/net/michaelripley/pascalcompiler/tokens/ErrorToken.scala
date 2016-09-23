@@ -8,7 +8,10 @@ import net.michaelripley.Util
 import net.michaelripley.pascalcompiler.Lexeme
 import ErrorToken._
 
-class ErrorToken(tokenName: String, attribute: Option[String], lexeme: Lexeme) extends AttributeToken(tokenName, attribute, lexeme) {
+class ErrorToken(
+    tokenName: String,
+    attribute: Option[String],
+    lexeme: Lexeme) extends AttributeToken(tokenName, attribute, lexeme) {
   
   override def canEqual(other: Any): Boolean = {
     other.isInstanceOf[ErrorToken]
