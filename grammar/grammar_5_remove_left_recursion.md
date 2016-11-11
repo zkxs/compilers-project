@@ -46,9 +46,10 @@
 | 17.2.2       | *expression_list'* →        | **ϵ** |
 | 18.1         | *expression* →              | *simple_expression* |
 | 18.2         | *expression* →              | *simple_expression* **relop** *simple_expression* |
-| 19.1         | *simple_expression* →       | *term* |
-| 19.2         | *simple_expression* →       | *sign* *term* |
-| 19.3         | *simple_expression* →       | *simple_expression* **addop** *term* |
+| 19.1.1       | *simple_expression* →       | *term* *simple_expression'* |
+| 19.2.1       | *simple_expression* →       | *sign* *term* *simple_expression'* |
+| 19.3.1       | *simple_expression'* →      | **addop** *term* *simple_expression'* |
+| 19.3.2       | *simple_expression'* →      | **ϵ** |
 | 20.1         | *term* →                    | *factor* |
 | 20.2         | *term* →                    | *term* **mulop** *factor* |
 | 21.1         | *factor* →                  | **id** |
