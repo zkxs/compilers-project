@@ -18,9 +18,9 @@
 |  7.1.2 | *subprogram_declaration* →  | *subprogram_head* *declarations* *compound_statement* |
 |  7.2.1 | *subprogram_declaration* →  | *subprogram_head* *subprogram_declarations* *compound_statement* |
 |  7.2.2 | *subprogram_declaration* →  | *subprogram_head* *compound_statement* |
-|  8     | *subprogram_head* →         | **procedure** **id** *arguments* **;** |
+|  8.1   | *subprogram_head* →         | **procedure** **id** *arguments* **;** |
+|  8.2   | *subprogram_head* →         | **procedure** **id** **;** |
 |  9.1   | *arguments* →               | **(** *parameter_list* **)** |
-|  9.2   | *arguments* →               | **ϵ** |
 | 10.1   | *parameter_list* →          | **id** **:** *type* |
 | 10.2   | *parameter_list* →          | *parameter_list* **;** **id** **:** *type* |
 | 11     | *compound_statement* →      | **begin** *optional_statements* **end** |
