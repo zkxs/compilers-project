@@ -4,8 +4,9 @@
 |  1.1.2       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *declarations* *compound_statement* **.** |
 |  1.2.1       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *subprogram_declarations* *compound_statement* **.** |
 |  1.2.2       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *compound_statement* **.** |
-|  2.1         | *identifier_list* →         | **id** |
-|  2.2         | *identifier_list* →         | *identifier_list* **,** **id** |
+|  2.1.1       | *identifier_list* →         | **id** *identifier_list'* |
+|  2.2.1       | *identifier_list'* →        | **,** **id** *identifier_list'* |
+|  2.2.2       | *identifier_list'* →        | **ϵ**
 |  3.1.1       | *declarations* →            | *declarations* **var** **id** **:** type **;** |
 |  3.1.2       | *declarations* →            | **var** **id** **:** type **;** |
 |  4.1         | *type* →                    | *standard_type* |
