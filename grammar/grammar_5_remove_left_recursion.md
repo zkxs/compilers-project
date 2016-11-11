@@ -22,8 +22,9 @@
 |  8.1         | *subprogram_head* →         | **procedure** **id** *arguments* **;** |
 |  8.2         | *subprogram_head* →         | **procedure** **id** **;** |
 |  9.1         | *arguments* →               | **(** *parameter_list* **)** |
-| 10.1         | *parameter_list* →          | **id** **:** *type* |
-| 10.2         | *parameter_list* →          | *parameter_list* **;** **id** **:** *type* |
+| 10.1.1       | *parameter_list* →          | **id** **:** *type* *parameter_list'* |
+| 10.2.1       | *parameter_list'* →         | **;** **id** **:** *type* *parameter_list'* |
+| 10.2.2       | *parameter_list'* →         | **ϵ** |
 | 11.1         | *compound_statement* →      | **begin** *optional_statements* **end** |
 | 11.2         | *compound_statement* →      | **begin** **end** |
 | 12.1         | *optional_statements* →     | *statement_list* |
