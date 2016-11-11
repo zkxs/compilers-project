@@ -50,8 +50,9 @@
 | 19.2.1       | *simple_expression* →       | *sign* *term* *simple_expression'* |
 | 19.3.1       | *simple_expression'* →      | **addop** *term* *simple_expression'* |
 | 19.3.2       | *simple_expression'* →      | **ϵ** |
-| 20.1         | *term* →                    | *factor* |
-| 20.2         | *term* →                    | *term* **mulop** *factor* |
+| 20.1.1       | *term* →                    | *factor* *term'* |
+| 20.2.1       | *term'* →                   | **mulop** *factor* *term'* |
+| 20.2.2       | *term'* →                   | **ϵ** |
 | 21.1         | *factor* →                  | **id** |
 | 21.2         | *factor* →                  | **id** **[** *expression* **]** |
 | 21.3         | *factor* →                  | **num** |
