@@ -25,9 +25,8 @@
 | 10.1.1       | *parameter_list* →          | **id** **:** *type* *parameter_list'* |
 | 10.2.1       | *parameter_list'* →         | **;** **id** **:** *type* *parameter_list'* |
 | 10.2.2       | *parameter_list'* →         | **ϵ** |
-| 11.1         | *compound_statement* →      | **begin** *optional_statements* **end** |
+| 11.1         | *compound_statement* →      | **begin** *statement_list* **end** |
 | 11.2         | *compound_statement* →      | **begin** **end** |
-| 12.1         | *optional_statements* →     | *statement_list* |
 | 13.1         | *statement_list* →          | *statement* |
 | 13.2         | *statement_list* →          | *statement_list* **;** *statement* |
 | 14.1         | *statement* →               | *variable* **assignop** *expression* |
