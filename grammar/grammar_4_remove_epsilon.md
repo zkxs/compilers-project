@@ -1,17 +1,19 @@
 | Number | Production Name             | Production |
 |--------|-----------------------------|------------|
-|  1     | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
+|  1.1   | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
+|  1.2   | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *subprogram_declarations* *compound_statement* **.** |
 |  2.1   | *identifier_list* →         | **id** |
 |  2.2   | *identifier_list* →         | *identifier_list* **,** **id** |
-|  3.1   | *declarations* →            | *declarations* **var** **id** **:** type **;** |
-|  3.2   | *declarations* →            | **ϵ** |
+|  3.1.1 | *declarations* →            | *declarations* **var** **id** **:** type **;** |
+|  3.1.2 | *declarations* →            | **var** **id** **:** type **;** |
 |  4.1   | *type* →                    | *standard_type* |
 |  4.2   | *type* →                    | **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* |
 |  5.1   | *standard_type* →           | **integer** |
 |  5.2   | *standard_type* →           | **real** |
 |  6.1   | *subprogram_declarations* → | *subprogram_declarations* *subprogram_declaration* **;** |
 |  6.2   | *subprogram_declarations* → | **ϵ** |
-|  7     | *subprogram_declaration* →  | *subprogram_head* *declarations* *subprogram_declarations* *compound_statement* |
+|  7.1   | *subprogram_declaration* →  | *subprogram_head* *declarations* *subprogram_declarations* *compound_statement* |
+|  7.2   | *subprogram_declaration* →  | *subprogram_head* *subprogram_declarations* *compound_statement* |
 |  8     | *subprogram_head* →         | **procedure** **id** *arguments* **;** |
 |  9.1   | *arguments* →               | **(** *parameter_list* **)** |
 |  9.2   | *arguments* →               | **ϵ** |
