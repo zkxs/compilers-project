@@ -41,8 +41,9 @@
 | 15.2         | *variable* →                | **id** **[** *expression* **]** |
 | 16.1         | *procedure_statement* →     | **call** **id** |
 | 16.2         | *procedure_statement* →     | **call** **id** **(** *expression_list* **)** |
-| 17.1         | *expression_list* →         | *expression* |
-| 17.2         | *expression_list* →         | *expression_list* **,** *expression* |
+| 17.1.1       | *expression_list* →         | *expression* *expression_list'* |
+| 17.2.1       | *expression_list'* →        | **,** *expression* *expression_list'* |
+| 17.2.2       | *expression_list'* →        | **ϵ** |
 | 18.1         | *expression* →              | *simple_expression* |
 | 18.2         | *expression* →              | *simple_expression* **relop** *simple_expression* |
 | 19.1         | *simple_expression* →       | *term* |
