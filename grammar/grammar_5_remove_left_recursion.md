@@ -27,8 +27,9 @@
 | 10.2.2       | *parameter_list'* →         | **ϵ** |
 | 11.1         | *compound_statement* →      | **begin** *statement_list* **end** |
 | 11.2         | *compound_statement* →      | **begin** **end** |
-| 13.1         | *statement_list* →          | *statement* |
-| 13.2         | *statement_list* →          | *statement_list* **;** *statement* |
+| 13.1.1       | *statement_list* →          | *statement* *statement_list'* |
+| 13.2.1       | *statement_list'* →         | **;** *statement* *statement_list'* |
+| 13.2.2       | *statement_list'* →         | **ϵ** |
 | 14.1         | *statement* →               | *variable* **assignop** *expression* |
 | 14.2         | *statement* →               | *procedure_statement* |
 | 14.3         | *statement* →               | *compound_statement* |
