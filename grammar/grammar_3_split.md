@@ -1,24 +1,50 @@
 | Number | Production Name | Production |
 |--------|-----------------|------------|
-|  1 | *program* → | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
-|  2 | *identifier_list* → | **id** \| *identifier_list* **,** **id** |
-|  3 | *declarations* → | *declarations* **var** **id** **:** type **;** \| **ϵ** |
-|  4 | *type* → | *standard_type* \| **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* |
-|  5 | *standard_type* → | **integer** \| **real** |
-|  6 | *subprogram_declarations* → | *subprogram_declarations* *subprogram_declaration* **;** \| **ϵ** |
-|  7 | *subprogram_declaration* → | *subprogram_head* *declarations* *subprogram_declarations* *compound_statement* |
-|  8 | *subprogram_head* → | **procedure** **id** *arguments* **;** |
-|  9 | *arguments* → | **(** *parameter_list* **)** \| **ϵ** |
-| 10 | *parameter_list* → | **id** **:** *type* \| *parameter_list* **;** **id** **:** *type* |
+| 1 | *program* → | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
+| 2.1 | *identifier_list* → | **id** |
+| 2.2 | *identifier_list* → | *identifier_list* **,** **id** |
+| 3.1 | *declarations* → | *declarations* **var** **id** **:** type **;** |
+| 3.2 | *declarations* → | **ϵ** |
+| 4.1 | *type* → | *standard_type* |
+| 4.2 | *type* → | **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* |
+| 5.1 | *standard_type* → | **integer** |
+| 5.2 | *standard_type* → | **real** |
+| 6.1 | *subprogram_declarations* → | *subprogram_declarations* *subprogram_declaration* **;** |
+| 6.2 | *subprogram_declarations* → | **ϵ** |
+| 7 | *subprogram_declaration* → | *subprogram_head* *declarations* *subprogram_declarations* *compound_statement* |
+| 8 | *subprogram_head* → | **procedure** **id** *arguments* **;** |
+| 9.1 | *arguments* → | **(** *parameter_list* **)** |
+| 9.2 | *arguments* → | **ϵ** |
+| 10.1 | *parameter_list* → | **id** **:** *type* |
+| 10.2 | *parameter_list* → | *parameter_list* **;** **id** **:** *type* |
 | 11 | *compound_statement* → | **begin** *optional_statements* **end** |
-| 12 | *optional_statements* → | *statement_list* \| **ϵ** |
-| 13 | *statement_list* → | *statement* \| *statement_list* **;** *statement* |
-| 14 | *statement* → | *variable* **assignop** *expression* \| *procedure_statement* \| *compound_statement* \| **if** *expression* **then** *statement* **else** *statement* \| **if** *expression* **then** *statement* \| **while** *expression* **do** *statement* |
-| 15 | *variable* → | **id** \| **id** **[** *expression* **]** |
-| 16 | *procedure_statement* → | **call** **id** \| **call** **id** **(** *expression_list* **)** |
-| 17 | *expression_list* → | *expression* \| *expression_list* **,** *expression* |
-| 18 | *expression* → | *simple_expression* \| *simple_expression* **relop** *simple_expression* |
-| 19 | *simple_expression* → | *term* \| *sign* *term* \| *simple_expression* **addop** *term* |
-| 20 | *term* → | *factor* \| *term* **mulop** *factor* |
-| 21 | *factor* → | **id** \| **id** **[** *expression* **]** \| **num** \| **(** *expression* **)** \| **not** *factor* |
-| 22 | *sign* → | **+** \| **-** |
+| 12.1 | *optional_statements* → | *statement_list* |
+| 12.2 | *optional_statements* → | **ϵ** |
+| 13.1 | *statement_list* → | *statement* |
+| 13.2 | *statement_list* → | *statement_list* **;** *statement* |
+| 14.1 | *statement* → | *variable* **assignop** *expression* |
+| 14.2 | *statement* → | *procedure_statement* |
+| 14.3 | *statement* → | *compound_statement* |
+| 14.4 | *statement* → | **if** *expression* **then** *statement* **else** *statement* |
+| 14.5 | *statement* → | **if** *expression* **then** *statement* |
+| 14.6 | *statement* → | **while** *expression* **do** *statement* |
+| 15.1 | *variable* → | **id** |
+| 15.2 | *variable* → | **id** **[** *expression* **]** |
+| 16.1 | *procedure_statement* → | **call** **id** |
+| 16.2 | *procedure_statement* → | **call** **id** **(** *expression_list* **)** |
+| 17.1 | *expression_list* → | *expression* |
+| 17.2 | *expression_list* → | *expression_list* **,** *expression* |
+| 18.1 | *expression* → | *simple_expression* |
+| 18.2 | *expression* → | *simple_expression* **relop** *simple_expression* |
+| 19.1 | *simple_expression* → | *term* |
+| 19.2 | *simple_expression* → | *sign* *term* |
+| 19.3 | *simple_expression* → | *simple_expression* **addop** *term* |
+| 20.1 | *term* → | *factor* |
+| 20.2 | *term* → | *term* **mulop** *factor* |
+| 21.1 | *factor* → | **id** |
+| 21.2 | *factor* → | **id** **[** *expression* **]** |
+| 21.3 | *factor* → | **num** |
+| 21.4 | *factor* → | **(** *expression* **)** |
+| 21.5 | *factor* → | **not** *factor* |
+| 22.1 | *sign* → | **+** |
+| 22.2 | *sign* → | **-** |
