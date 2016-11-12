@@ -1,9 +1,11 @@
 | Number       | Production Name             | Production |
 |--------------|-----------------------------|------------|
-|  1.1.1       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
-|  1.1.2       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *declarations* *compound_statement* **.** |
-|  1.2.1       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *subprogram_declarations* *compound_statement* **.** |
-|  1.2.2       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *compound_statement* **.** |
+|  1.1         | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *program'* |
+|  1.2.1       | *program'* →                | *declarations* *program''* |
+|  1.2.2       | *program'* →                | *subprogram_declarations* *compound_statement* **.** |
+|  1.2.3       | *program'* →                | *compound_statement* **.** |
+|  1.3.1       | *program''* →               | *subprogram_declarations* *compound_statement* **.** |
+|  1.3.2       | *program''* →               | *compound_statement* **.** |
 |  2.1.1       | *identifier_list* →         | **id** *identifier_list'* |
 |  2.2.1       | *identifier_list'* →        | **,** **id** *identifier_list'* |
 |  2.2.2       | *identifier_list'* →        | **ϵ**
