@@ -19,10 +19,12 @@
 |  6.1         | *subprogram_declarations* → | *subprogram_declaration* **;** *subprogram_declarations'* |
 |  6.2.1       | *subprogram_declarations'* →| *subprogram_declarations* |
 |  6.2.2       | *subprogram_declarations'* →| **ϵ** |
-|  7.1.1       | *subprogram_declaration* →  | *subprogram_head* *declarations* *subprogram_declarations* *compound_statement* |
-|  7.1.2       | *subprogram_declaration* →  | *subprogram_head* *declarations* *compound_statement* |
-|  7.2.1       | *subprogram_declaration* →  | *subprogram_head* *subprogram_declarations* *compound_statement* |
-|  7.2.2       | *subprogram_declaration* →  | *subprogram_head* *compound_statement* |
+|  7.1         | *subprogram_declaration* →  | *subprogram_head* *subprogram_declaration'* |
+|  7.2.1       | *subprogram_declaration'* → | *declarations* *subprogram_declaration''* |
+|  7.2.2       | *subprogram_declaration'* → | *subprogram_declarations* *compound_statement* |
+|  7.2.3       | *subprogram_declaration'* → | *compound_statement* |
+|  7.3.1       | *subprogram_declaration''* →| *subprogram_declarations* *compound_statement* |
+|  7.3.2       | *subprogram_declaration''* →| *compound_statement* |
 |  8.1         | *subprogram_head* →         | **procedure** **id** *arguments* **;** |
 |  8.2         | *subprogram_head* →         | **procedure** **id** **;** |
 |  9.1         | *arguments* →               | **(** *parameter_list* **)** |
