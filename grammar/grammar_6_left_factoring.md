@@ -45,8 +45,9 @@
 | 14.1.5       | *statement* →               | **while** *expression* **do** *statement* |
 | 14.2.1       | *statement'* →              | **else** *statement* |
 | 14.2.2       | *statement'* →              | **ϵ** |
-| 15.1         | *variable* →                | **id** |
-| 15.2         | *variable* →                | **id** **[** *expression* **]** |
+| 15.1         | *variable* →                | **id** *variable'* |
+| 15.2.1       | *variable'* →               | **[** *expression* **]** |
+| 15.2.2       | *variable'* →               | **ϵ** |
 | 16.1         | *procedure_statement* →     | **call** **id** |
 | 16.2         | *procedure_statement* →     | **call** **id** **(** *expression_list* **)** |
 | 17.1.1       | *expression_list* →         | *expression* *expression_list'* |
