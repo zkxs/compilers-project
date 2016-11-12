@@ -32,8 +32,9 @@
 | 10.1.1       | *parameter_list* →          | **id** **:** *type* *parameter_list'* |
 | 10.2.1       | *parameter_list'* →         | **;** **id** **:** *type* *parameter_list'* |
 | 10.2.2       | *parameter_list'* →         | **ϵ** |
-| 11.1         | *compound_statement* →      | **begin** *statement_list* **end** |
-| 11.2         | *compound_statement* →      | **begin** **end** |
+| 11.1         | *compound_statement* →      | **begin** *compound_statement'* |
+| 11.2.1       | *compound_statement'* →     | *statement_list* **end** |
+| 11.2.2       | *compound_statement'* →     | **end** |
 | 13.1.1       | *statement_list* →          | *statement* *statement_list'* |
 | 13.2.1       | *statement_list'* →         | **;** *statement* *statement_list'* |
 | 13.2.2       | *statement_list'* →         | **ϵ** |
