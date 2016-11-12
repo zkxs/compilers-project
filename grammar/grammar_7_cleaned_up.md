@@ -6,9 +6,9 @@
 |  1.2.3       | *program'* →                 | *compound_statement* **.** |
 |  1.3.1       | *program''* →                | *subprogram_declarations* *compound_statement* **.** |
 |  1.3.2       | *program''* →                | *compound_statement* **.** |
-|  2.1.1       | *identifier_list* →          | **id** *identifier_list'* |
-|  2.2.1       | *identifier_list'* →         | **,** **id** *identifier_list'* |
-|  2.2.2       | *identifier_list'* →         | **ϵ**
+|  2.1.1       | *identifier_list* →          | **id** *identifier_list_tail* |
+|  2.2.1       | *identifier_list_tail* →     | **,** **id** *identifier_list_tail* |
+|  2.2.2       | *identifier_list_tail* →     | **ϵ**
 |  3.1         | *declarations* →             | **var** **id** **:** type **;** *declarations'* |
 |  3.2.1       | *declarations'* →            | *declarations* |
 |  3.2.2       | *declarations'* →            | **ϵ** |
@@ -29,46 +29,46 @@
 |  8.2.1       | *subprogram_head'* →         | *arguments* **;** |
 |  8.2.2       | *subprogram_head'* →         | **;** |
 |  9           | *arguments* →                | **(** *parameter_list* **)** |
-| 10.1.1       | *parameter_list* →           | **id** **:** *type* *parameter_list'* |
-| 10.2.1       | *parameter_list'* →          | **;** **id** **:** *type* *parameter_list'* |
-| 10.2.2       | *parameter_list'* →          | **ϵ** |
-| 11.1         | *compound_statement* →       | **begin** *compound_statement'* |
-| 11.2.1       | *compound_statement'* →      | *statement_list* **end** |
-| 11.2.2       | *compound_statement'* →      | **end** |
-| 13.1.1       | *statement_list* →           | *statement* *statement_list'* |
-| 13.2.1       | *statement_list'* →          | **;** *statement* *statement_list'* |
-| 13.2.2       | *statement_list'* →          | **ϵ** |
+| 10.1.1       | *parameter_list* →           | **id** **:** *type* *parameter_list_tail* |
+| 10.2.1       | *parameter_list_tail* →      | **;** **id** **:** *type* *parameter_list_tail* |
+| 10.2.2       | *parameter_list_tail* →      | **ϵ** |
+| 11.1         | *compound_statement* →       | **begin** *compound_statment_tail* |
+| 11.2.1       | *compound_statment_tail* →   | *statement_list* **end** |
+| 11.2.2       | *compound_statment_tail* →   | **end** |
+| 13.1.1       | *statement_list* →           | *statement* *statement_list_tail* |
+| 13.2.1       | *statement_list_tail* →      | **;** *statement* *statement_list_tail* |
+| 13.2.2       | *statement_list_tail* →      | **ϵ** |
 | 14.1.1       | *statement* →                | *variable* **assignop** *expression* |
 | 14.1.2       | *statement* →                | *procedure_statement* |
 | 14.1.3       | *statement* →                | *compound_statement* |
-| 14.1.4       | *statement* →                | **if** *expression* **then** *statement* *statement'* |
+| 14.1.4       | *statement* →                | **if** *expression* **then** *statement* *optional_else* |
 | 14.1.5       | *statement* →                | **while** *expression* **do** *statement* |
-| 14.2.1       | *statement'* →               | **else** *statement* |
-| 14.2.2       | *statement'* →               | **ϵ** |
-| 15.1         | *variable* →                 | **id** *variable'* |
-| 15.2.1       | *variable'* →                | **[** *expression* **]** |
-| 15.2.2       | *variable'* →                | **ϵ** |
-| 16.1         | *procedure_statement* →      | **call** **id** *procedure_statement'* |
-| 16.2.1       | *procedure_statement'* →     | **(** *expression_list* **)** |
-| 16.2.2       | *procedure_statement'* →     | **ϵ** |
-| 17.1.1       | *expression_list* →          | *expression* *expression_list'* |
-| 17.2.1       | *expression_list'* →         | **,** *expression* *expression_list'* |
-| 17.2.2       | *expression_list'* →         | **ϵ** |
-| 18.1         | *expression* →               | *simple_expression* *expression'* |
-| 18.2.1       | *expression'* →              | **relop** *simple_expression* |
-| 18.2.2       | *expression'* →              | **ϵ** |
-| 19.1.1       | *simple_expression* →        | *term* *simple_expression'* |
-| 19.2.1       | *simple_expression* →        | *sign* *term* *simple_expression'* |
-| 19.3.1       | *simple_expression'* →       | **addop** *term* *simple_expression'* |
-| 19.3.2       | *simple_expression'* →       | **ϵ** |
-| 20.1.1       | *term* →                     | *factor* *term'* |
-| 20.2.1       | *term'* →                    | **mulop** *factor* *term'* |
-| 20.2.2       | *term'* →                    | **ϵ** |
-| 21.1.1       | *factor* →                   | **id** *factor'* |
+| 14.2.1       | *optional_else* →            | **else** *statement* |
+| 14.2.2       | *optional_else* →            | **ϵ** |
+| 15.1         | *variable* →                 | **id** *array_variable* |
+| 15.2.1       | *array_variable* →           | **[** *expression* **]** |
+| 15.2.2       | *array_variable* →           | **ϵ** |
+| 16.1         | *procedure_statement* →      | **call** **id** *optional_expression_list* |
+| 16.2.1       | *optional_expression_list* → | **(** *expression_list* **)** |
+| 16.2.2       | *optional_expression_list* → | **ϵ** |
+| 17.1.1       | *expression_list* →          | *expression* *expression_list_tail* |
+| 17.2.1       | *expression_list_tail* →     | **,** *expression* *expression_list_tail* |
+| 17.2.2       | *expression_list_tail* →     | **ϵ** |
+| 18.1         | *expression* →               | *simple_expression* *optional_relop* |
+| 18.2.1       | *optional_relop* →           | **relop** *simple_expression* |
+| 18.2.2       | *optional_relop* →           | **ϵ** |
+| 19.1.1       | *simple_expression* →        | *term* *optional_addop* |
+| 19.2.1       | *simple_expression* →        | *sign* *term* *optional_addop* |
+| 19.3.1       | *optional_addop* →           | **addop** *term* *optional_addop* |
+| 19.3.2       | *optional_addop* →           | **ϵ** |
+| 20.1.1       | *term* →                     | *factor* *optional_mulop* |
+| 20.2.1       | *optional_mulop* →           | **mulop** *factor* *optional_mulop* |
+| 20.2.2       | *optional_mulop* →           | **ϵ** |
+| 21.1.1       | *factor* →                   | **id** *array_expression* |
 | 21.1.2       | *factor* →                   | **num** |
 | 21.1.3       | *factor* →                   | **(** *expression* **)** |
 | 21.1.4       | *factor* →                   | **not** *factor* |
-| 21.2.1       | *factor'* →                  | **[** *expression* **]** |
-| 21.2.2       | *factor'* →                  | **ϵ** |
+| 21.2.1       | *array_expression* →         | **[** *expression* **]** |
+| 21.2.2       | *array_expression* →         | **ϵ** |
 | 22.1         | *sign* →                     | **+** |
 | 22.2         | *sign* →                     | **-** |
