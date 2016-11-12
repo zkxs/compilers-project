@@ -9,9 +9,9 @@
 |  2.1.1       | *identifier_list* →          | **id** *identifier_list_tail* |
 |  2.2.1       | *identifier_list_tail* →     | **,** **id** *identifier_list_tail* |
 |  2.2.2       | *identifier_list_tail* →     | **ϵ**
-|  3.1         | *declarations* →             | **var** **id** **:** type **;** *declarations'* |
-|  3.2.1       | *declarations'* →            | *declarations* |
-|  3.2.2       | *declarations'* →            | **ϵ** |
+|  3.1         | *declarations* →             | **var** **id** **:** type **;** *optional_declarations* |
+|  3.2.1       | *optional_declarations* →    | *declarations* |
+|  3.2.2       | *optional_declarations* →    | **ϵ** |
 |  4.1         | *type* →                     | *standard_type* |
 |  4.2         | *type* →                     | **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* |
 |  5.1         | *standard_type* →            | **integer** |
