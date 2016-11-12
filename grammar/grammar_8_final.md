@@ -38,11 +38,11 @@
 | 13.1.1 | *statement_list* →                   | *statement* *statement_list_tail*                                     | {**id**, **call**, **begin**, **if**, **while**} | {**end**}
 | 13.2.1 | *statement_list_tail* →              | **;** *statement* *statement_list_tail*                               | {**;**}                                          | ↓
 | 13.2.2 | *statement_list_tail* →              | **ϵ**                                                                 | {**ϵ**} →                                        | {**end**}
-| 14.1.1 | *statement* →                        | *variable* **assignop** *expression*                                  | {**id**}                                         | {**;**, **else**}
-| 14.1.2 | *statement* →                        | *procedure_statement*                                                 | {**call**}                                       | ↑
-| 14.1.3 | *statement* →                        | *compound_statement*                                                  | {**begin**}                                      | ↑
-| 14.1.4 | *statement* →                        | **if** *expression* **then** *statement* *optional_else*              | {**if**}                                         | ↑
-| 14.1.5 | *statement* →                        | **while** *expression* **do** *statement*                             | {**while**}                                      | ↑
+| 14.1.1 | *statement* →                        | *variable* **assignop** *expression*                                  | {**id**}                                         | ↓
+| 14.1.2 | *statement* →                        | *procedure_statement*                                                 | {**call**}                                       | ↓
+| 14.1.3 | *statement* →                        | *compound_statement*                                                  | {**begin**}                                      | ↓
+| 14.1.4 | *statement* →                        | **if** *expression* **then** *statement* *optional_else*              | {**if**}                                         | ↓
+| 14.1.5 | *statement* →                        | **while** *expression* **do** *statement*                             | {**while**}                                      | {**;**, **else**}
 | 14.2.1 | *optional_else* →                    | **else** *statement*                                                  | {**else**}                                       | ↓
 | 14.2.2 | *optional_else* →                    | **ϵ**                                                                 | {**ϵ**} →                                        | {**;**, **else**}
 | 15.1   | *variable* →                         | **id** *array_variable*                                               | {**id**}                                         | {**assignop**}
@@ -57,17 +57,17 @@
 | 18.1   | *expression* →                       | *simple_expression* *optional_relop*                                  | {**id**, **num**, **(**, **not**, **+**, **-**}  | {**;**, **else**, **then**, **do**, **]**, **)**, **,**}
 | 18.2.1 | *optional_relop* →                   | **relop** *simple_expression*                                         | {**relop**}
 | 18.2.2 | *optional_relop* →                   | **ϵ**                                                                 | {**ϵ**} →                                        | {**;**, **else**, **then**, **do**, **]**, **)**, **,**}
-| 19.1.1 | *simple_expression* →                | *term* *optional_addop*                                               | {**id**, **num**, **(**, **not**}                | {**;**, **else**, **then**, **do**, **]**, **)**, **,**, **relop**}
-| 19.1.2 | *simple_expression* →                | *sign* *term* *optional_addop*                                        | {**+**, **-**}                                   | ↑
+| 19.1.1 | *simple_expression* →                | *term* *optional_addop*                                               | {**id**, **num**, **(**, **not**}                | ↓
+| 19.1.2 | *simple_expression* →                | *sign* *term* *optional_addop*                                        | {**+**, **-**}                                   | {**;**, **else**, **then**, **do**, **]**, **)**, **,**, **relop**}
 | 19.2.1 | *optional_addop* →                   | **addop** *term* *optional_addop*                                     | {**addop**}                                      | ↓
 | 19.2.2 | *optional_addop* →                   | **ϵ**                                                                 | {**ϵ**} →                                        | {**;**, **else**, **then**, **do**, **]**, **)**, **,**, **relop**}
 | 20.1.1 | *term* →                             | *factor* *optional_mulop*                                             | {**id**, **num**, **(**, **not**}                | {**addop**}
 | 20.2.1 | *optional_mulop* →                   | **mulop** *factor* *optional_mulop*                                   | {**mulop**}                                      | ↓
 | 20.2.2 | *optional_mulop* →                   | **ϵ**                                                                 | {**ϵ**} →                                        | {**addop**}
-| 21.1.1 | *factor* →                           | **id** *array_expression*                                             | {**id**}                                         | {**mulop**}
-| 21.1.2 | *factor* →                           | **num**                                                               | {**num**}                                        | ↑
-| 21.1.3 | *factor* →                           | **(** *expression* **)**                                              | {**(**}                                          | ↑
-| 21.1.4 | *factor* →                           | **not** *factor*                                                      | {**not**}                                        | ↑
+| 21.1.1 | *factor* →                           | **id** *array_expression*                                             | {**id**}                                         | ↓
+| 21.1.2 | *factor* →                           | **num**                                                               | {**num**}                                        | ↓
+| 21.1.3 | *factor* →                           | **(** *expression* **)**                                              | {**(**}                                          | ↓
+| 21.1.4 | *factor* →                           | **not** *factor*                                                      | {**not**}                                        | {**mulop**}
 | 21.2.1 | *array_expression* →                 | **[** *expression* **]**                                              | {**[** }                                         | ↓
 | 21.2.2 | *array_expression* →                 | **ϵ**                                                                 | {**ϵ**} →                                        | {**mulop**}
 | 22.1   | *sign* →                             | **+**                                                                 | {**+**}
