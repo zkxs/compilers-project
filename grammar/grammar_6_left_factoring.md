@@ -17,7 +17,7 @@
 |  5.1         | *standard_type* →           | **integer** |
 |  5.2         | *standard_type* →           | **real** |
 |  6.1         | *subprogram_declarations* → | *subprogram_declaration* **;** *subprogram_declarations'* |
-|  6.2.1       | *subprogram_declarations'* →| *subprogram_declaration* |
+|  6.2.1       | *subprogram_declarations'* →| *subprogram_declarations* |
 |  6.2.2       | *subprogram_declarations'* →| **ϵ** |
 |  7.1.1       | *subprogram_declaration* →  | *subprogram_head* *declarations* *subprogram_declarations* *compound_statement* |
 |  7.1.2       | *subprogram_declaration* →  | *subprogram_head* *declarations* *compound_statement* |
