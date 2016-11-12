@@ -64,10 +64,11 @@
 | 20.1.1       | *term* →                    | *factor* *term'* |
 | 20.2.1       | *term'* →                   | **mulop** *factor* *term'* |
 | 20.2.2       | *term'* →                   | **ϵ** |
-| 21.1         | *factor* →                  | **id** |
-| 21.2         | *factor* →                  | **id** **[** *expression* **]** |
-| 21.3         | *factor* →                  | **num** |
-| 21.4         | *factor* →                  | **(** *expression* **)** |
-| 21.5         | *factor* →                  | **not** *factor* |
+| 21.1.1       | *factor* →                  | **id** *factor'* |
+| 21.1.2       | *factor* →                  | **num** |
+| 21.1.3       | *factor* →                  | **(** *expression* **)** |
+| 21.1.4       | *factor* →                  | **not** *factor* |
+| 21.2.1       | *factor'* →                 | **[** *expression* **]** |
+| 21.2.2       | *factor'* →                 | **ϵ** |
 | 22.1         | *sign* →                    | **+** |
 | 22.2         | *sign* →                    | **-** |
