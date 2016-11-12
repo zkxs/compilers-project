@@ -32,8 +32,7 @@
 | 13.2.2       | *statement_list'* →         | **ϵ** |
 | 14.1         | *statement* →               | *variable* **assignop** *expression* |
 | 14.2         | *statement* →               | *procedure_statement* |
-| 14.3.1       | *statement* →               | **begin** *statement_list* **end** |
-| 14.3.2       | *statement* →               | **begin** **end** |
+| 14.3         | *statement* →               | *compound_statement* |
 | 14.4         | *statement* →               | **if** *expression* **then** *statement* **else** *statement* |
 | 14.5         | *statement* →               | **if** *expression* **then** *statement* |
 | 14.6         | *statement* →               | **while** *expression* **do** *statement* |
