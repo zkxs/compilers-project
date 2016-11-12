@@ -38,12 +38,13 @@
 | 13.1.1       | *statement_list* →          | *statement* *statement_list'* |
 | 13.2.1       | *statement_list'* →         | **;** *statement* *statement_list'* |
 | 13.2.2       | *statement_list'* →         | **ϵ** |
-| 14.1         | *statement* →               | *variable* **assignop** *expression* |
-| 14.2         | *statement* →               | *procedure_statement* |
-| 14.3         | *statement* →               | *compound_statement* |
-| 14.4         | *statement* →               | **if** *expression* **then** *statement* **else** *statement* |
-| 14.5         | *statement* →               | **if** *expression* **then** *statement* |
-| 14.6         | *statement* →               | **while** *expression* **do** *statement* |
+| 14.1.1       | *statement* →               | *variable* **assignop** *expression* |
+| 14.1.2       | *statement* →               | *procedure_statement* |
+| 14.1.3       | *statement* →               | *compound_statement* |
+| 14.1.4       | *statement* →               | **if** *expression* **then** *statement* *statement'* |
+| 14.1.5       | *statement* →               | **while** *expression* **do** *statement* |
+| 14.2.1       | *statement'* →              | **else** *statement* |
+| 14.2.2       | *statement'* →              | **ϵ** |
 | 15.1         | *variable* →                | **id** |
 | 15.2         | *variable* →                | **id** **[** *expression* **]** |
 | 16.1         | *procedure_statement* →     | **call** **id** |
