@@ -16,7 +16,7 @@
 |  4.2   | *type* →                             | **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* | {**array**}
 |  5.1   | *standard_type* →                    | **integer**                                                           | {**integer**}
 |  5.2   | *standard_type* →                    | **real**                                                              | {**real**}
-|  6.1   | *subprogram_declarations* →          | *subprogram_declaration* **;** *optional_subprogram_declarations*     | F(*subprogram_declaration*) = {**procedure**}                            | F(*compound_statement*) ∪ f(*optional_subprogram_declarations*)
+|  6.1   | *subprogram_declarations* →          | *subprogram_declaration* **;** *optional_subprogram_declarations*     | F(*subprogram_declaration*) = {**procedure**}                            | F(*compound_statement*) ∪ f(*optional_subprogram_declarations*) = {**begin**}
 |  6.2.1 | *optional_subprogram_declarations* → | *subprogram_declarations*                                             | F(*subprogram_declarations*) = {**procedure**}                           | ↓
 |  6.2.2 | *optional_subprogram_declarations* → | **ϵ**                                                                 | {**ϵ**} →                                                                | f(*subprogram_declarations*) = F(*compound_statement*) = {**begin**}
 |  7.1   | *subprogram_declaration* →           | *subprogram_head* *subprogram_declaration'*                           | F(*subprogram_head*) = {**procedure**}
@@ -54,7 +54,7 @@
 | 17.1.1 | *expression_list* →                  | *expression* *expression_list_tail*                                   | F(*expression*) = {**id**, **num**, **(**, **not**, **+**, **-**}        | {**)**}
 | 17.2.1 | *expression_list_tail* →             | **,** *expression* *expression_list_tail*                             | {**,**}                                                                  | ↓
 | 17.2.2 | *expression_list_tail* →             | **ϵ**                                                                 | {**ϵ**} →                                                                | f(*expression_list*) = {**)**}
-| 18.1   | *expression* →                       | *simple_expression* *optional_relop*                                  | F(*simple_expression*) = {**id**, **num**, **(**, **not**, **+**, **-**} | f(*statement*) ∪ {**then**, **do**, **]**, **)**} ∪ F(*expression_list_tail*)
+| 18.1   | *expression* →                       | *simple_expression* *optional_relop*                                  | F(*simple_expression*) = {**id**, **num**, **(**, **not**, **+**, **-**} | f(*statement*) ∪ {**then**, **do**, **]**, **)**} ∪ F(*expression_list_tail*) = {**;**, **else**, **then**, **do**, **]**, **)**, **,**}
 | 18.2.1 | *optional_relop* →                   | **relop** *simple_expression*                                         | {**relop**}
 | 18.2.2 | *optional_relop* →                   | **ϵ**                                                                 | {**ϵ**} →                                                                | f(*expression*) = {**;**, **else**, **then**, **do**, **]**, **)**, **,**}
 | 19.1.1 | *simple_expression* →                | *term* *optional_addop*                                               | F(*term*) = {**id**, **num**, **(**, **not**}                            | f(*optional_relop*) ∪ F(*optional_relop*) = {**;**, **else**, **then**, **do**, **]**, **)**, **,**, **relop**}
