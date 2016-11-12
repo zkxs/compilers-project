@@ -1,6 +1,6 @@
 | Number | Production Name                      | Production                                                            | Firsts                                        | Follows |
 |--------|--------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------|---------|
-|  1.1   | *program* →                          | **program** **id** **(** *identifier_list* **)** **;** *program'*     | {**program**}
+|  1.1   | *program* →                          | **program** **id** **(** *identifier_list* **)** **;** *program'*     | {**program**} | f(*program*) = {**$**}
 |  1.2.1 | *program'* →                         | *declarations* *program''*                                            | F(*declarations*) = {**var**}
 |  1.2.2 | *program'* →                         | *subprogram_declarations* *compound_statement* **.**                  | F(*subprogram_declarations*) = {**procedure**}
 |  1.2.3 | *program'* →                         | *compound_statement* **.**                                            | F(*compound_statement*) = {**begin**}
