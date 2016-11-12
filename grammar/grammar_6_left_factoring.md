@@ -54,8 +54,9 @@
 | 17.1.1       | *expression_list* →         | *expression* *expression_list'* |
 | 17.2.1       | *expression_list'* →        | **,** *expression* *expression_list'* |
 | 17.2.2       | *expression_list'* →        | **ϵ** |
-| 18.1         | *expression* →              | *simple_expression* |
-| 18.2         | *expression* →              | *simple_expression* **relop** *simple_expression* |
+| 18.1         | *expression* →              | *simple_expression* *expression'* |
+| 18.2.1       | *expression'* →             | **relop** *simple_expression* |
+| 18.2.2       | *expression'* →             | **ϵ** |
 | 19.1.1       | *simple_expression* →       | *term* *simple_expression'* |
 | 19.2.1       | *simple_expression* →       | *sign* *term* *simple_expression'* |
 | 19.3.1       | *simple_expression'* →      | **addop** *term* *simple_expression'* |
