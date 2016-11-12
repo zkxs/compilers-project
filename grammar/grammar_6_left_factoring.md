@@ -25,8 +25,9 @@
 |  7.2.3       | *subprogram_declaration'* → | *compound_statement* |
 |  7.3.1       | *subprogram_declaration''* →| *subprogram_declarations* *compound_statement* |
 |  7.3.2       | *subprogram_declaration''* →| *compound_statement* |
-|  8.1         | *subprogram_head* →         | **procedure** **id** *arguments* **;** |
-|  8.2         | *subprogram_head* →         | **procedure** **id** **;** |
+|  8.1         | *subprogram_head* →         | **procedure** **id** *subprogram_head'* |
+|  8.2.1       | *subprogram_head'* →        | *arguments* **;** |
+|  8.2.2       | *subprogram_head'* →        | **;** |
 |  9.1         | *arguments* →               | **(** *parameter_list* **)** |
 | 10.1.1       | *parameter_list* →          | **id** **:** *type* *parameter_list'* |
 | 10.2.1       | *parameter_list'* →         | **;** **id** **:** *type* *parameter_list'* |
