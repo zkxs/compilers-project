@@ -48,8 +48,9 @@
 | 15.1         | *variable* →                | **id** *variable'* |
 | 15.2.1       | *variable'* →               | **[** *expression* **]** |
 | 15.2.2       | *variable'* →               | **ϵ** |
-| 16.1         | *procedure_statement* →     | **call** **id** |
-| 16.2         | *procedure_statement* →     | **call** **id** **(** *expression_list* **)** |
+| 16.1         | *procedure_statement* →     | **call** **id** *procedure_statement'* |
+| 16.2.1       | *procedure_statement'* →    | **(** *expression_list* **)** |
+| 16.2.2       | *procedure_statement'* →    | **ϵ** |
 | 17.1.1       | *expression_list* →         | *expression* *expression_list'* |
 | 17.2.1       | *expression_list'* →        | **,** *expression* *expression_list'* |
 | 17.2.2       | *expression_list'* →        | **ϵ** |
