@@ -58,9 +58,9 @@
 | 18.2.1       | *optional_relop* →                   | **relop** *simple_expression*                                          |
 | 18.2.2       | *optional_relop* →                   | **ϵ**                                                                  |
 | 19.1.1       | *simple_expression* →                | *term* *optional_addop*                                                |
-| 19.2.1       | *simple_expression* →                | *sign* *term* *optional_addop*                                         |
-| 19.3.1       | *optional_addop* →                   | **addop** *term* *optional_addop*                                      |
-| 19.3.2       | *optional_addop* →                   | **ϵ**                                                                  |
+| 19.1.2       | *simple_expression* →                | *sign* *term* *optional_addop*                                         |
+| 19.2.1       | *optional_addop* →                   | **addop** *term* *optional_addop*                                      |
+| 19.2.2       | *optional_addop* →                   | **ϵ**                                                                  |
 | 20.1.1       | *term* →                             | *factor* *optional_mulop*                                              |
 | 20.2.1       | *optional_mulop* →                   | **mulop** *factor* *optional_mulop*                                    |
 | 20.2.2       | *optional_mulop* →                   | **ϵ**                                                                  |
