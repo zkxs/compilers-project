@@ -28,7 +28,7 @@
 |  8.1         | *subprogram_head* →         | **procedure** **id** *subprogram_head'* |
 |  8.2.1       | *subprogram_head'* →        | *arguments* **;** |
 |  8.2.2       | *subprogram_head'* →        | **;** |
-|  9.1         | *arguments* →               | **(** *parameter_list* **)** |
+|  9           | *arguments* →               | **(** *parameter_list* **)** |
 | 10.1.1       | *parameter_list* →          | **id** **:** *type* *parameter_list'* |
 | 10.2.1       | *parameter_list'* →         | **;** **id** **:** *type* *parameter_list'* |
 | 10.2.2       | *parameter_list'* →         | **ϵ** |
