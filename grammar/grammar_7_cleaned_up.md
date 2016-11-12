@@ -8,7 +8,7 @@
 |  1.3.2       | *program''* →                        | *compound_statement* **.**                                             |
 |  2.1.1       | *identifier_list* →                  | **id** *identifier_list_tail*                                          |
 |  2.2.1       | *identifier_list_tail* →             | **,** **id** *identifier_list_tail*                                    |
-|  2.2.2       | *identifier_list_tail* →             | **ϵ**                                                                  
+|  2.2.2       | *identifier_list_tail* →             | **ϵ**                                                                  |
 |  3.1         | *declarations* →                     | **var** **id** **:** type **;** *optional_declarations*                |
 |  3.2.1       | *optional_declarations* →            | *declarations*                                                         |
 |  3.2.2       | *optional_declarations* →            | **ϵ**                                                                  |

@@ -6,7 +6,7 @@
 |  1.2.2       | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *compound_statement* **.** |
 |  2.1.1       | *identifier_list* →         | **id** *identifier_list'* |
 |  2.2.1       | *identifier_list'* →        | **,** **id** *identifier_list'* |
-|  2.2.2       | *identifier_list'* →        | **ϵ**
+|  2.2.2       | *identifier_list'* →        | **ϵ** |
 |  3.1.1.1     | *declarations* →            | **var** **id** **:** type **;** *declarations* |
 |  3.1.2       | *declarations* →            | **var** **id** **:** type **;** |
 |  4.1         | *type* →                    | *standard_type* |
