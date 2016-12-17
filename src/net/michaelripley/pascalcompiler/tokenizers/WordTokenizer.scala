@@ -12,9 +12,7 @@ private object WordTokenizer {
 
 import WordTokenizer._
 import net.michaelripley.pascalcompiler.identifiers.SymbolTable
-import net.michaelripley.pascalcompiler.ReservedStrings
-import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineFragment
+import net.michaelripley.pascalcompiler.lexer._
 
 /**
  * Tokenizes both identifiers and reserved words

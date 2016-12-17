@@ -2,7 +2,7 @@ package net.michaelripley.pascalcompiler.tokens
 
 import net.michaelripley.Util
 import net.michaelripley.pascalcompiler.identifiers.Identifier
-import net.michaelripley.pascalcompiler.Lexeme
+import net.michaelripley.pascalcompiler.lexer.Lexeme
 
 class IdentifierToken(
     tokenName: String,

@@ -1,13 +1,18 @@
-package net.michaelripley.pascalcompiler
+package net.michaelripley.pascalcompiler.lexer
 
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import scala.collection.mutable.MutableList
 import scala.io.Source
 import scala.util.matching.Regex.Match
+import scala.annotation.tailrec
 import net.michaelripley.pascalcompiler.identifiers.SymbolTable
 import net.michaelripley.pascalcompiler.tokenizers._
 import net.michaelripley.pascalcompiler.tokens._
+import net.michaelripley.pascalcompiler.lexer._
+
+// only Lexer._ is imported here. All other imports are above the object.
+import Lexer._
 
 object Lexer {
   def main(args: Array[String]): Unit = {
@@ -166,9 +171,8 @@ object Lexer {
   }
   
 } // end of object block
-
-// only Lexer._ is imported here. All other imports are above the object.
-import Lexer._
+import net.michaelripley.pascalcompiler.lexer.LineLocation
+import net.michaelripley.pascalcompiler.lexer.ReservedStrings
 
 class Lexer(
     reservedWordFile: Source,

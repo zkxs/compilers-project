@@ -1,7 +1,7 @@
 package net.michaelripley.pascalcompiler.tokens
 
 import net.michaelripley.Util
-import net.michaelripley.pascalcompiler.Lexeme
+import net.michaelripley.pascalcompiler.lexer.Lexeme
 
 /**
  * Only contains the token name and attribute. It is missing the lexeme.

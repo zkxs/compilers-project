@@ -5,7 +5,7 @@ private object ErrorToken {
 }
 
 import net.michaelripley.Util
-import net.michaelripley.pascalcompiler.Lexeme
+import net.michaelripley.pascalcompiler.lexer.Lexeme
 import ErrorToken._
 
 class ErrorToken(

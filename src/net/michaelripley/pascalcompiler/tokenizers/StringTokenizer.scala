@@ -45,10 +45,10 @@ private object StringTokenizer {
 }
 
 import net.michaelripley.pascalcompiler.tokens._
-import net.michaelripley.pascalcompiler.ReservedStrings
+import net.michaelripley.pascalcompiler.lexer.ReservedStrings
 import StringTokenizer._
-import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineFragment
+import net.michaelripley.pascalcompiler.lexer.Lexeme
+import net.michaelripley.pascalcompiler.lexer.LineFragment
 
 class StringTokenizer(private val reservedStrings: ReservedStrings)
     extends Tokenizer {

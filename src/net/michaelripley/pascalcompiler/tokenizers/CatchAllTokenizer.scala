@@ -9,8 +9,8 @@ private object CatchAllTokenizer {
 }
 
 import CatchAllTokenizer._
-import net.michaelripley.pascalcompiler.Lexeme
-import net.michaelripley.pascalcompiler.LineFragment
+import net.michaelripley.pascalcompiler.lexer.Lexeme
+import net.michaelripley.pascalcompiler.lexer.LineFragment
 
 class CatchAllTokenizer extends Tokenizer {
   def extractToken(line: LineFragment): Option[AttributeToken] = {

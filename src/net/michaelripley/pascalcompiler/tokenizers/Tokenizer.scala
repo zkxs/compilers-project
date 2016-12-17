@@ -1,7 +1,7 @@
 package net.michaelripley.pascalcompiler.tokenizers
 
 import net.michaelripley.pascalcompiler.tokens._
-import net.michaelripley.pascalcompiler.LineFragment
+import net.michaelripley.pascalcompiler.lexer.LineFragment
 
 trait Tokenizer {
   

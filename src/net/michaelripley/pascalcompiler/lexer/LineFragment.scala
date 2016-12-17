@@ -1,4 +1,6 @@
-package net.michaelripley.pascalcompiler
+package net.michaelripley.pascalcompiler.lexer
+
+import net.michaelripley.pascalcompiler.lexer.LineLocation
 
 private object LineFragment {
   private val spacePattern = """\s*""".r

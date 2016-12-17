@@ -1,7 +1,9 @@
-package net.michaelripley.pascalcompiler
+package net.michaelripley.pascalcompiler.lexer
 
 import scala.io.Source
 import net.michaelripley.pascalcompiler.tokens.PartialAttributeToken
+
+import ReservedStrings._
 
 private object ReservedStrings {
   
@@ -23,8 +25,6 @@ private object ReservedStrings {
     map
   }
 }
-
-import ReservedStrings._
 
 class ReservedStrings(reservedWordSource: Source) {
    private val reservedWordMap = load(reservedWordSource)
