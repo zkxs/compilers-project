@@ -3,41 +3,41 @@ Production Name                       |**program**|**procedure**|**begin**|**cal
 *program* →                           | **program** **id** **(** *identifier_list* **)** **;** *program'* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
 *program'* →                          | | *subprogram_declarations* *compound_statement* **.** | *compound_statement* **.** | | | | *declarations* *program''* | | | | | | | | | | | | | | | | | | | | | | | | | 
 *program''* →                         | | *subprogram_declarations* *compound_statement* **.** | *compound_statement* **.** | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*identifier_list* →                   | | | | | 2.1.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*identifier_list_tail* →              | | | | | | | | | | | | 2.2.2 | | | 2.2.1 | | | | | | | | | | | | | | | | | 
-*declarations* →                      | | | | | | | 3.1 | | | | | | | | | | | | | | | | | | | | | | | | | 
-*optional_declarations* →             | | | | | | | 3.2.1 | | | | | | | | | | | | | | | | | | | | | | | | | 
-*type* →                              | | | | | | | | 4.1 | 4.1 | 4.2 | | | | | | | | | | | | | | | | | | | | | | 
-*standard_type* →                     | | | | | | | | 5.1 | 5.2 | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_declarations* →           | | 6.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*optional_subprogram_declarations* →  | | 6.2.1 | 6.2.2 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_declaration* →            | | 7.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_declaration'* →           | | 7.2.2 | 7.2.3 | | | | 7.2.1 | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_declaration''* →          | | 7.3.1 | 7.3.2 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_head* →                   | | 8.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_head'* →                  | | | | | | | | | | | 8.2.1 | | | | | 8.2.2 | | | | | | | | | | | | | | | | 
-*arguments* →                         | | | | | | | | | | | 9 | | | | | | | | | | | | | | | | | | | | | 
-*parameter_list* →                    | | | | | 10.1.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*parameter_list_tail* →               | | | | | | | | | | | | 10.2.2 | | | | 10.2.1 | | | | | | | | | | | | | | | | 
-*compound_statement* →                | | | 11.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*compound_statment_tail* →            | | | 11.2.1 | 11.2.1 | 11.2.1 | | | | | | | | | | | | | | | | | | | | 11.2.1 | | | | 11.2.1 | 11.2.2 | | 
-*statement_list* →                    | | | 13.1.1 | 13.1.1 | 13.1.1 | | | | | | | | | | | | | | | | | | | | 13.1.1 | | | | 13.1.1 | | | 
-*statement_list_tail* →               | | | | | | | | | | | | | | | | 13.2.1 | | | | | | | | | | | | | | 13.2.2 | | 
-*statement* →                         | | | 14.1.3 | 14.1.2 | 14.1.1 | | | | | | | | | | | | | | | | | | | | 14.1.4 | | | | 14.1.5 | | | 
-*optional_else* →                     | | | | | | | | | | | | | | | | 14.2.2 | | | | | | | | | | | 14.2.1 14.2.2 | | 14.2.2 | | | 
-*variable* →                          | | | | | 15.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*array_variable* →                    | | | | | | | | | | | | | 15.2.1 | | | | | | | | | | 15.2.2 | | | | | | | | | 
-*procedure_statement* →               | | | | 16.1 | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*optional_expression_list* →          | | | | | | | | | | | 16.2.1 | | | | | 16.2.2 | | | | | | | | | | | 16.2.2 | | | 16.2.2 | | 
-*expression_list* →                   | | | | | 17.1.1 | 17.1.1 | | | | | 17.1.1 | | | | | | | 17.1.1 | 17.1.1 | | | | | 17.1.1 | | | | | | | | 
-*expression_list_tail* →              | | | | | | | | | | | | 17.2.2 | | | 17.2.1 | | | | | | | | | | | | | | | | | 
-*expression* →                        | | | | | 18.1 | 18.1 | | | | | 18.1 | | | | 18.1 | | | 18.1 | 18.1 | | | | | 18.1 | | | | | | | | 
-*optional_relop* →                    | | | | | | | | | | | | 18.2.2 | |18.2.2 | 18.2.2 | 18.2.2 | | | | 18.2.1 | | | | | | 18.2.2 | 18.2.2 |18.2.2 | | 18.2.2 | | 
-*simple_expression* →                 | | | | | 19.1.1 | 19.1.1 | | | | | 19.1.1 | 19.1.2 | |19.1.2 | 19.1.2 | 19.1.2 | | | | 19.1.2 | | | | 19.1.1 | | 19.1.2 | 19.1.2 |19.1.2 | | 19.1.2 | | 
-*optional_addop* →                    | | | | | | | | | | | | 19.2.2 | |19.2.2 | 19.2.2 | 19.2.2 | | | | 19.2.2 | 19.2.1 | | | | | 19.2.2 | 19.2.2 |19.2.2 | | 19.2.2 | | 
-*term* →                              | | | | | 20.1.1 | 20.1.1 | | | | | 20.1.1 | | | | | | | | | | | | | 20.1.1 | | | | | | | | 
-*optional_mulop* →                    | | | | | | | | | | | | 20.2.2 | |20.2.2 | 20.2.2 | 20.2.2 | | | | 20.2.2 | 20.2.2 | 20.2.1 | | | | 20.2.2 | 20.2.2 |20.2.2 | | 20.2.2 | | 
-*factor* →                            | | | | | 21.1.1 | 21.1.2 | | | | | 21.1.3 | | | | | | | | | | | | | 21.1.4 | | | | | | | | 
-*array_expression* →                  | | | | | | | | | | | | 21.2.2 | 21.2.1 |21.2.2 | 21.2.2 | 21.2.2 | | | | 21.2.2 | 21.2.2 | 21.2.2 | | | | 21.2.2 | 21.2.2 |21.2.2 | | 21.2.2 | | 
-*sign* →                              | | | | | | | | | | | | | | | | | | 22.1 | 22.2 | | | | | | | | | | | | | 
+*identifier_list* →                   | | | | | **id** *identifier_list_tail* | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*identifier_list_tail* →              | | | | | | | | | | | | **ϵ** | | | **,** **id** *identifier_list_tail* | | | | | | | | | | | | | | | | | 
+*declarations* →                      | | | | | | | **var** **id** **:** type **;** *optional_declarations* | | | | | | | | | | | | | | | | | | | | | | | | | 
+*optional_declarations* →             | | **ϵ** | **ϵ** | | | | *declarations* | | | | | | | | | | | | | | | | | | | | | | | | | 
+*type* →                              | | | | | | | | *standard_type* | *standard_type* | **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* | | | | | | | | | | | | | | | | | | | | | | 
+*standard_type* →                     | | | | | | | | **integer** | **real** | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_declarations* →           | | *subprogram_declaration* **;** *optional_subprogram_declarations* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*optional_subprogram_declarations* →  | | *subprogram_declarations* | **ϵ** | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_declaration* →            | | *subprogram_head* *subprogram_declaration'* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_declaration'* →           | | *subprogram_declarations* *compound_statement* | *compound_statement* | | | | *declarations* *subprogram_declaration''* | | | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_declaration''* →          | | *subprogram_declarations* *compound_statement* | *compound_statement* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_head* →                   | | **procedure** **id** *subprogram_head'* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_head'* →                  | | | | | | | | | | | *arguments* **;** | | | | | **;** | | | | | | | | | | | | | | | | 
+*arguments* →                         | | | | | | | | | | | **(** *parameter_list* **)** | | | | | | | | | | | | | | | | | | | | | 
+*parameter_list* →                    | | | | | **id** **:** *type* *parameter_list_tail* | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*parameter_list_tail* →               | | | | | | | | | | | | **ϵ** | | | | **;** **id** **:** *type* *parameter_list_tail* | | | | | | | | | | | | | | | | 
+*compound_statement* →                | | | **begin** *compound_statment_tail* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*compound_statment_tail* →            | | | *statement_list* **end** | *statement_list* **end** | *statement_list* **end** | | | | | | | | | | | | | | | | | | | | *statement_list* **end** | | | | *statement_list* **end** | **end** | | 
+*statement_list* →                    | | | *statement* *statement_list_tail* | *statement* *statement_list_tail* | *statement* *statement_list_tail* | | | | | | | | | | | | | | | | | | | | *statement* *statement_list_tail* | | | | *statement* *statement_list_tail* | | | 
+*statement_list_tail* →               | | | | | | | | | | | | | | | | **;** *statement* *statement_list_tail* | | | | | | | | | | | | | | **ϵ** | | 
+*statement* →                         | | | *compound_statement* | *procedure_statement* | *variable* **assignop** *expression* | | | | | | | | | | | | | | | | | | | | **if** *expression* **then** *statement* *optional_else* | | | | **while** *expression* **do** *statement* | | | 
+*optional_else* →                     | | | | | | | | | | | | | | | | **ϵ** | | | | | | | | | | |  **else** *statement* ∪ **ϵ** | | **ϵ** | | | 
+*variable* →                          | | | | | **id** *array_variable* | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*array_variable* →                    | | | | | | | | | | | | | **[** *expression* **]** | | | | | | | | | | **ϵ** | | | | | | | | | 
+*procedure_statement* →               | | | | **call** **id** *optional_expression_list* | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*optional_expression_list* →          | | | | | | | | | | | **(** *expression_list* **)** | | | | | **ϵ** | | | | | | | | | | | **ϵ** | | | **ϵ** | | 
+*expression_list* →                   | | | | | *expression* *expression_list_tail* | *expression* *expression_list_tail* | | | | | *expression* *expression_list_tail* | | | | | | | *expression* *expression_list_tail* | *expression* *expression_list_tail* | | | | | *expression* *expression_list_tail* | | | | | | | | 
+*expression_list_tail* →              | | | | | | | | | | | | **ϵ** | | | **,** *expression* *expression_list_tail* | | | | | | | | | | | | | | | | | 
+*expression* →                        | | | | | *simple_expression* *optional_relop* | *simple_expression* *optional_relop* | | | | | *simple_expression* *optional_relop* | | | | *simple_expression* *optional_relop* | | | *simple_expression* *optional_relop* | *simple_expression* *optional_relop* | | | | | *simple_expression* *optional_relop* | | | | | | | | 
+*optional_relop* →                    | | | | | | | | | | | | **ϵ** | |**ϵ** | **ϵ** | **ϵ** | | | | **relop** *simple_expression* | | | | | | **ϵ** | **ϵ** | **ϵ** | | **ϵ** | | 
+*simple_expression* →                 | | | | | *term* *optional_addop* | *term* *optional_addop* | | | | | *term* *optional_addop* | *sign* *term* *optional_addop* | | *sign* *term* *optional_addop* | *sign* *term* *optional_addop* | *sign* *term* *optional_addop* | | | | *sign* *term* *optional_addop* | | | | *term* *optional_addop* | | *sign* *term* *optional_addop* | *sign* *term* *optional_addop* | *sign* *term* *optional_addop* | | *sign* *term* *optional_addop* | | 
+*optional_addop* →                    | | | | | | | | | | | | **ϵ** | |**ϵ** | **ϵ** | **ϵ** | | | | **ϵ** | **addop** *term* *optional_addop* | | | | | **ϵ** | **ϵ** |**ϵ** | | **ϵ** | | 
+*term* →                              | | | | | *factor* *optional_mulop* | *factor* *optional_mulop* | | | | | *factor* *optional_mulop* | | | | | | | | | | | | | *factor* *optional_mulop* | | | | | | | | 
+*optional_mulop* →                    | | | | | | | | | | | | **ϵ** | |**ϵ** | **ϵ** | **ϵ** | | | | **ϵ** | **ϵ** | **mulop** *factor* *optional_mulop* | | | | **ϵ** | **ϵ** |**ϵ** | | **ϵ** | | 
+*factor* →                            | | | | | **id** *array_expression* | **num** | | | | | **(** *expression* **)** | | | | | | | | | | | | | **not** *factor* | | | | | | | | 
+*array_expression* →                  | | | | | | | | | | | | **ϵ** | **[** *expression* **]** |**ϵ** | **ϵ** | **ϵ** | | | | **ϵ** | **ϵ** | **ϵ** | | | | **ϵ** | **ϵ** |**ϵ** | | **ϵ** | | 
+*sign* →                              | | | | | | | | | | | | | | | | | | **+** | **-** | | | | | | | | | | | | | 
  
