@@ -50,8 +50,11 @@ object Lexer {
     // tokenizes integers
     val integerTokenizer = {
       
-      // successful token
-      val integerToken = new PartialAttributeToken("INTEGER")
+      // thing to create integer tokens
+      val integerTokenCreator = (m: Match, l: Lexeme) => {
+        val intVal = m.matched.toInt
+        new IntegerToken(l, intVal)
+      }
       
       // error tokens
       val integerErrorTooLong
@@ -60,7 +63,7 @@ object Lexer {
           = new PartialErrorToken("LEXERR", "Integer has leading zeros")
       
       // tokenizer implementation
-      new SimpleTokenizer("""\d+""".r, integerToken) {
+      new SimpleTokenizer("""\d+""".r, integerTokenCreator) {
         override def checkError(matchResult: Match, lexeme: Lexeme): 
             Option[AttributeToken] = {
           val intString = matchResult.matched
