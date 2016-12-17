@@ -1,8 +1,7 @@
 Production Name                       |**program**|**procedure**|**begin**|**call**|**id** |**num** |**var**|**integer**|**real**|**array**| **(** | **)** | **[** | **]** | **,** | **;** | **.** | **+** | **-** |**relop**|**addop**|**mulop**|**assignop**|**not** |**if** |**then**|**else** |**do** |**while**|**end** | **$** | 
 --------------------------------------|-----------|-------------|---------|--------|-------|--------|-------|-----------|--------|---------|-------|-------|-------|-------|-------|-------|-------|-------|-------|---------|---------|---------|------------|--------|-------|--------|---------|-------|---------|--------|-------| 
 *program* →                           | **program** **id** **(** *identifier_list* **)** **;** *program'* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*program'* →                          | | *subprogram_declarations* *compound_statement* **.** | *compound_statement* **.** | | | | *declarations* *program''* | | | | | | | | | | | | | | | | | | | | | | | | | 
-*program''* →                         | | *subprogram_declarations* *compound_statement* **.** | *compound_statement* **.** | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*program'* →                          | | *subprogram_declarations* *compound_statement* **.** | *compound_statement* **.** | | | | *declarations* *program'* | | | | | | | | | | | | | | | | | | | | | | | | | 
 *identifier_list* →                   | | | | | **id** *identifier_list_tail* | | | | | | | | | | | | | | | | | | | | | | | | | | | 
 *identifier_list_tail* →              | | | | | | | | | | | | **ϵ** | | | **,** **id** *identifier_list_tail* | | | | | | | | | | | | | | | | | 
 *declarations* →                      | | | | | | | **var** **id** **:** type **;** *optional_declarations* | | | | | | | | | | | | | | | | | | | | | | | | | 
@@ -12,8 +11,7 @@ Production Name                       |**program**|**procedure**|**begin**|**cal
 *subprogram_declarations* →           | | *subprogram_declaration* **;** *optional_subprogram_declarations* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
 *optional_subprogram_declarations* →  | | *subprogram_declarations* | **ϵ** | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
 *subprogram_declaration* →            | | *subprogram_head* *subprogram_declaration'* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_declaration'* →           | | *subprogram_declarations* *compound_statement* | *compound_statement* | | | | *declarations* *subprogram_declaration''* | | | | | | | | | | | | | | | | | | | | | | | | | 
-*subprogram_declaration''* →          | | *subprogram_declarations* *compound_statement* | *compound_statement* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
+*subprogram_declaration'* →           | | *subprogram_declarations* *compound_statement* | *compound_statement* | | | | *declarations* *subprogram_declaration'* | | | | | | | | | | | | | | | | | | | | | | | | | 
 *subprogram_head* →                   | | **procedure** **id** *subprogram_head'* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
 *subprogram_head'* →                  | | | | | | | | | | | *arguments* **;** | | | | | **;** | | | | | | | | | | | | | | | | 
 *arguments* →                         | | | | | | | | | | | **(** *parameter_list* **)** | | | | | | | | | | | | | | | | | | | | | 
