@@ -22,7 +22,7 @@ Production Name                       |**program**|**procedure**|**begin**|**cal
 *statement_list* →                    | | | *statement* *statement_list_tail* | *statement* *statement_list_tail* | *statement* *statement_list_tail* | | | | | | | | | | | | | | | | | | | | *statement* *statement_list_tail* | | | | *statement* *statement_list_tail* | | | 
 *statement_list_tail* →               | | | | | | | | | | | | | | | | **;** *statement* *statement_list_tail* | | | | | | | | | | | | | | **ϵ** | | 
 *statement* →                         | | | *compound_statement* | *procedure_statement* | *variable* **assignop** *expression* | | | | | | | | | | | | | | | | | | | | **if** *expression* **then** *statement* *optional_else* | | | | **while** *expression* **do** *statement* | | | 
-*optional_else* →                     | | | | | | | | | | | | | | | | **ϵ** | | | | | | | | | | |  **else** *statement* ∪ **ϵ** | | **ϵ** | | | 
+*optional_else* →                     | | | | | | | | | | | | | | | | **ϵ** | | | | | | | | | | |  **else** *statement* | | **ϵ** | | | 
 *variable* →                          | | | | | **id** *array_variable* | | | | | | | | | | | | | | | | | | | | | | | | | | | 
 *array_variable* →                    | | | | | | | | | | | | | **[** *expression* **]** | | | | | | | | | | **ϵ** | | | | | | | | | 
 *procedure_statement* →               | | | | **call** **id** *optional_expression_list* | | | | | | | | | | | | | | | | | | | | | | | | | | | | 
