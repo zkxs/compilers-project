@@ -1,11 +1,9 @@
 | Number | Production Name                      | Production                                                            | Firsts                                           | Follows |
 |--------|--------------------------------------|-----------------------------------------------------------------------|--------------------------------------------------|---------|
 |  1.1   | *program* →                          | **program** **id** **(** *identifier_list* **)** **;** *program'*     | {**program**}                                    | {**$**}
-|  1.2.1 | *program'* →                         | *declarations* *program''*                                            | {**var**}                                        | ↴
+|  1.2.1 | *program'* →                         | *declarations* *program'*                                             | {**var**}                                        | ↴
 |  1.2.2 | *program'* →                         | *subprogram_declarations* *compound_statement* **.**                  | {**procedure**}                                  | ↴
 |  1.2.3 | *program'* →                         | *compound_statement* **.**                                            | {**begin**}                                      | {**$**}
-|  1.3.1 | *program''* →                        | *subprogram_declarations* *compound_statement* **.**                  | {**procedure**}                                  | ↴
-|  1.3.2 | *program''* →                        | *compound_statement* **.**                                            | {**begin**}                                      | {**$**}
 |  2.1.1 | *identifier_list* →                  | **id** *identifier_list_tail*                                         | {**id**}                                         | {**)**}
 |  2.2.1 | *identifier_list_tail* →             | **,** **id** *identifier_list_tail*                                   | {**,**}                                          | ↴
 |  2.2.2 | *identifier_list_tail* →             | **ϵ**                                                                 | {**ϵ**} →                                        | {**)**}
@@ -20,11 +18,9 @@
 |  6.2.1 | *optional_subprogram_declarations* → | *subprogram_declarations*                                             | {**procedure**}                                  | ↴
 |  6.2.2 | *optional_subprogram_declarations* → | **ϵ**                                                                 | {**ϵ**} →                                        | {**begin**}
 |  7.1   | *subprogram_declaration* →           | *subprogram_head* *subprogram_declaration'*                           | {**procedure**}                                  | {**;**}
-|  7.2.1 | *subprogram_declaration'* →          | *declarations* *subprogram_declaration''*                             | {**var**}                                        | ↴
+|  7.2.1 | *subprogram_declaration'* →          | *declarations* *subprogram_declaration'*                              | {**var**}                                        | ↴
 |  7.2.2 | *subprogram_declaration'* →          | *subprogram_declarations* *compound_statement*                        | {**procedure**}                                  | ↴
 |  7.2.3 | *subprogram_declaration'* →          | *compound_statement*                                                  | {**begin**}                                      | {**;**}
-|  7.3.1 | *subprogram_declaration''* →         | *subprogram_declarations* *compound_statement*                        | {**procedure**}                                  | ↴
-|  7.3.2 | *subprogram_declaration''* →         | *compound_statement*                                                  | {**begin**}                                      | {**;**}
 |  8.1   | *subprogram_head* →                  | **procedure** **id** *subprogram_head'*                               | {**procedure**}                                  | {**var**, **procedure**, **begin**}
 |  8.2.1 | *subprogram_head'* →                 | *arguments* **;**                                                     | {**(**}                                          | ↴
 |  8.2.2 | *subprogram_head'* →                 | **;**                                                                 | {**;**}                                          | {**var**, **procedure**, **begin**}
