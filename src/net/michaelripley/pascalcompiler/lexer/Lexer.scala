@@ -174,8 +174,6 @@ object Lexer {
   }
   
 } // end of object block
-import net.michaelripley.pascalcompiler.lexer.LineLocation
-import net.michaelripley.pascalcompiler.lexer.ReservedStrings
 
 class Lexer(
     reservedWordFile: Source,
