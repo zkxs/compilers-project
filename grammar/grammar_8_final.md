@@ -7,7 +7,7 @@
 |  2.1.1 | *identifier_list* →                  | **id** *identifier_list_tail*                                         | {**id**}                                         | {**)**}
 |  2.2.1 | *identifier_list_tail* →             | **,** **id** *identifier_list_tail*                                   | {**,**}                                          | ↴
 |  2.2.2 | *identifier_list_tail* →             | **ϵ**                                                                 | {**ϵ**} →                                        | {**)**}
-|  3.1   | *declarations* →                     | **var** **id** **:** type **;** *optional_declarations*               | {**var**}                                        | {**procedure**, **begin**}
+|  3.1   | *declarations* →                     | **var** **id** **:** *type* **;** *optional_declarations*               | {**var**}                                        | {**procedure**, **begin**}
 |  3.2.1 | *optional_declarations* →            | *declarations*                                                        | {**var**}                                        | ↴
 |  3.2.2 | *optional_declarations* →            | **ϵ**                                                                 | {**ϵ**} →                                        | {**procedure**, **begin**}
 |  4.1   | *type* →                             | *standard_type*                                                       | {**integer**, **real**}                          | ↴
