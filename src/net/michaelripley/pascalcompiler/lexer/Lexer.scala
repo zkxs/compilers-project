@@ -10,6 +10,7 @@ import net.michaelripley.pascalcompiler.identifiers.SymbolTable
 import net.michaelripley.pascalcompiler.tokenizers._
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.lexer._
+import net.michaelripley.pascalcompiler.parser.Parser
 
 // only Lexer._ is imported here. All other imports are above the object.
 import Lexer._
@@ -35,6 +36,11 @@ object Lexer {
     override def toString(): String = {
       f"                                   $tokenName%-10s        NULL"
     }
+  }
+  
+  // EOL token (a fake thing we make to insert EOL's into token list)
+  private val eolToken = new Token("EOL"){
+    override def toString(): String = ""
   }
   
   // tokenizes garbage
@@ -237,9 +243,16 @@ class Lexer(
         )
       }
     }
-    
     tokens += eofToken
-    tokenWriter.println(eofToken)
+    
+    // at this point, tokens is done being generated
+    
+    // print all tokens to token file
+    tokens.foreach( token => {
+      tokenWriter.println(token)
+    })
+    
+    val parser = new Parser(tokens.toList, listWriter)
     
     listWriter.close()
     tokenWriter.close()
@@ -260,8 +273,8 @@ class Lexer(
     // Now, tokenize the line
     val tokens = tokenizeLine(superTokenizer, line, lineNumber)
     
+    // Now, go over all the tokens in the line again printing error tokens
     tokens.foreach( token => {
-      tokenWriter.println(token)
       
       token match {
         case error: ErrorToken => listWriter.println(error.errorString())
@@ -270,7 +283,7 @@ class Lexer(
       
     })
     
-    tokens
+    tokens :+ eolToken
   }
   
   /**
