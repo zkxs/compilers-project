@@ -66,7 +66,7 @@ class AttributeToken(
   }
   
   override def hashCode(): Int = {
-    Util.hash(tokenName, attribute, lexeme)
+    Util.hash(tokenName, attribute)
   }
   
   override def toString: String = {
