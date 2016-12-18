@@ -200,7 +200,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(SEMICOLON)
       programPrime()
     } else {
-      syntaxError("PROGRAM", Set(PROGRAM))
+      syntaxError("PROGRAM", Set.empty)
     }
   }
   
@@ -216,7 +216,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       declarations()
       programPrime()
     } else {
-      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN, VAR))
+      syntaxError("PROCEDURE, BEGIN, VAR", Set.empty)
     }
   }
   
@@ -225,7 +225,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       identifierListTail()
     } else {
-      syntaxError("ID", Set.empty, Set(ID))
+      syntaxError("ID", Set(PAREN_CLOSE))
     }
   }
   
@@ -237,7 +237,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       identifierListTail()
     } else {
-      syntaxError("')', ','", Set(PAREN_CLOSE, COMMA))
+      syntaxError("')', ','", Set(PAREN_CLOSE))
     }
   }
   
@@ -250,7 +250,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(SEMICOLON)
       optionalDeclarations()
     } else {
-      syntaxError("VAR", Set(VAR))
+      syntaxError("VAR", Set(PROCEDURE, BEGIN))
     }
   }
   
@@ -260,7 +260,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(VAR)) {
       declarations()
     } else {
-      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN, VAR))
+      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN))
     }
   }
   
@@ -278,7 +278,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(OF)
       standardType()
     } else {
-      syntaxError("INTEGER, REAL, ARRAY", Set(INTEGER, REAL, ARRAY))
+      syntaxError("INTEGER, REAL, ARRAY", Set(SEMICOLON, PAREN_CLOSE))
     }
   }
   
@@ -288,7 +288,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(REAL)) {
       matchToken(REAL)
     } else {
-       syntaxError("INTEGER, REAL", Set(INTEGER, REAL))
+       syntaxError("INTEGER, REAL", Set(SEMICOLON, PAREN_CLOSE))
     }
   }
   
@@ -298,7 +298,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(SEMICOLON)
       optionalSubprogramDeclarations()
     } else {
-      syntaxError("PROCEDURE, ';'", Set(PROCEDURE, SEMICOLON))
+      syntaxError("PROCEDURE", Set(BEGIN))
     }
   }
   
@@ -308,7 +308,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(BEGIN)) {
       Unit
     } else {
-      syntaxError("PROCEDURE, BEGIN", Set(PROCEDURE, BEGIN))
+      syntaxError("PROCEDURE, BEGIN", Set(BEGIN))
     }
   }
   
@@ -317,7 +317,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       subprogramHead()
       subprogramDeclarationPrime()
     } else {
-      syntaxError("PROCEDURE", Set(PROCEDURE))
+      syntaxError("PROCEDURE", Set(SEMICOLON))
     }
   }
   
@@ -331,7 +331,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       declarations()
       subprogramDeclarationPrime()
     } else {
-      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN, VAR))
+      syntaxError("PROCEDURE, BEGIN, VAR", Set(SEMICOLON))
     }
   }
   
@@ -341,7 +341,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       subprogramHeadPrime()
     } else {
-      syntaxError("PROCEDURE", Set(PROCEDURE))
+      syntaxError("PROCEDURE", Set(VAR, PROCEDURE, BEGIN))
     }
   }
   
@@ -352,7 +352,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(SEMICOLON)) {
       matchToken(SEMICOLON)
     } else {
-      syntaxError("'(', ';'", Set(PAREN_OPEN, SEMICOLON))
+      syntaxError("'(', ';'", Set(VAR, PROCEDURE, BEGIN))
     }
   }
   
@@ -362,7 +362,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       parameterList()
       matchToken(PAREN_CLOSE)
     } else {
-      syntaxError("'('", Set(PAREN_OPEN))
+      syntaxError("'('", Set(SEMICOLON))
     }
   }
   
@@ -373,7 +373,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       anyType()
       parameterListTail()
     } else {
-      syntaxError("ID", Set.empty, Set(ID))
+      syntaxError("ID", Set(PAREN_CLOSE))
     }
   }
   
@@ -387,7 +387,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       anyType()
       parameterListTail()
     } else {
-      syntaxError("')', ';'", Set(PAREN_CLOSE, SEMICOLON))
+      syntaxError("')', ';'", Set(PAREN_CLOSE))
     }
   }
   
@@ -396,7 +396,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(BEGIN)
       compoundStatmentTail()
     } else {
-      syntaxError("BEGIN", Set(BEGIN))
+      syntaxError("BEGIN", Set(FULLSTOP, SEMICOLON, CALL, BEGIN, IF, WHILE),
+          Set(ID))
     }
   }
   
@@ -408,7 +409,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(END)
     } else {
       syntaxError("BEGIN, CALL, ID, IF, WHILE, END",
-          Set(BEGIN, CALL, IF, WHILE, END), Set(ID))
+          Set(FULLSTOP, SEMICOLON, CALL, BEGIN, IF, WHILE),
+          Set(ID))
     }
   }
   
@@ -417,8 +419,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       statement()
       statementListTail()
     } else {
-      syntaxError("BEGIN, CALL, ID, IF, WHILE",
-          Set(BEGIN, CALL, IF, WHILE), Set(ID))
+      syntaxError("BEGIN, CALL, ID, IF, WHILE",  Set(END))
     }
   }
   
@@ -430,7 +431,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(END)) {
       Unit
     } else {
-      syntaxError("';', END", Set(SEMICOLON, END))
+      syntaxError("';', END", Set(END))
     }
   }
   
@@ -455,8 +456,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(DO)
       statement()
     } else {
-      syntaxError("BEGIN, CALL, ID, IF, WHILE",
-          Set(BEGIN, CALL, IF, WHILE), Set(ID))
+      syntaxError("BEGIN, CALL, ID, IF, WHILE", Set(SEMICOLON, END, ELSE))
     }
   }
   
@@ -476,7 +476,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       arrayVariable()
     } else {
-      syntaxError("ID", Set.empty, Set(ID))
+      syntaxError("ID", Set(ASSIGNOP))
     }
   }
   
@@ -488,8 +488,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(ASSIGNOP)) {
       Unit
     } else {
-      syntaxError("SQUAREBRACKET_OPEN, ASSIGNOP",
-          Set(SQUAREBRACKET_OPEN, ASSIGNOP))
+      syntaxError("SQUAREBRACKET_OPEN, ASSIGNOP", Set(ASSIGNOP))
     }
   }
   
@@ -499,7 +498,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       optionalExpressionList()
     } else {
-      syntaxError("CALL", Set(CALL))
+      syntaxError("CALL", Set(SEMICOLON, END, ELSE))
     }
   }
   
@@ -511,7 +510,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(SEMICOLON)) {
       Unit
     } else {
-      syntaxError("'(', ';'", Set(PAREN_OPEN, SEMICOLON))
+      syntaxError("'(', ';'", Set(SEMICOLON, END, ELSE))
     }
   }
   
@@ -522,8 +521,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       expression()
       expressionListTail()
     } else {
-      syntaxError("ID, NUM, '(', '+', '-', NOT",
-          Set(PAREN_OPEN, PLUS, MINUS, NOT), Set(ID, NUM))
+      syntaxError("ID, NUM, '(', '+', '-', NOT", Set(PAREN_CLOSE))
     }
   }
   
@@ -535,7 +533,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       expression()
       expressionListTail()
     } else {
-      syntaxError("')', ','", Set(PAREN_CLOSE, COMMA))
+      syntaxError("')', ','", Set(PAREN_CLOSE))
     }
   }
   
@@ -547,7 +545,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       optionalRelop()
     } else {
       syntaxError("ID, NUM, '(', '+', '-', NOT",
-          Set(PAREN_OPEN, PLUS, MINUS, NOT), Set(ID, NUM))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA))
     }
   }
   
@@ -561,9 +560,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       simpleExpression()
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP",
-          Set(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON, THEN, ELSE,
-              DO, END),
-          Set(RELOP))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA))
     }
   }
   
@@ -579,7 +577,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       optionalAddop()
     } else {
       syntaxError("ID, NUM, '(', '+', '-', NOT",
-          Set(PAREN_OPEN, PLUS, MINUS, NOT), Set(ID, NUM))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA),
+          Set(RELOP))
     }
   }
   
@@ -594,9 +594,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       optionalAddop()
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP",
-          Set(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON, THEN, ELSE,
-              DO, END),
-          Set(RELOP, ADDOP))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA),
+          Set(RELOP))
     }
   }
   
@@ -608,7 +608,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       optionalMulop()
     } else {
       syntaxError("ID, NUM, '(', NOT",
-          Set(PAREN_OPEN, NOT), Set(ID, NUM))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA),
+          Set(RELOP, ADDOP))
     }
   }
   
@@ -625,9 +627,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else {
       syntaxError(
           "')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP",
-          Set(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON, THEN, ELSE,
-              DO, END),
-          Set(RELOP, ADDOP, MULOP))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA),
+          Set(RELOP, ADDOP))
     }
   }
   
@@ -646,7 +648,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       factor()
     } else {
       syntaxError("ID, NUM, '(', NOT",
-          Set(PAREN_OPEN, NOT), Set(ID, NUM))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA),
+          Set(RELOP, ADDOP, MULOP))
     }
   }
   
@@ -664,9 +668,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else {
       syntaxError(
           "')', '[', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP",
-          Set(PAREN_CLOSE, SQUAREBRACKET_OPEN, SQUAREBRACKET_CLOSE, COMMA,
-              SEMICOLON, THEN, ELSE, DO, END),
-          Set(RELOP, ADDOP, MULOP))
+          Set(SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE, PAREN_CLOSE,
+              COMMA),
+          Set(RELOP, ADDOP))
     }
   }
   
@@ -676,7 +680,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(MINUS)) {
       matchToken(MINUS)
     } else {
-      syntaxError("'+', '-'", Set(PLUS, MINUS))
+      syntaxError("'+', '-'", Set(PAREN_OPEN, NOT), Set(ID, NUM))
     }
   }
   
