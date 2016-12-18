@@ -138,18 +138,26 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     return false
   }
   
+  private def isCurrentTokenInSync(sync: SyncSet): Boolean = {
+    val (sync1, sync2) = sync
+    
+    currentToken == EOF || sync1.contains(currentToken) ||
+        sync2.find(_(currentToken)._1).isDefined
+  }
+  
   /**
    * Perform generic error reporting and recovery
    * @param message Error message
    * @param sync1 Sync set
    * @param sync2 Extra sync set of TokenMatchers
    */
-  private def error(message: String,
-      sync1: Set[Token], sync2: Set[TokenMatcher]): Unit = {
+  private def error(message: String, sync: SyncSet): Unit = {
     
     listWriter.println(message)
     
-    //TODO: gobble tokens not in sync1, sync2, or EOF
+    while (!isCurrentTokenInSync(sync)) {
+      nextToken()
+    }
   }
   
   /**
@@ -158,7 +166,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
    * @param sync Sync set
    */
   private def error(message: String, sync: Set[Token]): Unit = {
-    error(message, sync, Set.empty[TokenMatcher])
+    error(message, (sync, Set.empty[TokenMatcher]))
   }
   
   private def syntaxError(expectedTokens: String, sync: SyncSet): Unit = {
@@ -179,7 +187,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       }
     }
     
-    error(space + errorString, sync._1, sync._2)
+    error(space + errorString, sync)
   }
   
   /* *************************************************************************
