@@ -205,7 +205,8 @@ class Parser(tokens: List[Token], lines: Array[String],
         et.errorString()
       }
       case _ => {
-        s"""^ SYNERR: expected one of: $expectedTokens but got "${lexeme.lexeme}""""
+        val q = '"'
+        s"^ SYNERR: expected one of: $expectedTokens but got $q${lexeme.lexeme}$q"
       }
     }
     

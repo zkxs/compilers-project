@@ -6,7 +6,8 @@ import net.michaelripley.pascalcompiler.lexer.Lexeme
 class AttributeToken(
     tokenName: String,
     attribute: Option[String],
-    optionalLexeme: Option[Lexeme]) extends PartialAttributeToken(tokenName, attribute) {
+    optionalLexeme: Option[Lexeme])
+    extends PartialAttributeToken(tokenName, attribute) {
   
   def this(token: String, attribute: Option[String], lexeme: Lexeme) = {
     this(token, attribute, Some(lexeme))

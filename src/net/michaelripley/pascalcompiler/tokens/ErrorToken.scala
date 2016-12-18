@@ -35,9 +35,10 @@ class ErrorToken(
   }
   
   def errorString(): String = {
+    val q = '"'
     attribute match {
-      case Some(attr) => s"""^ $tokenName: $attr: "${lexeme.lexeme}""""
-      case None       => s"""^ $tokenName: "${lexeme.lexeme}""""
+      case Some(attr) => s"^ $tokenName: $attr: $q${lexeme.lexeme}$q"
+      case None       => s"^ $tokenName: $q${lexeme.lexeme}$q"
     }
   }
   
