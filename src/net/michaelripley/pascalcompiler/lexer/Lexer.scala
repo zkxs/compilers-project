@@ -286,8 +286,6 @@ class Lexer(
         List.empty)
   }
   
-  import scala.annotation.tailrec
-  
   /**
    * Tokenize line, starting from given location
    */
