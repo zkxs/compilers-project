@@ -1,8 +1,9 @@
 package net.michaelripley.pascalcompiler.parser
 
+import java.io.PrintWriter
 import net.michaelripley.pascalcompiler.tokens._
 
-class Parser(tokens: List[Token]) {
+class Parser(tokens: List[Token], listWriter: PrintWriter) {
   
   // easy tokens to match
   private val PROGRAM = new AttributeToken("PROGRAM")
@@ -37,43 +38,43 @@ class Parser(tokens: List[Token]) {
   
   // harder tokens to match (they can be different literals)
   
-  private type TokenMatcher = (Token => Boolean)
+  private type TokenMatcher = (Token => (Boolean, String))
   
   private val ID: TokenMatcher = (t: Token) => {
-    t match {
+    (t match {
       case i: IdentifierToken => true
       case _ => false
-    }
+    }, "ID")
   }
   
   private val NUM: TokenMatcher = (t: Token) => {
-    t match {
+    (t match {
       case _: IntegerToken => true
       case a: AttributeToken
         if (a.tokenName == "REAL" || a.tokenName == "LONGREAL") => true
       case _ => false
-    }
+    }, "NUM")
   }
   
   private val RELOP: TokenMatcher = (t: Token) => {
-    t match {
+    (t match {
       case a: AttributeToken if a.tokenName == "RELOP" => true
       case _ => false
-    }
+    }, "RELOP")
   }
   
   private val ADDOP: TokenMatcher = (t: Token) => {
-    t match {
+    (t match {
       case a: AttributeToken if a.tokenName == "ADDOP" => true
       case _ => false
-    }
+    }, "ADDOP")
   }
   
   private val MULOP: TokenMatcher = (t: Token) => {
-    t match {
+    (t match {
       case a: AttributeToken if a.tokenName == "MULOP" => true
       case _ => false
-    }
+    }, "MULOP")
   }
   
   private val tokenIterator = tokens.iterator
@@ -85,33 +86,42 @@ class Parser(tokens: List[Token]) {
 		  
   private def parse() = {
     nextToken()
-    try {
-      program()
-    } catch {
-      case e: UnexpectedEofException => {
-        //TODO: handle unexpected EOF
-      }
-    }
-    
+    program()
     matchToken(EOF)
   }
   
   private def matchToken(m: TokenMatcher): Unit = {
-    if (m(currentToken)) {
-      nextToken()
-    } else if (currentToken == EOF) {
-      throw new UnexpectedEofException
+    val (matched, name) = m(currentToken)
+    if (matched) {
+      if (currentToken != EOF) {
+        nextToken()
+      } else {
+        /* Typically, you would exit the parser after reading an expected EOF,
+         * however the only case in which this happens in this program is at
+         * the end of parse(), so simply returning is acceptable behavior.
+         */
+      }
     } else {
-      //TODO: error recovery
+      syntaxError(name, Set.empty) //TODO: pass parent sync set to here
     }
   }
   
   private def matchToken(t: Token): Unit = {
-    matchToken(t => t == currentToken)
+    matchToken(t => (t == currentToken, 
+      t match {
+        case at: AttributeToken => {
+          at.attribute match {
+            case Some(attr) => s"${at.tokenName}_$attr"
+            case _ => at.tokenName
+          }
+        }
+        case _ => t.tokenName
+      }
+    ))
   }
   
   private def isCurrentToken(m: TokenMatcher): Boolean = {
-    m(currentToken)
+    m(currentToken)._1
   }
   
   private def isCurrentToken(t: Token): Boolean = {
@@ -125,6 +135,55 @@ class Parser(tokens: List[Token]) {
       }
     })
     return false
+  }
+  
+  /**
+   * Perform generic error reporting and recovery
+   * @param message Error message
+   * @param sync1 Sync set
+   * @param sync2 Extra sync set of TokenMatchers
+   */
+  private def error(message: String,
+      sync1: Set[Token], sync2: Set[TokenMatcher]): Unit = {
+    
+    listWriter.println(message)
+    
+    //TODO: gobble tokens not in sync1 or sync2
+  }
+  
+  /**
+   * Perform generic error reporting and recovery
+   * @param message Error message
+   * @param sync Sync set
+   */
+  private def error(message: String, sync: Set[Token]): Unit = {
+    error(message, sync, Set.empty[TokenMatcher])
+  }
+  
+  private def syntaxError(expectedTokens: String,
+      sync1: Set[Token], sync2: Set[TokenMatcher]): Unit = {
+    
+    val lexeme = currentToken match {
+      case at: AttributeToken  => at.lexeme
+      case id: IdentifierToken => id.lexeme
+    }
+    
+    val space = " " * (lexeme.location.columnOffset + 7)
+    
+    val errorString = currentToken match {
+      case et: ErrorToken => {
+        et.errorString()
+      }
+      case _ => {
+        s"""^ SYNERR: expected one of: $expectedTokens but got "${lexeme.lexeme}""""
+      }
+    }
+    
+    error(space + errorString, sync1, sync2)
+  }
+  
+  private def syntaxError(expectedTokens: String, sync: Set[Token]): Unit = {
+    syntaxError(expectedTokens, sync, Set.empty[TokenMatcher])
   }
   
   /* *************************************************************************
@@ -141,7 +200,7 @@ class Parser(tokens: List[Token]) {
       matchToken(SEMICOLON)
       programPrime()
     } else {
-      //TODO: error
+      syntaxError("PROGRAM", Set(PROGRAM))
     }
   }
   
@@ -157,7 +216,7 @@ class Parser(tokens: List[Token]) {
       declarations()
       programPrime()
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN, VAR))
     }
   }
   
@@ -166,7 +225,7 @@ class Parser(tokens: List[Token]) {
       matchToken(ID)
       identifierListTail()
     } else {
-      //TODO: Error
+      syntaxError("ID", Set.empty, Set(ID))
     }
   }
   
@@ -178,7 +237,7 @@ class Parser(tokens: List[Token]) {
       matchToken(ID)
       identifierListTail()
     } else {
-      //TODO: error
+      syntaxError("')', ','", Set(PAREN_CLOSE, COMMA))
     }
   }
   
@@ -191,7 +250,7 @@ class Parser(tokens: List[Token]) {
       matchToken(SEMICOLON)
       optionalDeclarations()
     } else {
-      //TODO: error
+      syntaxError("VAR", Set(VAR))
     }
   }
   
@@ -201,7 +260,7 @@ class Parser(tokens: List[Token]) {
     } else if (isCurrentToken(VAR)) {
       declarations()
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN, VAR))
     }
   }
   
@@ -219,7 +278,7 @@ class Parser(tokens: List[Token]) {
       matchToken(OF)
       standardType()
     } else {
-      //TODO: error
+      syntaxError("INTEGER, REAL, ARRAY", Set(INTEGER, REAL, ARRAY))
     }
   }
   
@@ -229,7 +288,7 @@ class Parser(tokens: List[Token]) {
     } else if (isCurrentToken(REAL)) {
       matchToken(REAL)
     } else {
-      //TODO: error
+       syntaxError("INTEGER, REAL", Set(INTEGER, REAL))
     }
   }
   
@@ -239,7 +298,7 @@ class Parser(tokens: List[Token]) {
       matchToken(SEMICOLON)
       optionalSubprogramDeclarations()
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE, ';'", Set(PROCEDURE, SEMICOLON))
     }
   }
   
@@ -249,7 +308,7 @@ class Parser(tokens: List[Token]) {
     } else if (isCurrentToken(BEGIN)) {
       Unit
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE, BEGIN", Set(PROCEDURE, BEGIN))
     }
   }
   
@@ -258,7 +317,7 @@ class Parser(tokens: List[Token]) {
       subprogramHead()
       subprogramDeclarationPrime()
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE", Set(PROCEDURE))
     }
   }
   
@@ -272,7 +331,7 @@ class Parser(tokens: List[Token]) {
       declarations()
       subprogramDeclarationPrime()
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE, BEGIN, VAR", Set(PROCEDURE, BEGIN, VAR))
     }
   }
   
@@ -282,7 +341,7 @@ class Parser(tokens: List[Token]) {
       matchToken(ID)
       subprogramHeadPrime()
     } else {
-      //TODO: error
+      syntaxError("PROCEDURE", Set(PROCEDURE))
     }
   }
   
@@ -293,7 +352,7 @@ class Parser(tokens: List[Token]) {
     } else if (isCurrentToken(SEMICOLON)) {
       matchToken(SEMICOLON)
     } else {
-      //TODO: error
+      syntaxError("'(', ';'", Set(PAREN_OPEN, SEMICOLON))
     }
   }
   
@@ -303,7 +362,7 @@ class Parser(tokens: List[Token]) {
       parameterList()
       matchToken(PAREN_CLOSE)
     } else {
-      //TODO: error
+      syntaxError("'('", Set(PAREN_OPEN))
     }
   }
   
@@ -314,7 +373,7 @@ class Parser(tokens: List[Token]) {
       anyType()
       parameterListTail()
     } else {
-      //TODO: error
+      syntaxError("ID", Set.empty, Set(ID))
     }
   }
   
@@ -328,7 +387,7 @@ class Parser(tokens: List[Token]) {
       anyType()
       parameterListTail()
     } else {
-      //TODO: error
+      syntaxError("')', ';'", Set(PAREN_CLOSE, SEMICOLON))
     }
   }
   
