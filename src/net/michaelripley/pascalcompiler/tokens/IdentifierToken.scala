@@ -31,7 +31,7 @@ class IdentifierToken(
   }
   
   override def toString: String = {
-    f"${lexeme.location.lineNumber}%4d        ${lexeme.lexeme}%-15s        $tokenName%-10s        loc${identifier.number}"
+    f"${lexeme.location.lineNumber + 1}%4d        ${lexeme.lexeme}%-15s        $tokenName%-10s        loc${identifier.number}"
   }
   
 }
