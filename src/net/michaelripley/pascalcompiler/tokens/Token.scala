@@ -3,7 +3,7 @@ package net.michaelripley.pascalcompiler.tokens
 /**
  * Superclass of all tokens. It only contains the token name.
  */
-abstract class Token(val tokenName: String) {
+class Token(val tokenName: String) {
   
   def canEqual(other: Any): Boolean = {
     other.isInstanceOf[Token]
