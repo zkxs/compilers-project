@@ -49,10 +49,6 @@ class AttributeToken(
     lexeme.size
   }
   
-  def isNumeric(): Boolean = {
-    this.isInstanceOf[IntegerToken] || tokenName == "REAL" ||  tokenName == "LONGREAL"
-  }
-  
   override def canEqual(other: Any): Boolean = {
     other.isInstanceOf[AttributeToken]
   }
