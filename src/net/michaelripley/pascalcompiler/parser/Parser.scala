@@ -88,10 +88,10 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
   private def parse() = {
     nextToken()
     program()
-    matchToken(EOF)
+    matchToken(EOF, (Set.empty[Token], Set.empty[TokenMatcher]))
   }
   
-  private def matchToken(m: TokenMatcher): Unit = {
+  private def matchToken(m: TokenMatcher, sync: SyncSet): Unit = {
     val (matched, name) = m(currentToken)
     if (matched) {
       if (currentToken != EOF) {
@@ -103,11 +103,11 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
          */
       }
     } else {
-      syntaxError(name, (Set.empty[Token], Set.empty[TokenMatcher])) //TODO: pass parent sync set to here
+      syntaxError(name, sync)
     }
   }
   
-  private def matchToken(t: Token): Unit = {
+  private def matchToken(t: Token, sync: SyncSet): Unit = {
     matchToken(t => (t == currentToken, 
       t match {
         case at: AttributeToken => {
@@ -118,7 +118,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
         }
         case _ => t.tokenName
       }
-    ))
+    ), sync)
   }
   
   private def isCurrentToken(m: TokenMatcher): Boolean = {
@@ -190,12 +190,12 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set.empty[Token], Set.empty[TokenMatcher])
     
     if (isCurrentToken(PROGRAM)) {
-      matchToken(PROGRAM)
-      matchToken(ID)
-      matchToken(PAREN_OPEN)
+      matchToken(PROGRAM, sync)
+      matchToken(ID, sync)
+      matchToken(PAREN_OPEN, sync)
       identifierList()
-      matchToken(PAREN_CLOSE)
-      matchToken(SEMICOLON)
+      matchToken(PAREN_CLOSE, sync)
+      matchToken(SEMICOLON, sync)
       programPrime()
     } else {
       syntaxError("PROGRAM", sync)
@@ -208,10 +208,10 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     if (isCurrentToken(PROCEDURE)) {
       subprogramDeclarations()
       compoundStatement()
-      matchToken(FULLSTOP)
+      matchToken(FULLSTOP, sync)
     } else if (isCurrentToken(BEGIN)) {
       compoundStatement()
-      matchToken(FULLSTOP)
+      matchToken(FULLSTOP, sync)
     } else if (isCurrentToken(VAR)) {
       declarations()
       programPrime()
@@ -224,7 +224,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      matchToken(ID)
+      matchToken(ID, sync)
       identifierListTail()
     } else {
       syntaxError("ID", sync)
@@ -237,8 +237,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     if (isCurrentToken(PAREN_CLOSE)) {
       Unit
     } else if (isCurrentToken(COMMA)) {
-      matchToken(COMMA)
-      matchToken(ID)
+      matchToken(COMMA, sync)
+      matchToken(ID, sync)
       identifierListTail()
     } else {
       syntaxError("')', ','", sync)
@@ -249,11 +249,11 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](PROCEDURE, BEGIN), Set.empty[TokenMatcher])
     
     if (isCurrentToken(VAR)) {
-      matchToken(VAR)
-      matchToken(ID)
-      matchToken(COLON)
+      matchToken(VAR, sync)
+      matchToken(ID, sync)
+      matchToken(COLON, sync)
       anyType()
-      matchToken(SEMICOLON)
+      matchToken(SEMICOLON, sync)
       optionalDeclarations()
     } else {
       syntaxError("VAR", sync)
@@ -279,13 +279,13 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     if (isCurrentToken(INTEGER, REAL)) {
       standardType()
     } else if (isCurrentToken(ARRAY)) {
-      matchToken(ARRAY)
-      matchToken(SQUAREBRACKET_OPEN)
-      matchToken(NUM)
-      matchToken(ARRAYRANGE)
-      matchToken(NUM)
-      matchToken(SQUAREBRACKET_CLOSE)
-      matchToken(OF)
+      matchToken(ARRAY, sync)
+      matchToken(SQUAREBRACKET_OPEN, sync)
+      matchToken(NUM, sync)
+      matchToken(ARRAYRANGE, sync)
+      matchToken(NUM, sync)
+      matchToken(SQUAREBRACKET_CLOSE, sync)
+      matchToken(OF, sync)
       standardType()
     } else {
       syntaxError("INTEGER, REAL, ARRAY", sync)
@@ -296,9 +296,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](SEMICOLON, PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(INTEGER)) {
-      matchToken(INTEGER)
+      matchToken(INTEGER, sync)
     } else if (isCurrentToken(REAL)) {
-      matchToken(REAL)
+      matchToken(REAL, sync)
     } else {
        syntaxError("INTEGER, REAL", sync)
     }
@@ -309,7 +309,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     
     if (isCurrentToken(PROCEDURE)) {
       subprogramDeclaration()
-      matchToken(SEMICOLON)
+      matchToken(SEMICOLON, sync)
       optionalSubprogramDeclarations()
     } else {
       syntaxError("PROCEDURE", sync)
@@ -359,8 +359,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](VAR, PROCEDURE, BEGIN), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PROCEDURE)) {
-      matchToken(PROCEDURE)
-      matchToken(ID)
+      matchToken(PROCEDURE, sync)
+      matchToken(ID, sync)
       subprogramHeadPrime()
     } else {
       syntaxError("PROCEDURE", sync)
@@ -372,9 +372,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     
     if (isCurrentToken(PAREN_OPEN)) {
       arguments()
-      matchToken(SEMICOLON)
+      matchToken(SEMICOLON, sync)
     } else if (isCurrentToken(SEMICOLON)) {
-      matchToken(SEMICOLON)
+      matchToken(SEMICOLON, sync)
     } else {
       syntaxError("'(', ';'", sync)
     }
@@ -384,9 +384,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](SEMICOLON), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
-      matchToken(PAREN_OPEN)
+      matchToken(PAREN_OPEN, sync)
       parameterList()
-      matchToken(PAREN_CLOSE)
+      matchToken(PAREN_CLOSE, sync)
     } else {
       syntaxError("'('", sync)
     }
@@ -396,8 +396,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      matchToken(ID)
-      matchToken(COLON)
+      matchToken(ID, sync)
+      matchToken(COLON, sync)
       anyType()
       parameterListTail()
     } else {
@@ -411,9 +411,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     if (isCurrentToken(PAREN_CLOSE)) {
       Unit
     } else if (isCurrentToken(SEMICOLON)) {
-      matchToken(SEMICOLON)
-      matchToken(ID)
-      matchToken(COLON)
+      matchToken(SEMICOLON, sync)
+      matchToken(ID, sync)
+      matchToken(COLON, sync)
       anyType()
       parameterListTail()
     } else {
@@ -426,7 +426,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
         Set[TokenMatcher](ID))
     
     if (isCurrentToken(BEGIN)) {
-      matchToken(BEGIN)
+      matchToken(BEGIN, sync)
       compoundStatmentTail()
     } else {
       syntaxError("BEGIN", sync)
@@ -439,9 +439,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     
     if (isCurrentToken(BEGIN, CALL, IF, WHILE) || isCurrentToken(ID)) {
       statementList()
-      matchToken(END)
+      matchToken(END, sync)
     } else if (isCurrentToken(END)) {
-      matchToken(END)
+      matchToken(END, sync)
     } else {
       syntaxError("BEGIN, CALL, ID, IF, WHILE, END", sync)
     }
@@ -462,7 +462,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](END), Set.empty[TokenMatcher])
     
     if (isCurrentToken(SEMICOLON)) {
-      matchToken(SEMICOLON)
+      matchToken(SEMICOLON, sync)
       statement()
       statementListTail()
     } else if (isCurrentToken(END)) {
@@ -481,18 +481,18 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       procedureStatement()
     } else if (isCurrentToken(ID)) {
       variable()
-      matchToken(ASSIGNOP)
+      matchToken(ASSIGNOP, sync)
       expression()
     } else if (isCurrentToken(IF)) {
-      matchToken(IF)
+      matchToken(IF, sync)
       expression()
-      matchToken(THEN)
+      matchToken(THEN, sync)
       statement()
       optionalElse()
     } else if (isCurrentToken(WHILE)) {
-      matchToken(WHILE)
+      matchToken(WHILE, sync)
       expression()
-      matchToken(DO)
+      matchToken(DO, sync)
       statement()
     } else {
       syntaxError("BEGIN, CALL, ID, IF, WHILE", sync)
@@ -505,7 +505,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     if (isCurrentToken(SEMICOLON, END)) {
       Unit
     } else if (isCurrentToken(ELSE)) {
-      matchToken(ELSE)
+      matchToken(ELSE, sync)
       statement()
     } else {
       syntaxError("';', END, ELSE", sync)
@@ -516,7 +516,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](ASSIGNOP), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      matchToken(ID)
+      matchToken(ID, sync)
       arrayVariable()
     } else {
       syntaxError("ID", sync)
@@ -527,9 +527,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](ASSIGNOP), Set.empty[TokenMatcher])
     
     if (isCurrentToken(SQUAREBRACKET_OPEN)) {
-      matchToken(SQUAREBRACKET_OPEN)
+      matchToken(SQUAREBRACKET_OPEN, sync)
       expression()
-      matchToken(SQUAREBRACKET_CLOSE)
+      matchToken(SQUAREBRACKET_CLOSE, sync)
     } else if (isCurrentToken(ASSIGNOP)) {
       Unit
     } else {
@@ -541,8 +541,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](SEMICOLON, END, ELSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(CALL)) {
-      matchToken(CALL)
-      matchToken(ID)
+      matchToken(CALL, sync)
+      matchToken(ID, sync)
       optionalExpressionList()
     } else {
       syntaxError("CALL", sync)
@@ -553,9 +553,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](SEMICOLON, END, ELSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
-      matchToken(PAREN_OPEN)
+      matchToken(PAREN_OPEN, sync)
       expressionList()
-      matchToken(PAREN_CLOSE)
+      matchToken(PAREN_CLOSE, sync)
     } else if (isCurrentToken(SEMICOLON)) {
       Unit
     } else {
@@ -582,7 +582,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     if (isCurrentToken(PAREN_CLOSE)) {
       Unit
     } else if (isCurrentToken(COMMA)) {
-      matchToken(COMMA)
+      matchToken(COMMA, sync)
       expression()
       expressionListTail()
     } else {
@@ -615,7 +615,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       
       Unit
     } else if (isCurrentToken(RELOP)) {
-      matchToken(RELOP)
+      matchToken(RELOP, sync)
       simpleExpression()
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP", sync)
@@ -651,7 +651,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       
       Unit
     } else if (isCurrentToken(ADDOP)) {
-      matchToken(ADDOP)
+      matchToken(ADDOP, sync)
       term()
       optionalAddop()
     } else {
@@ -685,7 +685,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       
       Unit
     } else if (isCurrentToken(MULOP)) {
-      matchToken(MULOP)
+      matchToken(MULOP, sync)
       factor()
       optionalMulop()
     } else {
@@ -700,16 +700,16 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       Set[TokenMatcher](RELOP, ADDOP, MULOP))
     
     if (isCurrentToken(ID)) {
-      matchToken(ID)
+      matchToken(ID, sync)
       arrayExpression()
     } else if (isCurrentToken(NUM)) {
-      matchToken(NUM)
+      matchToken(NUM, sync)
     } else if (isCurrentToken(PAREN_OPEN)) {
-      matchToken(PAREN_OPEN)
+      matchToken(PAREN_OPEN, sync)
       expression()
-      matchToken(PAREN_CLOSE)
+      matchToken(PAREN_CLOSE, sync)
     } else if (isCurrentToken(NOT)) {
-      matchToken(NOT)
+      matchToken(NOT, sync)
       factor()
     } else {
       syntaxError("ID, NUM, '(', NOT", sync)
@@ -727,9 +727,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
         || isCurrentToken(MULOP)) {
       Unit
     } else if (isCurrentToken(SQUAREBRACKET_OPEN)) {
-      matchToken(SQUAREBRACKET_OPEN)
+      matchToken(SQUAREBRACKET_OPEN, sync)
       expression()
-      matchToken(SQUAREBRACKET_CLOSE)
+      matchToken(SQUAREBRACKET_CLOSE, sync)
     } else {
       syntaxError(
           "')', '[', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP",
@@ -741,9 +741,9 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     val sync = (Set[Token](PAREN_OPEN, NOT), Set[TokenMatcher](ID, NUM))
     
     if (isCurrentToken(PLUS)) {
-      matchToken(PLUS)
+      matchToken(PLUS, sync)
     } else if (isCurrentToken(MINUS)) {
-      matchToken(MINUS)
+      matchToken(MINUS, sync)
     } else {
       syntaxError("'+', '-'", sync)
     }
