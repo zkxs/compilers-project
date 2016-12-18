@@ -1,48 +1,51 @@
 package net.michaelripley.pascalcompiler.parser
 
-import scala.annotation.switch
+import scala.unchecked
 import net.michaelripley.pascalcompiler.tokens._
 
 class Parser(tokens: List[Token]) {
   
   // easy tokens to match
-  val PROGRAM = new AttributeToken("PROGRAM")
-  val PROCEDURE = new AttributeToken("PROCEDURE")
-  val BEGIN = new AttributeToken("BEGIN")
-  val CALL = new AttributeToken("CALL")
-  val VAR = new AttributeToken("VAR")
-  val INTEGER = new AttributeToken("INTEGER")
-  val REAL = new AttributeToken("REAL")
-  val ARRAY = new AttributeToken("ARRAY")
-  val PAREN_OPEN = new AttributeToken("PAREN", "OPEN")
-  val PAREN_CLOSE = new AttributeToken("PAREN", "CLOSE")
-  val SQUAREBRACKET_OPEN = new AttributeToken("SQUAREBRACKET", "OPEN")
-  val SQUAREBRACKET_CLOSE = new AttributeToken("SQUAREBRACKET", "CLOSE")
-  val COMMA = new AttributeToken("COMMA")
-  val SEMICOLON = new AttributeToken("SEMICOLON")
-  val FULLSTOP = new AttributeToken("FULLSTOP")
-  val PLUS = new AttributeToken("ADDOP", "ADD")
-  val MINUS = new AttributeToken("ADDOP", "SUBTRACT")
-  val ASSIGNOP = new AttributeToken("ASSIGNOP")
-  val NOT = new AttributeToken("NOT")
-  val IF = new AttributeToken("IF")
-  val THEN = new AttributeToken("THEN")
-  val ELSE = new AttributeToken("ELSE")
-  val DO = new AttributeToken("DO")
-  val WHILE = new AttributeToken("WHILE")
-  val END = new AttributeToken("END")
-  val EOF = new Token("EOF")
+  private val PROGRAM = new AttributeToken("PROGRAM")
+  private val PROCEDURE = new AttributeToken("PROCEDURE")
+  private val BEGIN = new AttributeToken("BEGIN")
+  private val CALL = new AttributeToken("CALL")
+  private val VAR = new AttributeToken("VAR")
+  private val INTEGER = new AttributeToken("INTEGER")
+  private val REAL = new AttributeToken("REAL")
+  private val ARRAY = new AttributeToken("ARRAY")
+  private val PAREN_OPEN = new AttributeToken("PAREN", "OPEN")
+  private val PAREN_CLOSE = new AttributeToken("PAREN", "CLOSE")
+  private val SQUAREBRACKET_OPEN = new AttributeToken("SQUAREBRACKET", "OPEN")
+  private val SQUAREBRACKET_CLOSE = new AttributeToken("SQUAREBRACKET", "CLOSE")
+  private val COMMA = new AttributeToken("COMMA")
+  private val COLON = new AttributeToken("COLON")
+  private val SEMICOLON = new AttributeToken("SEMICOLON")
+  private val FULLSTOP = new AttributeToken("FULLSTOP")
+  private val PLUS = new AttributeToken("ADDOP", "ADD")
+  private val MINUS = new AttributeToken("ADDOP", "SUBTRACT")
+  private val ASSIGNOP = new AttributeToken("ASSIGNOP")
+  private val NOT = new AttributeToken("NOT")
+  private val IF = new AttributeToken("IF")
+  private val THEN = new AttributeToken("THEN")
+  private val ELSE = new AttributeToken("ELSE")
+  private val DO = new AttributeToken("DO")
+  private val WHILE = new AttributeToken("WHILE")
+  private val END = new AttributeToken("END")
+  private val EOF = new Token("EOF")
   
   // harder tokens to match (they can be different literals)
   
-  val ID = (t: Token) => {
+  private type TokenMatcher = (Token => Boolean)
+  
+  private val ID: TokenMatcher = (t: Token) => {
     t match {
       case i: IdentifierToken => true
       case _ => false
     }
   }
   
-  val NUM = (t: Token) => {
+  private val NUM: TokenMatcher = (t: Token) => {
     t match {
       case _: IntegerToken => true
       case a: AttributeToken
@@ -51,35 +54,35 @@ class Parser(tokens: List[Token]) {
     }
   }
   
-  val RELOP = (t: Token) => {
+  private val RELOP: TokenMatcher = (t: Token) => {
     t match {
       case a: AttributeToken if a.tokenName == "RELOP" => true
       case _ => false
     }
   }
   
-  val ADDOP = (t: Token) => {
+  private val ADDOP: TokenMatcher = (t: Token) => {
     t match {
       case a: AttributeToken if a.tokenName == "ADDOP" => true
       case _ => false
     }
   }
   
-  val MULOP = (t: Token) => {
+  private val MULOP: TokenMatcher = (t: Token) => {
     t match {
       case a: AttributeToken if a.tokenName == "MULOP" => true
       case _ => false
     }
   }
   
-  val tokenIterator = tokens.iterator
-  var currentToken: Token = _
+  private val tokenIterator = tokens.iterator
+  private var currentToken: Token = _
   
-  def nextToken(): Unit = {
+  private def nextToken(): Unit = {
     currentToken = tokenIterator.next()
   }
 		  
-  def parse() = {
+  private def parse() = {
     nextToken()
     try {
       program()
@@ -92,9 +95,9 @@ class Parser(tokens: List[Token]) {
     matchToken(EOF)
   }
   
-  def matchToken(m: Token => Boolean): Unit = {
+  private def matchToken(m: TokenMatcher): Unit = {
     if (m(currentToken)) {
-      
+      nextToken()
     } else if (currentToken == EOF) {
       throw new UnexpectedEofException
     } else {
@@ -102,12 +105,40 @@ class Parser(tokens: List[Token]) {
     }
   }
   
-  def matchToken(t: Token): Unit = {
+  private def matchToken(t: Token): Unit = {
     matchToken(t => t == currentToken)
   }
   
-  def program() = {
-    if (currentToken == PROGRAM) {
+  private def isCurrentToken(m: TokenMatcher): Boolean = {
+    m(currentToken)
+  }
+  
+  private def isCurrentToken(t: Token): Boolean = {
+    t == currentToken
+  }
+  
+  private def isCurrentToken(toks: Any*): Boolean = {
+    toks.foreach( a => {
+      a match {
+        case t: Token => 
+          if (isCurrentToken(t)) {
+            return true
+          }
+        case (m: TokenMatcher @unchecked) => //TODO: is this a problem?
+          if (isCurrentToken(m)) {
+            return true
+          }
+        case _ => throw new IllegalArgumentException(
+            "isCurrentToken() only accepts Tokens or TokenMatchers")
+      }
+      
+      
+    })
+    return false
+  }
+  
+  private def program(): Unit = {
+    if (isCurrentToken(PROGRAM)) {
       matchToken(PROGRAM)
       matchToken(ID)
       matchToken(PAREN_OPEN)
@@ -116,156 +147,202 @@ class Parser(tokens: List[Token]) {
       matchToken(SEMICOLON)
       programPrime()
     } else {
-      // TODO: error
+      // ODO: error
     }
   }
   
-  def programPrime() = {
-    
+  private def programPrime(): Unit = {
+    if (isCurrentToken(PROCEDURE)) {
+      subprogramDeclaration()
+      compoundStatement()
+      matchToken(FULLSTOP)
+    } else if (isCurrentToken(BEGIN)) {
+      compoundStatement()
+      matchToken(FULLSTOP)
+    } else if (isCurrentToken(VAR)) {
+      declarations()
+      programPrime()
+    } else {
+      //TODO: error
+    }
   }
   
-  def identifierList() = {
-    
+  private def identifierList(): Unit = {
+    if (isCurrentToken(ID)) {
+      matchToken(ID)
+      identifierListTail()
+    } else {
+      //TODO: Error
+    }
   }
   
-  def identifierListTail() = {
-    
+  private def identifierListTail(): Unit = {
+    if (isCurrentToken(PAREN_CLOSE)) {
+      Unit
+    } else if (isCurrentToken(COMMA)) {
+      matchToken(COMMA)
+      matchToken(ID)
+      identifierListTail()
+    } else {
+      //TODO: error
+    }
   }
   
-  def declarations() = {
-    
+  private def declarations(): Unit = {
+    if (isCurrentToken(VAR)) {
+      matchToken(VAR)
+      matchToken(ID)
+      matchToken(COLON)
+      anyType()
+      matchToken(SEMICOLON)
+      optionalDeclarations()
+    } else {
+      //TODO: error
+    }
   }
   
-  def optionalDeclarations() = {
-    
+  private def optionalDeclarations(): Unit = {
+    if (isCurrentToken(PROCEDURE, BEGIN)) {
+      Unit
+    } else if (isCurrentToken(VAR)) {
+      declarations()
+    } else {
+      //TODO: error
+    }
   }
   
   // could not name this function type, as type is a reserved word in Scala
-  def anyType() = {
+  private def anyType(): Unit = {
+    if (isCurrentToken(INTEGER, REAL)) {
+      
+    } else if (isCurrentToken(ARRAY)) {
+      
+    } else {
+      //TODO: error
+    }
+  }
+  
+  private def standardType(): Unit = {
     
   }
   
-  def standardType() = {
+  private def subprogramDeclarations(): Unit = {
     
   }
   
-  def subprogramDeclarations() = {
+  private def optionalSubprogramDeclarations(): Unit = {
     
   }
   
-  def optionalSubprogramDeclarations() = {
+  private def subprogramDeclaration(): Unit = {
     
   }
   
-  def subprogramDeclaration() = {
+  private def subprogramDeclarationPrime(): Unit = {
     
   }
   
-  def subprogramDeclarationPrime() = {
+  private def subprogramHead(): Unit = {
     
   }
   
-  def subprogramHead() = {
+  private def subprogramHeadPrime(): Unit = {
     
   }
   
-  def subprogramHeadPrime() = {
+  private def arguments(): Unit = {
     
   }
   
-  def arguments() = {
+  private def parameterList(): Unit = {
     
   }
   
-  def parameterList() = {
+  private def parameterListTail(): Unit = {
     
   }
   
-  def parameterListTail() = {
+  private def compoundStatement(): Unit = {
     
   }
   
-  def compoundStatement() = {
+  private def compoundStatmentTail(): Unit = {
     
   }
   
-  def compoundStatmentTail() = {
+  private def statementList(): Unit = {
     
   }
   
-  def statementList() = {
+  private def statementListTail(): Unit = {
     
   }
   
-  def statementListTail() = {
+  private def statement(): Unit = {
     
   }
   
-  def statement() = {
+  private def optionalElse(): Unit = {
     
   }
   
-  def optionalElse() = {
+  private def variable(): Unit = {
     
   }
   
-  def variable() = {
+  private def arrayVariable(): Unit = {
     
   }
   
-  def arrayVariable() = {
+  private def procedureStatement(): Unit = {
     
   }
   
-  def procedureStatement() = {
+  private def optionalExpressionList(): Unit = {
     
   }
   
-  def optionalExpressionList() = {
+  private def expressionList(): Unit = {
     
   }
   
-  def expressionList() = {
+  private def expressionListTail(): Unit = {
     
   }
   
-  def expressionListTail() = {
+  private def expression(): Unit = {
     
   }
   
-  def expression() = {
+  private def optionalRelop(): Unit = {
     
   }
   
-  def optionalRelop() = {
+  private def simpleExpression(): Unit = {
     
   }
   
-  def simpleExpression() = {
+  private def optionalAddop(): Unit = {
     
   }
   
-  def optionalAddop() = {
+  private def term(): Unit = {
     
   }
   
-  def term() = {
+  private def optionalMulop(): Unit = {
     
   }
   
-  def optionalMulop() = {
+  private def factor(): Unit = {
     
   }
   
-  def factor() = {
+  private def arrayExpression(): Unit = {
     
   }
   
-  def arrayExpression() = {
-    
-  }
-  
-  def sign() = {
+  private def sign(): Unit = {
     
   }
   
