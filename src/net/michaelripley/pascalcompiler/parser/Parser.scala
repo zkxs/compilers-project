@@ -39,6 +39,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
   // harder tokens to match (they can be different literals)
   
   private type TokenMatcher = (Token => (Boolean, String))
+  private type SyncSet = (Set[Token], Set[TokenMatcher])
   
   private val ID: TokenMatcher = (t: Token) => {
     (t match {
@@ -160,8 +161,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     error(message, sync, Set.empty[TokenMatcher])
   }
   
-  private def syntaxError(expectedTokens: String,
-      sync: (Set[Token], Set[TokenMatcher])): Unit = {
+  private def syntaxError(expectedTokens: String, sync: SyncSet): Unit = {
     
     val lexeme = currentToken match {
       case at: AttributeToken  => at.lexeme
