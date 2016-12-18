@@ -126,7 +126,7 @@ class Parser(tokens: List[Token], lines: Array[String],
   }
   
   private def matchToken(t: Token, sync: SyncSet): Unit = {
-    matchToken(t => (t == currentToken, 
+    matchToken(curr => (t == curr,
       t match {
         case at: AttributeToken => {
           at.attribute match {
