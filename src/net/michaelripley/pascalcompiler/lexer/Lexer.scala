@@ -31,13 +31,6 @@ object Lexer {
     Source.fromInputStream(getClass.getResourceAsStream(path))
   }
   
-  // EOF token
-  private val eofToken = new Token("EOF"){
-    override def toString(): String = {
-      f"                                   $tokenName%-10s        NULL"
-    }
-  }
-  
   // EOL token (a fake thing we make to insert EOL's into token list)
   private val eolToken = new Token("EOL"){
     override def toString(): String = ""
@@ -242,6 +235,15 @@ class Lexer(
         )
       }
     }
+    
+    // EOF token
+    val eofToken = new AttributeToken("EOF", None,
+      Lexeme("", LineLocation(lines.size, lines.tail.length))){
+        override def toString(): String = {
+          f"                                   $tokenName%-10s        NULL"
+      }
+    }
+    
     mutableTokens += eofToken
     val tokens = mutableTokens.toList
     // at this point, tokens is done being generated
