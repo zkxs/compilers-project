@@ -23,7 +23,7 @@ class IntegerToken(
   }
   
   override def hashCode(): Int = {
-    Util.hash(tokenName, attribute, lexeme)
+    value.hashCode()
   }
   
 }
