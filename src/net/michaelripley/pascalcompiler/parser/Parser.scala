@@ -148,7 +148,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     
     listWriter.println(message)
     
-    //TODO: gobble tokens not in sync1 or sync2
+    //TODO: gobble tokens not in sync1, sync2, or EOF
   }
   
   /**
@@ -396,7 +396,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(BEGIN)
       compoundStatmentTail()
     } else {
-      //TODO: error
+      syntaxError("BEGIN", Set(BEGIN))
     }
   }
   
@@ -407,7 +407,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(END)) {
       matchToken(END)
     } else {
-      //TODO: error
+      syntaxError("BEGIN, CALL, ID, IF, WHILE, END",
+          Set(BEGIN, CALL, IF, WHILE, END), Set(ID))
     }
   }
   
@@ -416,7 +417,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       statement()
       statementListTail()
     } else {
-      //TODO: error
+      syntaxError("BEGIN, CALL, ID, IF, WHILE",
+          Set(BEGIN, CALL, IF, WHILE), Set(ID))
     }
   }
   
@@ -428,7 +430,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(END)) {
       Unit
     } else {
-      //TODO: error
+      syntaxError("';', END", Set(SEMICOLON, END))
     }
   }
   
@@ -453,7 +455,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(DO)
       statement()
     } else {
-      //TODO: error
+      syntaxError("BEGIN, CALL, ID, IF, WHILE",
+          Set(BEGIN, CALL, IF, WHILE), Set(ID))
     }
   }
   
@@ -464,7 +467,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ELSE)
       statement()
     } else {
-      //TODO: error
+      syntaxError("';', END, ELSE", Set(SEMICOLON, END, ELSE))
     }
   }
   
@@ -473,7 +476,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       arrayVariable()
     } else {
-      //TODO: error
+      syntaxError("ID", Set.empty, Set(ID))
     }
   }
   
@@ -485,7 +488,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(ASSIGNOP)) {
       Unit
     } else {
-      //TODO: error
+      syntaxError("SQUAREBRACKET_OPEN, ASSIGNOP",
+          Set(SQUAREBRACKET_OPEN, ASSIGNOP))
     }
   }
   
@@ -495,7 +499,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(ID)
       optionalExpressionList()
     } else {
-      //TODO: error
+      syntaxError("CALL", Set(CALL))
     }
   }
   
@@ -507,7 +511,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(SEMICOLON)) {
       Unit
     } else {
-      //TODO: error
+      syntaxError("'(', ';'", Set(PAREN_OPEN, SEMICOLON))
     }
   }
   
@@ -518,7 +522,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       expression()
       expressionListTail()
     } else {
-      //TODO: error
+      syntaxError("ID, NUM, '(', '+', '-', NOT",
+          Set(PAREN_OPEN, PLUS, MINUS, NOT), Set(ID, NUM))
     }
   }
   
@@ -530,7 +535,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       expression()
       expressionListTail()
     } else {
-      //TODO: error
+      syntaxError("')', ','", Set(PAREN_CLOSE, COMMA))
     }
   }
   
@@ -541,7 +546,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       simpleExpression()
       optionalRelop()
     } else {
-      //TODO: error
+      syntaxError("ID, NUM, '(', '+', '-', NOT",
+          Set(PAREN_OPEN, PLUS, MINUS, NOT), Set(ID, NUM))
     }
   }
   
@@ -554,7 +560,10 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(RELOP)
       simpleExpression()
     } else {
-      //TODO: error
+      syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP",
+          Set(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON, THEN, ELSE,
+              DO, END),
+          Set(RELOP))
     }
   }
   
@@ -569,7 +578,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       term()
       optionalAddop()
     } else {
-      //TODO: error
+      syntaxError("ID, NUM, '(', '+', '-', NOT",
+          Set(PAREN_OPEN, PLUS, MINUS, NOT), Set(ID, NUM))
     }
   }
   
@@ -583,7 +593,10 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       term()
       optionalAddop()
     } else {
-      //TODO: error
+      syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP",
+          Set(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON, THEN, ELSE,
+              DO, END),
+          Set(RELOP, ADDOP))
     }
   }
   
@@ -594,7 +607,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       factor()
       optionalMulop()
     } else {
-      //TODO: error
+      syntaxError("ID, NUM, '(', NOT",
+          Set(PAREN_OPEN, NOT), Set(ID, NUM))
     }
   }
   
@@ -609,7 +623,11 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       factor()
       optionalMulop()
     } else {
-      //TODO: error
+      syntaxError(
+          "')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP",
+          Set(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON, THEN, ELSE,
+              DO, END),
+          Set(RELOP, ADDOP, MULOP))
     }
   }
   
@@ -627,7 +645,8 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       matchToken(NOT)
       factor()
     } else {
-      //TODO: error
+      syntaxError("ID, NUM, '(', NOT",
+          Set(PAREN_OPEN, NOT), Set(ID, NUM))
     }
   }
   
@@ -643,7 +662,11 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
       expression()
       matchToken(SQUAREBRACKET_CLOSE)
     } else {
-      //TODO: error
+      syntaxError(
+          "')', '[', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP",
+          Set(PAREN_CLOSE, SQUAREBRACKET_OPEN, SQUAREBRACKET_CLOSE, COMMA,
+              SEMICOLON, THEN, ELSE, DO, END),
+          Set(RELOP, ADDOP, MULOP))
     }
   }
   
@@ -653,7 +676,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
     } else if (isCurrentToken(MINUS)) {
       matchToken(MINUS)
     } else {
-      //TODO: error
+      syntaxError("'+', '-'", Set(PLUS, MINUS))
     }
   }
   
