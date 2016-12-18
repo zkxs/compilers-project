@@ -231,10 +231,10 @@ class Lexer(
     tokenWriter.println(
         "Line No.    Lexeme                 Token-Type        Attribute")
     
-    val tokens = MutableList[Token]()
+    val mutableTokens = MutableList[Token]()
     sourceFile.getLines().zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
-        tokens ++= lexLine(
+        mutableTokens ++= lexLine(
             superTokenizer,
             listWriter,
             tokenWriter,
@@ -243,8 +243,8 @@ class Lexer(
         )
       }
     }
-    tokens += eofToken
-    
+    mutableTokens += eofToken
+    val tokens = mutableTokens.toList
     // at this point, tokens is done being generated
     
     // print all tokens to token file
@@ -252,7 +252,7 @@ class Lexer(
       tokenWriter.println(token)
     })
     
-    val parser = new Parser(tokens.toList, listWriter)
+    val parser = new Parser(tokens, listWriter)
     
     listWriter.close()
     tokenWriter.close()
@@ -265,7 +265,7 @@ class Lexer(
       listWriter: PrintWriter,
       tokenWriter: PrintWriter,
       line: String,
-      lineNumber: Int): List[Token] = {
+      lineNumber: Int): MutableList[Token] = {
     
     // First, output the line to the listing
     listWriter.println(f"${lineNumber + 1}%5d: $line")
@@ -283,7 +283,7 @@ class Lexer(
       
     })
     
-    tokens :+ eolToken
+    tokens += eolToken
   }
   
   /**
@@ -292,11 +292,11 @@ class Lexer(
   private def tokenizeLine(
       superTokenizer: Tokenizer,
       line: String,
-      lineNumber: Int): List[Token] = {
+      lineNumber: Int): MutableList[Token] = {
     
     tokenizeLine(superTokenizer,
         LineFragment(line, LineLocation(lineNumber, 0)),
-        List.empty)
+        MutableList.empty[Token])
   }
   
   /**
@@ -306,7 +306,7 @@ class Lexer(
   private def tokenizeLine(
       superTokenizer: Tokenizer,
       line: LineFragment,
-      priorTokens: List[Token]): List[Token] = {
+      priorTokens: MutableList[Token]): MutableList[Token] = {
     
     val spacelessLine = line.removeLeadingSpace
     
@@ -323,7 +323,7 @@ class Lexer(
       tokenizeLine(
           superTokenizer,
           spacelessLine.offset(length),
-          priorTokens :+ token
+          priorTokens += token
       )
     }
   }
