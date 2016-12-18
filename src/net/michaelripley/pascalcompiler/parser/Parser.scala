@@ -1,6 +1,5 @@
 package net.michaelripley.pascalcompiler.parser
 
-import scala.unchecked
 import net.michaelripley.pascalcompiler.tokens._
 
 class Parser(tokens: List[Token]) {
@@ -117,22 +116,11 @@ class Parser(tokens: List[Token]) {
     t == currentToken
   }
   
-  private def isCurrentToken(toks: Any*): Boolean = {
-    toks.foreach( a => {
-      a match {
-        case t: Token => 
-          if (isCurrentToken(t)) {
-            return true
-          }
-        case (m: TokenMatcher @unchecked) => //TODO: is this a problem?
-          if (isCurrentToken(m)) {
-            return true
-          }
-        case _ => throw new IllegalArgumentException(
-            "isCurrentToken() only accepts Tokens or TokenMatchers")
+  private def isCurrentToken(toks: Token*): Boolean = {
+    toks.foreach( t => {
+      if (isCurrentToken(t)) {
+        return true
       }
-      
-      
     })
     return false
   }
