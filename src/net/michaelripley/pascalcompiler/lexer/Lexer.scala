@@ -238,7 +238,7 @@ class Lexer(
     
     // EOF token
     val eofToken = new AttributeToken("EOF", None,
-      Lexeme("", LineLocation(lines.size, lines.tail.length))){
+      Lexeme("EOF", LineLocation(lines.size, lines.tail.length))){
         override def toString(): String = {
           f"                                   $tokenName%-10s        NULL"
       }
