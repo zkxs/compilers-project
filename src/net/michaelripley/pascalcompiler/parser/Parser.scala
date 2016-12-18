@@ -36,7 +36,7 @@ class Parser(tokens: List[Token], lines: Array[String],
   private val DO = new AttributeToken("DO")
   private val WHILE = new AttributeToken("WHILE")
   private val END = new AttributeToken("END")
-  private val EOF = new Token("EOF")
+  private val EOF = new AttributeToken("EOF")
   private val EOL = new Token("EOL") // fake shenanigans to make printing work
   
   // harder tokens to match (they can be different literals)
