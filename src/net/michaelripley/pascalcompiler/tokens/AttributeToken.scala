@@ -27,7 +27,7 @@ class AttributeToken(
   }
   
   def isNumeric(): Boolean = {
-    tokenName == "INTEGER" || tokenName == "REAL" ||  tokenName == "LONGREAL"
+    this.isInstanceOf[IntegerToken] || tokenName == "REAL" ||  tokenName == "LONGREAL"
   }
   
   override def canEqual(other: Any): Boolean = {
