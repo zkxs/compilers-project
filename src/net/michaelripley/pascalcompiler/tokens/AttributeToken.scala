@@ -6,7 +6,11 @@ import net.michaelripley.pascalcompiler.lexer.Lexeme
 class AttributeToken(
     tokenName: String,
     attribute: Option[String],
-    val lexeme: Lexeme) extends PartialAttributeToken(tokenName, attribute) {
+    optionalLexeme: Option[Lexeme]) extends PartialAttributeToken(tokenName, attribute) {
+  
+  def this(token: String, attribute: Option[String], lexeme: Lexeme) = {
+    this(token, attribute, Some(lexeme))
+  }
   
   def this(token: String, attributeString: String, lexeme: Lexeme) = {
     this(token, 
@@ -17,6 +21,25 @@ class AttributeToken(
       },
       lexeme
     )
+  }
+  
+  def this(token: String, attributeString: String) = {
+    this(token,
+      if (attributeString.isEmpty()) {
+        None
+      } else {
+        Option(attributeString)
+      },
+      None
+    )
+  }
+  
+  def this(token: String) = {
+    this(token, None, None)
+  }
+  
+  def lexeme = {
+    optionalLexeme.get
   }
   
   /**
