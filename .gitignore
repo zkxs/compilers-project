@@ -22,3 +22,6 @@ target/
 # Program output
 *.listing
 *.tokens
+
+# Program input
+*.pas

@@ -1,9 +1,11 @@
 package net.michaelripley.pascalcompiler.parser
 
+import scala.annotation.tailrec
 import java.io.PrintWriter
 import net.michaelripley.pascalcompiler.tokens._
 
-class Parser(tokens: List[Token], listWriter: PrintWriter) {
+class Parser(tokens: List[Token], lines: Array[String],
+    listWriter: PrintWriter) {
   
   // easy tokens to match
   private val PROGRAM = new AttributeToken("PROGRAM")
@@ -35,6 +37,7 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
   private val WHILE = new AttributeToken("WHILE")
   private val END = new AttributeToken("END")
   private val EOF = new Token("EOF")
+  private val EOL = new Token("EOL") // fake shenanigans to make printing work
   
   // harder tokens to match (they can be different literals)
   
@@ -80,12 +83,47 @@ class Parser(tokens: List[Token], listWriter: PrintWriter) {
   
   private val tokenIterator = tokens.iterator
   private var currentToken: Token = _
+  private var lineNumber = 0
   
+  @tailrec
   private def nextToken(): Unit = {
     currentToken = tokenIterator.next()
+    
+    if (currentToken == EOL) {
+      lineNumber += 1
+      if (lineNumber < lines.size) {
+        printLine(lineNumber)
+      }
+      nextToken()
+    }
   }
+  
+  private def printLine(lineNumber: Int) = {
+    listWriter.println(f"${lineNumber + 1}%5d: ${lines(lineNumber)}")
+  }
+  
+  
+//  private def SNIPPETS_DELETE_ME() = {
+//    // First, output the line to the listing
+//    listWriter.println(f"${lineNumber + 1}%5d: $line")
+//    
+//    
+//    
+//    // Now, go over all the tokens in the line again printing error tokens
+//    tokens.foreach( token => {
+//      
+//      token match {
+//        case error: ErrorToken => listWriter.println(error.errorString())
+//        case _ =>
+//      }
+//      
+//    })
+//  }
 		  
-  private def parse() = {
+  def parse() = {
+    println(lines.size)
+    
+    printLine(0)
     nextToken()
     program()
     matchToken(EOF, (Set.empty[Token], Set.empty[TokenMatcher]))

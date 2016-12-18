@@ -232,12 +232,11 @@ class Lexer(
         "Line No.    Lexeme                 Token-Type        Attribute")
     
     val mutableTokens = MutableList[Token]()
-    sourceFile.getLines().zipWithIndex.foreach {
+    val lines = sourceFile.getLines().toArray
+    lines.zipWithIndex.foreach {
       case (line, lineNumber) => { // extract fields from tuple
         mutableTokens ++= lexLine(
             superTokenizer,
-            listWriter,
-            tokenWriter,
             line,
             lineNumber
         )
@@ -248,42 +247,31 @@ class Lexer(
     // at this point, tokens is done being generated
     
     // print all tokens to token file
-    tokens.foreach( token => {
-      tokenWriter.println(token)
+    tokens.foreach(token => {
+      if (token != eolToken) {
+        tokenWriter.println(token)
+      }
     })
     
-    val parser = new Parser(tokens, listWriter)
-    
-    listWriter.close()
     tokenWriter.close()
     
-    tokens.toList
+    val parser = new Parser(tokens, lines, listWriter)
+    parser.parse()
+    
+    listWriter.close()
+
+    tokens.toList // TODO: return Unit
   }
   
   private def lexLine(
       superTokenizer: Tokenizer,
-      listWriter: PrintWriter,
-      tokenWriter: PrintWriter,
       line: String,
       lineNumber: Int): MutableList[Token] = {
     
-    // First, output the line to the listing
-    listWriter.println(f"${lineNumber + 1}%5d: $line")
-    
     // Now, tokenize the line
     val tokens = tokenizeLine(superTokenizer, line, lineNumber)
-    
-    // Now, go over all the tokens in the line again printing error tokens
-    tokens.foreach( token => {
-      
-      token match {
-        case error: ErrorToken => listWriter.println(error.errorString())
-        case _ =>
-      }
-      
-    })
-    
     tokens += eolToken
+    tokens
   }
   
   /**
