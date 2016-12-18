@@ -40,4 +40,9 @@ class ErrorToken(
       case None       => s"""^ $tokenName: "${lexeme.lexeme}""""
     }
   }
+  
+  def fullErrorString(): String = {
+    val space = " " * (lexeme.location.columnOffset + 7)
+    space + errorString()
+  }
 }

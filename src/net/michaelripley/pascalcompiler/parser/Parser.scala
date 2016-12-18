@@ -121,8 +121,6 @@ class Parser(tokens: List[Token], lines: Array[String],
 //  }
 		  
   def parse() = {
-    println(lines.size)
-    
     printLine(0)
     nextToken()
     program()
@@ -195,6 +193,10 @@ class Parser(tokens: List[Token], lines: Array[String],
     
     while (!isCurrentTokenInSync(sync)) {
       nextToken()
+      currentToken match {
+        case et: ErrorToken => listWriter.println(et.fullErrorString())
+        case _ =>
+      }
     }
   }
   
