@@ -101,24 +101,6 @@ class Parser(tokens: List[Token], lines: Array[String],
   private def printLine(lineNumber: Int) = {
     listWriter.println(f"${lineNumber + 1}%5d: ${lines(lineNumber)}")
   }
-  
-  
-//  private def SNIPPETS_DELETE_ME() = {
-//    // First, output the line to the listing
-//    listWriter.println(f"${lineNumber + 1}%5d: $line")
-//    
-//    
-//    
-//    // Now, go over all the tokens in the line again printing error tokens
-//    tokens.foreach( token => {
-//      
-//      token match {
-//        case error: ErrorToken => listWriter.println(error.errorString())
-//        case _ =>
-//      }
-//      
-//    })
-//  }
 		  
   def parse() = {
     printLine(0)
