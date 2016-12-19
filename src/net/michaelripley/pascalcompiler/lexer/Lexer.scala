@@ -188,7 +188,7 @@ class Lexer(
       garbageTokenizer)
   }
   
-  def lex(filename: String): List[Token] = {
+  def lex(filename: String): Unit = {
 
     val idManager = new IdentifierManager()
     
@@ -248,7 +248,7 @@ class Lexer(
     })
     tokenWriter.close()
 
-    tokens.toList // TODO: return Unit
+    // Unit
   }
   
   private def lexLine(
