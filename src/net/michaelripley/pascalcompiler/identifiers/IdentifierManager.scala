@@ -6,6 +6,7 @@ private[identifiers] object IdentifierManager {
 }
 
 import IdentifierManager._
+import scala.collection.mutable.Map
 
 /**
  * 2nd generation symbol table.  This is a complete rewrite of the old
@@ -16,13 +17,16 @@ class IdentifierManager {
   private var program: Option[SubProgram] = None
   private var currentScope: Option[SubProgram] = None
   
+  private val tokenLocations = Map.empty[Identifier, Int]
+  private val variableLocations = Map.empty[TypedIdentifier, Int]
+  
   private def error(message: String) = {
     Some(IdentifierError(message))
   }
   
-  def addProgram(idName: String): Rt = {
+  def addProgram(id: Identifier): Rt = {
     if (program.isEmpty) {
-      program = Some(new SubProgram(idName, None))
+      program = Some(new SubProgram(id.name, None))
       currentScope = program
       None
     } else {
@@ -30,7 +34,7 @@ class IdentifierManager {
     }
   }
   
-  def addParam(idName: String, idType: Type): Rt = {
+  def addParam(id: Identifier, idType: Type): Rt = {
     currentScope match {
       case Some(scope) => {
         //scope. //TODO
@@ -53,7 +57,15 @@ class IdentifierManager {
   }
   
   def pop() = {
-    //TODO
+    currentScope match {
+      case Some(scope) => {
+        scope.parent match {
+          case parent: Some[SubProgram] => currentScope = parent
+          case _ => currentScope = None
+        }
+      }
+      case _ => error("no scope defined")
+    }
   }
   
 }
