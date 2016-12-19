@@ -7,7 +7,7 @@ import net.michaelripley.Util
 
 private[identifiers] class SubProgram(
     val idName: String,
-    val params: List[TypedIdentifier],
+    val params: List[Type],
     val parent: Option[SubProgram]) {
   
   private val variables   = MutableList.empty[TypedIdentifier]
@@ -17,7 +17,7 @@ private[identifiers] class SubProgram(
     variables.find { _.name == idName }
   }
   
-  def hasVariable(idName: String) = {
+  private def hasVariable(idName: String) = {
     getVariable(idName).isDefined
   }
   
@@ -34,15 +34,30 @@ private[identifiers] class SubProgram(
     }
   }
   
-  def getSubProgram(idName: String, params: List[TypedIdentifier]) = {
+  private def getSubProgram(idName: String, params: List[Type]) = {
     subPrograms.find { s => s.idName == idName && s.params == params }
   }
   
-  def hasSubProgram(idName: String, params: List[TypedIdentifier]) = {
+  private def hasSubProgram(idName: String, params: List[Type]) = {
     getSubProgram(idName, params).isDefined
   }
   
-  def addSubProgram(idName: String, params: List[TypedIdentifier]): Unit = {
+  /**
+   * Try to add a subprogram
+   * @return true if subprogram was added, false otherwise
+   */
+  def addSubProgram(idName: String, params: List[Type]): Boolean = {
+    
+    // first, check if we are allowed to add a procedure
+    // aka, is there already an identical one in scope?
+    
+    if (isSubProgramInScope(idName, params)) {
+      false
+    } else {
+      // now, insert the new subprogram
+      subPrograms += new SubProgram(idName, params, Some(this))
+      true
+    }
     
   }
   
@@ -50,9 +65,9 @@ private[identifiers] class SubProgram(
    * Recursively check if a subprogram is in scope
    */
   @tailrec
-  final def findSubProgram(
+  private def findSubProgram(
       idName: String,
-      params: List[TypedIdentifier]): Option[SubProgram] = {
+      params: List[Type]): Option[SubProgram] = {
     // first try to see if this scope contains an appropriately named subprogram
     getSubProgram(idName, params) match {
       case m: Some[_] => m // if so, we're done
@@ -67,7 +82,7 @@ private[identifiers] class SubProgram(
     }
   }
   
-  def isSubProgramInScope( idName: String, params: List[TypedIdentifier]) = {
+  def isSubProgramInScope( idName: String, params: List[Type]) = {
     findSubProgram(idName, params).isDefined
   }
   

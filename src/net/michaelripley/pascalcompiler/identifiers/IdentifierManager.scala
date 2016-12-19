@@ -2,7 +2,7 @@ package net.michaelripley.pascalcompiler.identifiers
 
 private[identifiers] object IdentifierManager {
   case class IdentifierError(val message: String)
-  type Rt = Option[IdentifierError] // return type for failable functions
+  type Err = Option[IdentifierError] // return type for failable functions
   private val q = '"'
 }
 
@@ -16,8 +16,12 @@ import scala.collection.mutable.MutableList
  */
 class IdentifierManager {
   
+  // pointers to head and current location in tree
   private var program: Option[SubProgram] = None
   private var currentScope: Option[SubProgram] = None
+  
+  // offset in memory of next variable
+  private var offset: Int = 0
   
   // maps to keep track of variable locations
   private val tokenLocations = Map.empty[Identifier, Int]
@@ -27,7 +31,7 @@ class IdentifierManager {
     Some(IdentifierError(message))
   }
   
-  def addProgram(id: Identifier, params: List[TypedIdentifier]): Rt = {
+  def addProgram(id: Identifier, params: List[Type]): Err = {
     if (program.isEmpty) {
       program = Some(new SubProgram(id.name, params, None))
       currentScope = program
@@ -37,11 +41,15 @@ class IdentifierManager {
     }
   }
   
-  def addVariable(id: Identifier, idType: Type): Rt = {
+  def addVariable(id: Identifier, idType: Type): Err = {
     currentScope match {
       case Some(scope) => {
-        if (scope.addVariable(TypedIdentifier(id.name, idType))) {
+        val typedId = TypedIdentifier(id.name, idType)
+        if (scope.addVariable(typedId)) {
           // add successful
+          tokenLocations.put(id, offset)
+          variableLocations.put(typedId, offset)
+          offset += typedId.idType.size
           None 
         } else {
           // add failed
@@ -52,17 +60,58 @@ class IdentifierManager {
     }
   }
   
-  def addProcedure(id: Identifier, params: MutableList[Type]): Rt = {
-    //TODO
-    None
+  /**
+   * @return either an error or the found TypedIdentifier
+   */
+  def getVariable(id: Identifier): Either[IdentifierError, TypedIdentifier] = {
+    currentScope match {
+      case Some(scope) => {
+        scope.getVariable(id.name) match {
+          case Some(v) => {
+            // record the new id that points to this variable
+            tokenLocations.put(id, variableLocations(v))
+            
+            Right(v)
+          }
+          case _ => Left(IdentifierError(s"$q${id.name}$q not declared"))
+        }
+      }
+      case _ => Left(IdentifierError("no scope defined"))
+    }
   }
   
-  def checkCall(id: Identifier, params: MutableList[Type]): Rt = {
-    //TODO
-    None
+  def addProcedure(id: Identifier, params: List[Type]): Err = {
+    currentScope match {
+      case Some(scope) => {
+        if (scope.addSubProgram(id.name, params)) {
+          // add successful
+          None 
+        } else {
+          // add failed
+          error(s"procedure ${id.name}(${params.mkString(", ")}) already exists in this scope")
+        }
+      }
+      case _ => error("no scope defined")
+    }
   }
   
-  def pop(): Rt = {
+  /**
+   * Assert that a procedure being called is accessible from this scope
+   */
+  def checkCall(id: Identifier, params: List[Type]): Err = {
+    currentScope match {
+      case Some(scope) => {
+        if (scope.isSubProgramInScope(id.name, params)) {
+          None
+        } else {
+          error(s"procedure ${id.name}(${params.mkString(", ")}) does not exist in this scope")
+        }
+      }
+      case _ => error("no scope defined")
+    }
+  }
+  
+  def pop(): Err = {
     currentScope match {
       case Some(scope) => {
         scope.parent match {
