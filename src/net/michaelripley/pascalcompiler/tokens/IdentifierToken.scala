@@ -5,9 +5,8 @@ import net.michaelripley.pascalcompiler.identifiers.Identifier
 import net.michaelripley.pascalcompiler.lexer.Lexeme
 
 class IdentifierToken(
-    tokenName: String,
     val identifier: Identifier,
-    val lexeme: Lexeme) extends Token(tokenName) {
+    val lexeme: Lexeme) extends Token("ID") {
   
   override def canEqual(other: Any): Boolean = {
     other.isInstanceOf[IdentifierToken]

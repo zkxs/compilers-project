@@ -4,7 +4,6 @@ import net.michaelripley.pascalcompiler.tokens._
 
 private object WordTokenizer {
   private val pattern = """(?i)[a-z][a-z0-9]*""".r
-  private val identifierTokenName = "ID"
   private val IdentifierTooLongError
       = new PartialErrorToken("LEXERR", "Identifier too long")
   private val maxIdentifierLength = 10
@@ -46,7 +45,7 @@ class WordTokenizer(
               val identifier = symbolTable.registerSymbol(lowerCaseWordString)
               
               // create a new token for this id
-              Some(new IdentifierToken(identifierTokenName, identifier, lexeme))
+              Some(new IdentifierToken(identifier, lexeme))
             }
           }
         }
