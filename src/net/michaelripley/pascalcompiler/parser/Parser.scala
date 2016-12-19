@@ -272,6 +272,8 @@ class Parser(
       matchToken(PAREN_CLOSE, sync)
       matchToken(SEMICOLON, sync)
       programPrime()
+      
+      semanticError(pop(), sync)
     } else {
       syntaxError("PROGRAM", sync)
     }
