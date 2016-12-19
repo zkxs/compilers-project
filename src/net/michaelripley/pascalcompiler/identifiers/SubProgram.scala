@@ -44,19 +44,20 @@ private[identifiers] class SubProgram(
   
   /**
    * Try to add a subprogram
-   * @return true if subprogram was added, false otherwise
+   * @return Optionally return the newly added subprogram
    */
-  def addSubProgram(idName: String, params: List[Type]): Boolean = {
+  def addSubProgram(idName: String, params: List[Type]): Option[SubProgram] = {
     
     // first, check if we are allowed to add a procedure
     // aka, is there already an identical one in scope?
     
     if (isSubProgramInScope(idName, params)) {
-      false
+      None
     } else {
       // now, insert the new subprogram
-      subPrograms += new SubProgram(idName, params, Some(this))
-      true
+      val subProgram = new SubProgram(idName, params, Some(this))
+      subPrograms += subProgram
+      Some(subProgram)
     }
   }
   
@@ -69,7 +70,7 @@ private[identifiers] class SubProgram(
       params: List[Type]): Option[SubProgram] = {
     // first try to see if this scope contains an appropriately named subprogram
     getSubProgram(idName, params) match {
-      case m: Some[_] => m // if so, we're done
+      case m: Some[SubProgram] => m // if so, we're done
       case _ => {
         parent match { // otherwise, check if we have a parent
           case Some(p) => { // if so, have it do the same thing we're doing now

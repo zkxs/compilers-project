@@ -91,12 +91,16 @@ class IdentifierManager {
   def addProcedure(id: Identifier, params: List[Type]): Err = {
     currentScope match {
       case Some(scope) => {
-        if (scope.addSubProgram(id.name, params)) {
-          // add successful
-          None 
-        } else {
-          // add failed
-          error(s"procedure ${id.name}(${params.mkString(", ")}) already exists in this scope")
+        scope.addSubProgram(id.name, params) match {
+          case sp: Some[SubProgram] => {
+            // add successful
+            currentScope = sp
+            None
+          }
+          case None => {
+            // add failed
+            error(s"procedure ${id.name}(${params.mkString(", ")}) already exists in this scope")
+          }
         }
       }
       case _ => error("no scope defined")
