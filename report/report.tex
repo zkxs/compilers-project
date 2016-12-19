@@ -151,7 +151,7 @@ Project 2 adds syntax analysis on top of the lexing framework created in project
 
 \section{Methodology}\label{meth}
 
-Before work on the parser could even begin, the grammar had to undergo significant massaging.  The grammar after each step is included at the end of this report.  The steps are as follows: 
+Before work on the parser could even begin, the grammar had to undergo significant massaging.  Finally, after all massaging, the firsts and follows had to be computed.  The grammar after each step is included at the end of this report.  The steps are as follows: 
 \begin{enumerate}
   \item Project-specific modifications applied and all productions split
   \item Removal of $\epsilon$ productions
@@ -159,31 +159,17 @@ Before work on the parser could even begin, the grammar had to undergo significa
   \item Left factoring, final clean-up, and computation of firsts and follows
 \end{enumerate}
 
-\subsection{Machines}\label{machines}
+Using the final massaged grammar with firsts and follows, the parse table is created.  Note that while normally only the follows of $\epsilon$ productions must be computed, we need all of the follows for use in error recovery, which will be discussed later.  
 
-The meat and potatoes of the lexical analyzer is several machines.
-
-The first machine matches words, which are checked against a reserved-word table. If a match is found, the token is clearly a reserved word, otherwise it is an identifier.  Identifiers can be at most 10 characters long.
-
-Next, there are three types of numbers: Long reals, reals, and integers, which should be checked for in that order, otherwise part of a real may be stolen to make an integer token.
-
-Finally, there is a catch-all machine that will grab a single character. As this single character was not recognized by any other machine, it is an unrecognized character lexical error.
+Next, ambiguity must be removed.  The easiest way to do this is in the parse table.  Ambiguities appear as cells with two possible productions, one of which must be removed to resolve the ambiguity.  The \textit{optional\_else} production upon seeing terminal \textbf{else} becomes either \textbf{else} \textit{statement} OR \textbf{$\epsilon$}. The $\epsilon$ production is removed, as we want dangling-else clauses to bind to the nearest if statement.  
 
 \section{Implementation}\label{impl}
 
-I chose to use Scala as the main programming language for this project.  Scala compiles to JVM bytecode, meaning it can run anywhere Java can, and it can seamlessly make calls to Java libraries.  It sort of fits into the ``better Java'' niche, aiming to have all of Java's strong points while incorporating more modern language features.
-
-My decision to use Scala was made for several reasons.  While the language I am most comfortable with is Java, I've been interested in Scala for a while and I feel I won't learn it unless I make a write a large project using it.  As I am already familiar with C, pointers, and manual memory management, I felt that I could use this opportunity better learning a new language than than revisiting all the pointer arithmetic and memory management of my past experiences.  
-
-Due to the size of this project, it merited doing a certain amount of planning ahead of time.  I drew out a flow chart of the general structure of the major components of the program, then made some pseudocode to help my wrap my mind around how the machines would be called.  I could have done more planning ahead of time, which would have saved me some time as I scrapped some work that was going down the wrong path.
-
-When working on a large project, I like to begin with the smallest pieces possible, gradually combining them as I add functionality.  I've noticed that when programming in this order, I have more opportunity to notice flaws in my initial design and adjust before I've invested too much time in them.
-
-I began by defining the simple data elements, such as tokens and lexemes. Working my way up, I began work on the machines.  Noticing that the machine classes had very similar structure, I created a generic machine that I could sort of fill-in-the-blanks with.  This dramatically reduced the boilerplate in most my machines. Some machines were special cases, such as the ``word'' machine that produces both reserved word and identifier tokens.  Continuing to work upwards, I implemented the symbol table, then the logic to feed lines to machines.  Finally, I added logic to print to the token file, and added error printing functionality to the listing file.
+With all the pen-and-paper work complete, let us move on to the actual implementation.  First, I reviewed the project 3 and 4 assignment to ensure that my program would be structured in such a way to be easily extended for later projects.  Then, I began the grunt work of transcribing the parse table to the recursive descent parser functions as discussed in class.  To accelerate this process and reduce redundant code, I developed a number of helper functions for common tasks, such as token comparison and error handling.  After the initial parser code was complete, I performed a second pass to add error handling to each function.  Next, I created a unique sync set for each production using the follows of that production as well as \$ (End of File).  Wrapping up, a few bugs were fixed and I plugged the new parser code into the existing lexer code.  This required a small reworking of where the printing happened.  
 
 \section{Discussion and Conclusions}\label{conclusions}
 
-I'm glad that I chose to program this in Scala, as I feel I've already learned a lot about the language.  I've made several mistakes due to my unfamiliarity with the language, but I noticed and fixed the bugs during testing.  I'm happy with how my program is designed, and even though I'm not 100\% sure what the upcoming projects have in store, I'm confident that my program is modular enough that it will be straightforward to introduce new features to.
+The recursive descent parser is pretty amazing.  Testing it was actually quite entertaining, as it's starting to feel like an actual compiler.  I also noticed that most of the immediately-recursive functions are in fact tail recursive, meaning it is even more memory efficient than it appears to be.  
 
 \section{References}\label{ref}
 
@@ -195,7 +181,7 @@ I'm glad that I chose to program this in Scala, as I feel I've already learned a
 
 \section{Appendix I: Sample Inputs and Outputs}\label{sample}
 
-Three source programs were ran through the lexer. The first, ``test1\_correct.pas'', has no lexical errors.  The second, ``test2\_error.pas'', has every lexical error possible.  The third ``test3\_reals.pas'' was provided by Dr. Shenoi to ensure numbers are ``cut'' correctly.
+Two source programs were ran through the parser. The first, ``test1\_correct.pas'', has no errors.  The second, ``test2\_error.pas'', demonstrates that lexical and syntax errors are reported on and recovered from.  
 
 \filelisting[language=pascal]{test1_correct.pas}
 \filelisting{test1_correct.pas.listing}
@@ -203,15 +189,12 @@ Three source programs were ran through the lexer. The first, ``test1\_correct.pa
 \filelisting[language=pascal]{test2_errors.pas}
 \filelisting{test2_errors.pas.listing}
 \filelisting{test2_errors.pas.tokens}
-\filelisting[language=pascal]{test3_reals.pas}
-\filelisting{test3_reals.pas.listing}
-\filelisting{test3_reals.pas.tokens}
 
 \section{Appendix II: Program Listings}\label{code}
 
-\datalisting{resources/operators.dat}
-\datalisting{resources/punctuation.dat}
-\datalisting{resources/reservedwords.dat}
+%\datalisting{resources/operators.dat}
+%\datalisting{resources/punctuation.dat}
+%\datalisting{resources/reservedwords.dat}
 
 %\scalalisting{net/michaelripley/pascalcompiler/identifiers/Identifier.scala}
 %\scalalisting{net/michaelripley/pascalcompiler/identifiers/IdentifierManager.scala}
