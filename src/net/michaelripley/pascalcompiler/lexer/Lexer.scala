@@ -237,13 +237,21 @@ class Lexer(
     parser.parse()
     listWriter.close()
     
+    val tokenLocations = idManager.getTokenLocations()
+    
     // print all tokens to token file
     val tokenWriter = new PrintWriter(filename + ".tokens")
     tokenWriter.println(
         "Line No.    Lexeme                 Token-Type        Attribute")
     tokens.foreach(token => token match {
       case t if t == eolToken => Unit
-      case t: IdentifierToken => tokenWriter.println(t + s"loc${t.identifier.number}") //TODO: lookup actual location from symbol table, also make this line much shorter
+      case t: IdentifierToken => {
+        val locationString = tokenLocations.get(t.identifier) match {
+          case Some(x) => "loc" + x
+          case _ => "itk" + t.identifier.number //TODO: this should probably be null
+        }
+        tokenWriter.println(t.toString() + locationString)
+      }
       case t => tokenWriter.println(t)
     })
     tokenWriter.close()
