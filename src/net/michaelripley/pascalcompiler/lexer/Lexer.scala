@@ -10,6 +10,7 @@ import net.michaelripley.pascalcompiler.tokenizers._
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.lexer._
 import net.michaelripley.pascalcompiler.parser.Parser
+import net.michaelripley.pascalcompiler.identifiers.IdentifierManager
 
 // only Lexer._ is imported here. All other imports are above the object.
 import Lexer._
@@ -189,6 +190,8 @@ class Lexer(
   
   def lex(filename: String): List[Token] = {
 
+    val idManager = new IdentifierManager()
+    
     // must be called per-lex because wordTokenizer has state
     val superTokenizer = getSuperTokenizer()
     
