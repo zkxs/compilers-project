@@ -222,6 +222,8 @@ class Parser(
    *      BEGINNING OF RECURSIVE DESCENT PARSER COOKIE-CUTTER FUNCTIONS
    * *************************************************************************/
   
+  import idMan._ // bring the functions in idMan into this scope
+  
   private def program(): Unit = {
     val sync = (Set.empty[Token], Set.empty[TokenMatcher])
     
