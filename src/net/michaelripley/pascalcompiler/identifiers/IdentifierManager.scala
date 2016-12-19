@@ -1,8 +1,7 @@
 package net.michaelripley.pascalcompiler.identifiers
 
-private[identifiers] object IdentifierManager {
-  case class IdentifierError(val message: String)
-  type Err = Option[IdentifierError] // return type for failable functions
+private object IdentifierManager {
+  private type Err = Option[IdentifierError] // return type for failable functions
   private val q = '"'
 }
 
