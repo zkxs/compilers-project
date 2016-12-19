@@ -10,6 +10,10 @@
 \usepackage{nameref} % reference named things by labels. Must be imported before hyperref
 \usepackage{hyperref} % allows creation of hyperlinks
 \usepackage{enumitem} % for tinkering with spacing between list items
+\usepackage{longtable} % used by pandoc for tables
+\usepackage{tabulary} % used by pandoc for tables
+\usepackage{booktabs} % used by pandoc
+\usepackage[utf8]{inputenc} % allows mapping of unicode characters to LaTeX
 
 
 % ------------------------------------------------------------------------------
@@ -74,11 +78,20 @@
     \lstinputlisting[style=myStyle, title={\texttt{\detokenize{#2}}},#1]{../#2}
 }
 
+\newcommand\processmarkdownfile[1]
+    {\immediate\write18{bash md2tex.sh #1}%
+     \input{tmp_#1.tex}}
+
+% Unicode mappings
+\DeclareUnicodeCharacter{2192}{$\rightarrow$}
+\DeclareUnicodeCharacter{3F5}{$\epsilon$}
+\DeclareUnicodeCharacter{21B4}{$\searrow$}
+
 
 % ------------------------------------------------------------------------------
 % Set up title
 
-\newcommand{\ptitle}{Project 1 Report}
+\newcommand{\ptitle}{Project 2 Report}
 \newcommand{\pauthor}{Michael Ripley}
 \newcommand{\pschool}{University of Tulsa}
 \newcommand{\pteacher}{Dr. Shenoi}
@@ -147,11 +160,29 @@
 
 \section{Introduction}\label{intro}
 
-Project 1 is the implementation of a lexical analyzer for a subset of Pascal.  The lexical analyzer tokenizes an input file and detects lexical errors.  Additionally, a symbol table is created during lexical analysis.
+Project 2 adds syntax analysis on top of the lexing framework created in project 1.  The syntax analyzer identifies and reports syntax errors.  Additionally, it implements error recovery.  
 
 \section{Methodology}\label{meth}
 
-A source file is read in line-by-line. Each line is examined by several machines. If a machine matches the beginning of that line, it is captured as a token. The rest of the line is then examined by the machines again and again, until the end of the line. The tokens output by the machines contain the lexeme, the token name, and then either an attribute or an identifier. The identifiers are references to a symbol in the symbol table. Finally, an EOF token is inserted at the end of the file.
+Before work on the parser could even begin, the grammar had to undergo significant massaging.  
+
+Grammar with our project-specific modifications applied and all productions split
+
+\processmarkdownfile{grammar_3_split.md}
+
+Grammar after epsilon removal
+
+\processmarkdownfile{grammar_4_remove_epsilon.md}
+
+Grammar after removal of left recursion
+
+\processmarkdownfile{grammar_5_remove_left_recursion.md}
+
+Grammar after left-factoring, final clean-up, and computation of firsts and follows
+
+\processmarkdownfile{grammar_8_final.md}
+
+
 
 \subsection{Machines}\label{machines}
 
@@ -182,7 +213,7 @@ I'm glad that I chose to program this in Scala, as I feel I've already learned a
 \section{References}\label{ref}
 
 \begin{itemize}
-    \item Handouts and lectures from class
+    \item Handouts and lecture notes from class
     \item API documentation for both Java and Scala
     \item Discussions between myself, Steven Buchele, and James Rogers
 \end{itemize}
@@ -207,25 +238,28 @@ Three source programs were ran through the lexer. The first, ``test1\_correct.pa
 \datalisting{resources/punctuation.dat}
 \datalisting{resources/reservedwords.dat}
 
-\scalalisting{net/michaelripley/Util.scala}
-\scalalisting{net/michaelripley/pascalcompiler/Lexeme.scala}
-\scalalisting{net/michaelripley/pascalcompiler/Lexer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/LineFragment.scala}
-\scalalisting{net/michaelripley/pascalcompiler/LineLocation.scala}
-\scalalisting{net/michaelripley/pascalcompiler/ReservedStrings.scala}
-\scalalisting{net/michaelripley/pascalcompiler/identifiers/Identifier.scala}
-\scalalisting{net/michaelripley/pascalcompiler/identifiers/SymbolTable.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokenizers/CatchAllTokenizer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokenizers/CompoundTokenizer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokenizers/SimpleTokenizer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokenizers/StringTokenizer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokenizers/Tokenizer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokenizers/WordTokenizer.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokens/AttributeToken.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokens/ErrorToken.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokens/IdentifierToken.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokens/PartialAttributeToken.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokens/PartialErrorToken.scala}
-\scalalisting{net/michaelripley/pascalcompiler/tokens/Token.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/identifiers/Identifier.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/identifiers/IdentifierManager.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/identifiers/SymbolTable.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/lexer/Lexeme.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/lexer/Lexer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/lexer/LineFragment.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/lexer/LineLocation.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/lexer/ReservedStrings.scala}
+\scalalisting{net/michaelripley/pascalcompiler/parser/Parser.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokenizers/CatchAllTokenizer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokenizers/CompoundTokenizer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokenizers/SimpleTokenizer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokenizers/StringTokenizer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokenizers/Tokenizer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokenizers/WordTokenizer.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/AttributeToken.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/ErrorToken.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/IdentifierToken.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/IntegerToken.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/PartialAttributeToken.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/PartialErrorToken.scala}
+%\scalalisting{net/michaelripley/pascalcompiler/tokens/Token.scala}
+%\scalalisting{net/michaelripley/Util.scala}
 
 \end{document}
