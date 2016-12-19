@@ -222,6 +222,24 @@ class Parser(
     error(space + errorString, sync)
   }
   
+  private def semanticError(
+      err: Option[IdentifierError], sync: SyncSet): Unit = {
+    
+    err match {
+      case Some(err) => {
+        val lexeme = currentToken match {
+          case at: AttributeToken  => at.lexeme
+          case id: IdentifierToken => id.lexeme
+        }
+        
+        val space = " " * (lexeme.location.columnOffset + 7)
+        
+        error(space + "^ " + err.message, sync)
+      }
+      case _ => Unit
+    }
+  }
+  
   /* *************************************************************************
    *      BEGINNING OF RECURSIVE DESCENT PARSER COOKIE-CUTTER FUNCTIONS
    * *************************************************************************/
@@ -233,9 +251,24 @@ class Parser(
     
     if (isCurrentToken(PROGRAM)) {
       matchToken(PROGRAM, sync)
-      matchToken(ID, sync)
+      val optId = matchToken(ID, sync)
       matchToken(PAREN_OPEN, sync)
-      identifierList()
+      val optParams = identifierList()
+      
+      optId match {
+        case Some(id: IdentifierToken) => {
+          // ok, now to grab the params
+          optParams match {
+            case Some(params) => {
+              semanticError(addProgram(id.identifier, params), sync)
+            }
+            case _ => //error?
+          }
+        }
+        case Some(x) => throw new AssertionError(s"What is $x?")
+        case _ => //error?
+      }
+      
       matchToken(PAREN_CLOSE, sync)
       matchToken(SEMICOLON, sync)
       programPrime()
@@ -262,28 +295,36 @@ class Parser(
     }
   }
   
-  private def identifierList(): Unit = {
+  private def identifierList(): Option[List[Type]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
       matchToken(ID, sync)
-      identifierListTail()
+      identifierListTail() match {
+        case Some(list) => Some(T_ProgramParam() +: list)
+        case _ => None
+      }
     } else {
       syntaxError("ID", sync)
+      None
     }
   }
   
-  private def identifierListTail(): Unit = {
-     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
+  private def identifierListTail(): Option[List[Type]] = {
+    val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_CLOSE)) {
-      Unit
+      Some(List.empty)
     } else if (isCurrentToken(COMMA)) {
       matchToken(COMMA, sync)
       matchToken(ID, sync)
-      identifierListTail()
+      identifierListTail() match {
+        case Some(list) => Some(T_ProgramParam() +: list)
+        case _ => None
+      }
     } else {
       syntaxError("')', ','", sync)
+      None
     }
   }
   
