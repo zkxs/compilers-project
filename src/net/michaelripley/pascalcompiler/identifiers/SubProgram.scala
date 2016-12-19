@@ -58,7 +58,6 @@ private[identifiers] class SubProgram(
       subPrograms += new SubProgram(idName, params, Some(this))
       true
     }
-    
   }
   
   /**
