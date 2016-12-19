@@ -114,23 +114,27 @@ class Parser(
     matchToken(EOF, (Set.empty[Token], Set.empty[TokenMatcher]))
   }
   
-  private def matchToken(m: TokenMatcher, sync: SyncSet): Unit = {
+  private def matchToken(m: TokenMatcher, sync: SyncSet): Option[Token] = {
     val (matched, name) = m(currentToken)
     if (matched) {
       if (currentToken != EOF) {
+        val toReturn = currentToken
         nextToken()
+        Some(toReturn)
       } else {
         /* Typically, you would exit the parser after reading an expected EOF,
          * however the only case in which this happens in this program is at
          * the end of parse(), so simply returning is acceptable behavior.
          */
+        Some(currentToken)
       }
     } else {
       syntaxError(name, sync)
+      None
     }
   }
   
-  private def matchToken(t: Token, sync: SyncSet): Unit = {
+  private def matchToken(t: Token, sync: SyncSet): Option[Token] = {
     matchToken(curr => (t == curr,
       t match {
         case at: AttributeToken => {
