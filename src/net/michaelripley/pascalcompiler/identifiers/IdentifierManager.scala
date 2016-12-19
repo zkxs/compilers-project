@@ -27,6 +27,14 @@ class IdentifierManager {
   private val tokenLocations = Map.empty[Identifier, Int]
   private val variableLocations = Map.empty[TypedIdentifier, Int]
   
+  def getTokenLocations() = {
+    tokenLocations.toMap
+  }
+  
+  def getVariableLocations() = {
+    variableLocations.toMap
+  }
+  
   private def error(message: String) = {
     Some(IdentifierError(message))
   }
