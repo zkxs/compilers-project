@@ -2,22 +2,16 @@ package net.michaelripley.pascalcompiler.identifiers
 
 import scala.annotation.tailrec
 import scala.collection.GenSeqLike
-import scala.collection.mutable.{MutableList, Set}
+import scala.collection.mutable.MutableList
 import net.michaelripley.Util
-import net.michaelripley.pascalcompiler.identifiers.IdentifierManager._
 
 private[identifiers] class SubProgram(
     val idName: String,
+    val params: List[TypedIdentifier],
     val parent: Option[SubProgram]) {
   
-  private val params      = MutableList.empty[TypedIdentifier]
   private val variables   = MutableList.empty[TypedIdentifier]
   private val subPrograms = MutableList.empty[SubProgram]
-  
-  
-  def addParam(id: TypedIdentifier) {
-    
-  }
   
   def getVariable(idName: String) = {
     variables.find { _.name == idName }
@@ -27,12 +21,29 @@ private[identifiers] class SubProgram(
     getVariable(idName).isDefined
   }
   
-  def getSubProgram(idName: String, params: MutableList[TypedIdentifier]) = {
+  /**
+   * Try to add a variable
+   * @return true if variable was added, false otherwise
+   */
+  def addVariable(id: TypedIdentifier): Boolean = {
+    if (hasVariable(id.name)) {
+      false
+    } else {
+      variables += id
+      true
+    }
+  }
+  
+  def getSubProgram(idName: String, params: List[TypedIdentifier]) = {
     subPrograms.find { s => s.idName == idName && s.params == params }
   }
   
-  def hasSubProgram(idName: String, params: MutableList[TypedIdentifier]) = {
+  def hasSubProgram(idName: String, params: List[TypedIdentifier]) = {
     getSubProgram(idName, params).isDefined
+  }
+  
+  def addSubProgram(idName: String, params: List[TypedIdentifier]): Unit = {
+    
   }
   
   /**
@@ -41,7 +52,7 @@ private[identifiers] class SubProgram(
   @tailrec
   final def findSubProgram(
       idName: String,
-      params: MutableList[TypedIdentifier]): Option[SubProgram] = {
+      params: List[TypedIdentifier]): Option[SubProgram] = {
     // first try to see if this scope contains an appropriately named subprogram
     getSubProgram(idName, params) match {
       case m: Some[_] => m // if so, we're done
@@ -56,9 +67,7 @@ private[identifiers] class SubProgram(
     }
   }
   
-  def isSubProgramInScope(
-      idName: String,
-      params: MutableList[TypedIdentifier]) = {
+  def isSubProgramInScope( idName: String, params: List[TypedIdentifier]) = {
     findSubProgram(idName, params).isDefined
   }
   

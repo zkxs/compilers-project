@@ -3,10 +3,12 @@ package net.michaelripley.pascalcompiler.identifiers
 private[identifiers] object IdentifierManager {
   case class IdentifierError(val message: String)
   type Rt = Option[IdentifierError] // return type for failable functions
+  private val q = '"'
 }
 
 import IdentifierManager._
 import scala.collection.mutable.Map
+import scala.collection.mutable.MutableList
 
 /**
  * 2nd generation symbol table.  This is a complete rewrite of the old
@@ -17,6 +19,7 @@ class IdentifierManager {
   private var program: Option[SubProgram] = None
   private var currentScope: Option[SubProgram] = None
   
+  // maps to keep track of variable locations
   private val tokenLocations = Map.empty[Identifier, Int]
   private val variableLocations = Map.empty[TypedIdentifier, Int]
   
@@ -24,9 +27,9 @@ class IdentifierManager {
     Some(IdentifierError(message))
   }
   
-  def addProgram(id: Identifier): Rt = {
+  def addProgram(id: Identifier, params: List[TypedIdentifier]): Rt = {
     if (program.isEmpty) {
-      program = Some(new SubProgram(id.name, None))
+      program = Some(new SubProgram(id.name, params, None))
       currentScope = program
       None
     } else {
@@ -34,34 +37,43 @@ class IdentifierManager {
     }
   }
   
-  def addParam(id: Identifier, idType: Type): Rt = {
+  def addVariable(id: Identifier, idType: Type): Rt = {
     currentScope match {
       case Some(scope) => {
-        //scope. //TODO
-        None
+        if (scope.addVariable(TypedIdentifier(id.name, idType))) {
+          // add successful
+          None 
+        } else {
+          // add failed
+          error(s"variable $q${id.name}$q already exists in this scope")
+        }
       }
       case _ => error("no scope defined")
     }
   }
   
-  def addProcedure(idName: String, params: Iterable[Type]) = {
+  def addProcedure(id: Identifier, params: MutableList[Type]): Rt = {
     //TODO
+    None
   }
   
-  def addVariable(idName: String, idType: Type) = {
+  def checkCall(id: Identifier, params: MutableList[Type]): Rt = {
     //TODO
+    None
   }
   
-  def checkCall(procedureName: String, procedureParams: Iterable[Type]) = {
-    //TODO
-  }
-  
-  def pop() = {
+  def pop(): Rt = {
     currentScope match {
       case Some(scope) => {
         scope.parent match {
-          case parent: Some[SubProgram] => currentScope = parent
-          case _ => currentScope = None
+          case parent: Some[SubProgram] => {
+            currentScope = parent
+            None
+          }
+          case _ => {
+            currentScope = None
+            None
+          }
         }
       }
       case _ => error("no scope defined")
