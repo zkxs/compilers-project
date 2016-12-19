@@ -2,7 +2,7 @@
 |--------|-----------------|------------|
 |  1 | *program* → | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
 |  2 | *identifier_list* → | **id** \| *identifier_list* **,** **id** |
-|  3 | *declarations* → | *declarations* **var** **id** **:** type **;** \| **ϵ** |
+|  3 | *declarations* → | *declarations* **var** **id** **:** *type* **;** \| **ϵ** |
 |  4 | *type* → | *standard_type* \| **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* |
 |  5 | *standard_type* → | **integer** \| **real** |
 |  6 | *subprogram_declarations* → | *subprogram_declarations* *subprogram_declaration* **;** \| **ϵ** |
