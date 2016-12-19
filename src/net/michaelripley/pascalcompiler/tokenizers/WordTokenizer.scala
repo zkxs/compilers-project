@@ -10,15 +10,17 @@ private object WordTokenizer {
 }
 
 import WordTokenizer._
-import net.michaelripley.pascalcompiler.identifiers.SymbolTable
+import java.util.concurrent.atomic.AtomicInteger
+import net.michaelripley.pascalcompiler.identifiers.Identifier
 import net.michaelripley.pascalcompiler.lexer._
 
 /**
  * Tokenizes both identifiers and reserved words
  */
 class WordTokenizer(
-    private val reservedWords: ReservedStrings,
-    private val symbolTable: SymbolTable) extends Tokenizer {
+    private val reservedWords: ReservedStrings) extends Tokenizer {
+  
+  private val nextIdentifierNumber = new AtomicInteger()
   
   def extractToken(line: LineFragment): Option[Token] = {
     
@@ -41,8 +43,9 @@ class WordTokenizer(
             // it is not, so it's an identifier
             case None => {
               
-              // add identifier to table
-              val identifier = symbolTable.registerSymbol(lowerCaseWordString)
+              // create new uniquely-numbered identifier
+              val identifier = new Identifier(lowerCaseWordString,
+                  nextIdentifierNumber.getAndIncrement())
               
               // create a new token for this id
               Some(new IdentifierToken(identifier, lexeme))

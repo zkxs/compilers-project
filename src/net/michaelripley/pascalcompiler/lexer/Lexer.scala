@@ -6,7 +6,6 @@ import scala.collection.mutable.MutableList
 import scala.io.Source
 import scala.util.matching.Regex.Match
 import scala.annotation.tailrec
-import net.michaelripley.pascalcompiler.identifiers.SymbolTable
 import net.michaelripley.pascalcompiler.tokenizers._
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.lexer._
@@ -174,10 +173,10 @@ class Lexer(
   val operatorTokenizer = new StringTokenizer(operators)
   val punctuationTokenizer = new StringTokenizer(punctuation)
   
-  // create tokenizer that can tokenize anything
-  private def getSuperTokenizer(symbolTable: SymbolTable) = {
+  // create new instance of tokenizer that can tokenize anything
+  private def getSuperTokenizer() = {
     // create tokenizer for identifiers/reserved words
-    val wordTokenizer = new WordTokenizer(reservedWords, symbolTable)
+    val wordTokenizer = new WordTokenizer(reservedWords) // <-- has state
     
     // lump all the tokenizers together, in order of priority
     new CompoundTokenizer(
@@ -189,9 +188,9 @@ class Lexer(
   }
   
   def lex(filename: String): List[Token] = {
-    val symbolTable = new SymbolTable()
-    val superTokenizer = getSuperTokenizer(symbolTable)
-    
+
+    // must be called per-lex because wordTokenizer has state
+    val superTokenizer = getSuperTokenizer()
     
     val sourceFile:Source = try {
       Source.fromFile(filename)
