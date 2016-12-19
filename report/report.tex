@@ -10,10 +10,6 @@
 \usepackage{nameref} % reference named things by labels. Must be imported before hyperref
 \usepackage{hyperref} % allows creation of hyperlinks
 \usepackage{enumitem} % for tinkering with spacing between list items
-\usepackage{longtable} % used by pandoc for tables
-\usepackage{tabulary} % used by pandoc for tables
-\usepackage{booktabs} % used by pandoc
-\usepackage[utf8]{inputenc} % allows mapping of unicode characters to LaTeX
 
 
 % ------------------------------------------------------------------------------
@@ -77,15 +73,6 @@
 \newcommand{\filelisting}[2][]{
     \lstinputlisting[style=myStyle, title={\texttt{\detokenize{#2}}},#1]{../#2}
 }
-
-\newcommand\processmarkdownfile[1]
-    {\immediate\write18{bash md2tex.sh #1}%
-     \input{tmp_#1.tex}}
-
-% Unicode mappings
-\DeclareUnicodeCharacter{2192}{$\rightarrow$}
-\DeclareUnicodeCharacter{3F5}{$\epsilon$}
-\DeclareUnicodeCharacter{21B4}{$\searrow$}
 
 
 % ------------------------------------------------------------------------------
@@ -164,23 +151,18 @@ Project 2 adds syntax analysis on top of the lexing framework created in project
 
 \section{Methodology}\label{meth}
 
-Before work on the parser could even begin, the grammar had to undergo significant massaging.  
+Before work on the parser could even begin, the grammar had to undergo significant massaging.  The grammar after each step is included at the end of this report.  The steps are as follows: 
+\begin{enumerate}
+  \item Project-specific modifications applied and all productions split
+  \item Removal of $\epsilon$ productions
+  \item Removal of left recursion
+  \item Left factoring, final clean-up, and computation of firsts and follows
+\end{enumerate}
 
-Grammar with our project-specific modifications applied and all productions split
-
-\processmarkdownfile{grammar_3_split.md}
-
-Grammar after epsilon removal
-
-\processmarkdownfile{grammar_4_remove_epsilon.md}
-
-Grammar after removal of left recursion
-
-\processmarkdownfile{grammar_5_remove_left_recursion.md}
-
-Grammar after left-factoring, final clean-up, and computation of firsts and follows
-
-\processmarkdownfile{grammar_8_final.md}
+%\processmarkdownfile{grammar_3_split.md}
+%\processmarkdownfile{grammar_4_remove_epsilon.md}
+%\processmarkdownfile{grammar_5_remove_left_recursion.md}
+%\processmarkdownfile{grammar_8_final.md}
 
 
 
