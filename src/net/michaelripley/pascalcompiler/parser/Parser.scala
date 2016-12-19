@@ -377,15 +377,18 @@ class Parser(
     }
   }
   
-  private def standardType(): Unit = {
+  private def standardType(): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(INTEGER)) {
       matchToken(INTEGER, sync)
+      Some(T_Integer())
     } else if (isCurrentToken(REAL)) {
       matchToken(REAL, sync)
+      Some(T_Real())
     } else {
-       syntaxError("INTEGER, REAL", sync)
+      syntaxError("INTEGER, REAL", sync)
+      None
     }
   }
   
