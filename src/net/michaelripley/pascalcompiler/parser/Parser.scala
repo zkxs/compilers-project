@@ -3,9 +3,14 @@ package net.michaelripley.pascalcompiler.parser
 import scala.annotation.tailrec
 import java.io.PrintWriter
 import net.michaelripley.pascalcompiler.tokens._
+import net.michaelripley.pascalcompiler.identifiers._
+import Type._
 
-class Parser(tokens: List[Token], lines: Array[String],
-    listWriter: PrintWriter) {
+class Parser(
+    tokens: List[Token],
+    lines: Array[String],
+    listWriter: PrintWriter,
+    idMan: IdentifierManager) {
   
   // easy tokens to match
   private val PROGRAM = new AttributeToken("PROGRAM")

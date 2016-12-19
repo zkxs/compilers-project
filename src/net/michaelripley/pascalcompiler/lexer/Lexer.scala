@@ -245,7 +245,7 @@ class Lexer(
     
     tokenWriter.close()
     
-    val parser = new Parser(tokens, lines, listWriter)
+    val parser = new Parser(tokens, lines, listWriter, idManager)
     parser.parse()
     
     listWriter.close()
