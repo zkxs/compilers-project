@@ -237,10 +237,10 @@ class Lexer(
     // at this point, tokens is done being generated
     
     // print all tokens to token file
-    tokens.foreach(token => {
-      if (token != eolToken) {
-        tokenWriter.println(token)
-      }
+    tokens.foreach(token => token match {
+      case t if t == eolToken => Unit
+      case t: IdentifierToken => tokenWriter.println(t + s"loc${t.identifier.number}") //TODO: lookup actual location from symbol table, also make this line much shorter
+      case t => tokenWriter.println(t)
     })
     
     tokenWriter.close()

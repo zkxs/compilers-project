@@ -29,8 +29,12 @@ class IdentifierToken(
     Util.hash(tokenName, identifier, lexeme)
   }
   
+  /**
+   * Only returns the first part of the string. The "attribute" must be appended
+   * separately
+   */
   override def toString: String = {
-    f"${lexeme.location.lineNumber + 1}%4d        ${lexeme.lexeme}%-15s        $tokenName%-10s        loc${identifier.number}"
+    f"${lexeme.location.lineNumber + 1}%4d        ${lexeme.lexeme}%-19s    $tokenName%-14s    "
   }
   
 }
