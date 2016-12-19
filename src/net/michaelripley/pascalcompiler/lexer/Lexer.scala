@@ -205,13 +205,6 @@ class Lexer(
       }
     }
     
-    
-    val listWriter = new PrintWriter(filename + ".listing")
-    val tokenWriter = new PrintWriter(filename + ".tokens")
-    
-    tokenWriter.println(
-        "Line No.    Lexeme                 Token-Type        Attribute")
-    
     val mutableTokens = MutableList[Token]()
     val lines = sourceFile.getLines().toArray
     lines.zipWithIndex.foreach {
@@ -236,19 +229,24 @@ class Lexer(
     val tokens = mutableTokens.toList
     // at this point, tokens is done being generated
     
+    /* Parse everything!
+     * This also writes out the listing file
+     */
+    val listWriter = new PrintWriter(filename + ".listing")
+    val parser = new Parser(tokens, lines, listWriter, idManager)
+    parser.parse()
+    listWriter.close()
+    
     // print all tokens to token file
+    val tokenWriter = new PrintWriter(filename + ".tokens")
+    tokenWriter.println(
+        "Line No.    Lexeme                 Token-Type        Attribute")
     tokens.foreach(token => token match {
       case t if t == eolToken => Unit
       case t: IdentifierToken => tokenWriter.println(t + s"loc${t.identifier.number}") //TODO: lookup actual location from symbol table, also make this line much shorter
       case t => tokenWriter.println(t)
     })
-    
     tokenWriter.close()
-    
-    val parser = new Parser(tokens, lines, listWriter, idManager)
-    parser.parse()
-    
-    listWriter.close()
 
     tokens.toList // TODO: return Unit
   }
