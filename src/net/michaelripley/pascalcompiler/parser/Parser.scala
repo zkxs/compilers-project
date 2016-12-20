@@ -870,9 +870,9 @@ class Parser(
       iType
     } else if (isCurrentToken(RELOP)) {
       matchToken(RELOP, sync)
-      val sType = simpleExpression()
-      if (assertEquals(sType, iType, "cannot RELOP differing types", sync)) {
-        sType
+      val exprType = simpleExpression()
+      if (assertEquals(exprType, iType, "cannot RELOP differing types", sync)) {
+        Some(T_Boolean())
       } else {
         None
       }
