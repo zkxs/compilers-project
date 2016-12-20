@@ -75,7 +75,7 @@ class IdentifierManager {
         scope.findVariable(id.name) match {
           case Some(v) => {
             // record the new id that points to this variable
-            tokenLocations.put(id, variableLocations(v))
+            variableLocations.get(v).map( loc => tokenLocations.put(id, loc))
             
             Right(v)
           }

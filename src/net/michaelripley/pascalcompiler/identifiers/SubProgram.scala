@@ -14,11 +14,19 @@ private[identifiers] class SubProgram(
   private val subPrograms = MutableList.empty[SubProgram]
   
   private def getVariable(idName: String) = {
-    variables.find { _.name == idName }
+    variables.find( _.name == idName )
   }
   
   private def hasVariable(idName: String) = {
     getVariable(idName).isDefined
+  }
+  
+  private def getParam(idName: String) = {
+    params.find( p => p.name == idName )
+  }
+  
+  private def hasParam(idName: String) = {
+    getParam(idName).isDefined
   }
   
   private def paramsEqual(a: List[Type]): Boolean = {
@@ -43,7 +51,7 @@ private[identifiers] class SubProgram(
   }
   
   private def getSubProgram(idName: String, params: List[Type]) = {
-    subPrograms.find { s => s.idName == idName && paramsEqual(s.params) }
+    subPrograms.find( s => s.idName == idName && paramsEqual(s.params) )
   }
   
   private def hasSubProgram(idName: String, params: List[Type]) = {
@@ -75,16 +83,23 @@ private[identifiers] class SubProgram(
    */
   @tailrec
   final def findVariable(idName: String): Option[TypedIdentifier] = {
-    // TODO first check to see if there is a matching parameter
-    // next try to see if this scope contains an appropriately named variable
-    getVariable(idName) match {
-      case m: Some[TypedIdentifier] => m // if so, we're done
+    // first check to see if there is a matching parameter
+    getParam(idName) match {
+      case p: Some[TypedIdentifier] => p // done
       case _ => {
-        parent match { // otherwise, check if we have a parent
-          case Some(p) => { // if so, have it do the same thing we're doing now
-            p.findVariable(idName)
+        // next try to see if this scope
+        // contains an appropriately named variable
+        getVariable(idName) match {
+          case m: Some[TypedIdentifier] => m // if so, we're done
+          case _ => {
+            parent match { // otherwise, check if we have a parent
+              case Some(p) => {
+                // if so, have it do the same thing we're doing now
+                p.findVariable(idName)
+              }
+              case _ => None // if no more parents, we're done
+            }
           }
-          case _ => None // if no more parents, we're done
         }
       }
     }
