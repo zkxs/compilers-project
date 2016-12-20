@@ -905,12 +905,29 @@ class Parser(
       
       iType
     } else if (isCurrentToken(RELOP)) {
-      matchToken(RELOP, sync)
+      val optRelop = matchToken(RELOP, sync)
       val exprType = simpleExpression()
-      if (assertEquals(exprType, iType, "cannot RELOP differing types", sync)) {
-        Some(T_Boolean())
-      } else {
-        None
+      
+      optRelop match {
+        case Some(relop: AttributeToken) => {
+          if (assertEquals(exprType, iType,
+              s"cannot RELOP differing types: $iType, $exprType", sync)) {
+            val opType = relop.attribute.get
+            if (opType == "EQUALS" || opType == "NOTEQUALS") {
+              Some(T_Boolean())
+            } else {
+              if (assertNumeric(exprType,
+                  "cannot compare non-numeric types", sync)) {
+                Some(T_Boolean())
+              } else {
+                None
+              }
+            }
+          } else {
+            None
+          }
+        }
+        case _ => None
       }
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP", sync)
@@ -948,14 +965,30 @@ class Parser(
       
       iType
     } else if (isCurrentToken(ADDOP)) {
-      matchToken(ADDOP, sync)
+      val optAddop = matchToken(ADDOP, sync)
       val sType = term()
       optionalAddop(sType)
-      if (assertEquals(sType, iType, s"cannot add $sType + $iType", sync)
-          && assertNumeric(sType, s"cannot add $sType + $iType", sync)) {
-        sType
-      } else {
-        None
+      
+      
+      optAddop match {
+        case Some(addop: AttributeToken) => {
+          if (assertEquals(sType, iType,
+              s"cannot ADDOP differing types: $iType, $sType", sync)) {
+            if (addop.attribute.get == "OR") {
+              Some(T_Boolean())
+            } else {
+              if (assertNumeric(sType,
+                  "cannot add non-numeric types", sync)) {
+                sType
+              } else {
+                None
+              }
+            }
+          } else {
+            None
+          }
+        }
+        case _ => None
       }
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP", sync)
@@ -990,14 +1023,29 @@ class Parser(
       
       iType
     } else if (isCurrentToken(MULOP)) {
-      matchToken(MULOP, sync)
+      val optMulop = matchToken(MULOP, sync)
       val sType = factor()
       optionalMulop(sType)
-      if (assertEquals(sType, iType, s"cannot multiply $sType * $iType", sync)
-          && assertNumeric(sType, s"cannot multiply $sType * $iType", sync)) {
-        sType
-      } else {
-        None
+      
+      optMulop match {
+        case Some(mulop: AttributeToken) => {
+          if (assertEquals(sType, iType,
+              s"cannot MULOP differning types: $iType, $sType", sync)) {
+            if (mulop.attribute.get == "AND") {
+              Some(T_Boolean())
+            } else {
+              if (assertNumeric(sType,
+                  s"cannot multiply ${iType.fold("")(_.toString())}", sync)) {
+                sType
+              } else {
+                None
+              }
+            }
+          } else {
+            None
+          }
+        }
+        case _ => None
       }
     } else {
       syntaxError(
