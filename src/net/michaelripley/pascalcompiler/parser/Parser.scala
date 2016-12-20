@@ -457,6 +457,7 @@ class Parser(
     if (isCurrentToken(PROCEDURE)) {
       subprogramHead()
       subprogramDeclarationPrime()
+      semanticError(pop(), sync)
     } else {
       syntaxError("PROCEDURE", sync)
     }
