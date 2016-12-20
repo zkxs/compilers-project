@@ -63,7 +63,7 @@ class IdentifierManager {
           error(s"variable $q${id.name}$q already exists in this scope")
         }
       }
-      case _ => error("no scope defined")
+      case _ => error("addVariable(): no scope defined")
     }
   }
   
@@ -83,7 +83,7 @@ class IdentifierManager {
           case _ => Left(IdentifierError(s"$q${id.name}$q not declared"))
         }
       }
-      case _ => Left(IdentifierError("no scope defined"))
+      case _ => Left(IdentifierError("getVariable(): no scope defined"))
     }
   }
   
@@ -102,7 +102,7 @@ class IdentifierManager {
           }
         }
       }
-      case _ => error("no scope defined")
+      case _ => error("addProcedure(): no scope defined")
     }
   }
   
@@ -118,7 +118,7 @@ class IdentifierManager {
           error(s"procedure ${id.name}(${params.mkString(", ")}) does not exist in this scope")
         }
       }
-      case _ => error("no scope defined")
+      case _ => error("checkCall(): no scope defined")
     }
   }
   
@@ -136,7 +136,7 @@ class IdentifierManager {
           }
         }
       }
-      case _ => error("no scope defined")
+      case _ => error("pop(): no scope defined")
     }
   }
   

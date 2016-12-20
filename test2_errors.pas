@@ -3,16 +3,19 @@ var x: integer;
 var y: real;
 var z: array[1 .. 10] of integer;
 procedure gcd(a: integer; b: integer);
-    procedure inner(w: real; y: real);
+    procedure inner(w: real; y: array[1 .. 5] of real);
     begin
         while x=y do 
         begin
             a:=a+1;
             a := a + 2;
-            michael := 1 + 2 + $ + 4;
+            michael := 1 + 2 + 3 + 4;
             z[4] := 5
         end;
         z := z + 4
+    end;
+    procedure inner(w: real; y: array[1 .. 5] of real);
+    begin
     end;
 begin
     if b = 0 then gcd := a
@@ -21,7 +24,7 @@ begin
 end;
 
 begin
-    call read();
+    call read(x, y);
     call gcd(x, y);
     x := 4 <> 5 - a + 7.0E5 * 11 + not 0;
     tffom := +tffom;

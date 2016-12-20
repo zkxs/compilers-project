@@ -239,7 +239,7 @@ class Parser(
   private def semanticError(
       err: Option[IdentifierError], sync: SyncSet): Unit = {
     
-    err.fold()(e => error(e.message, sync))
+    err.fold()(e => semanticError(e.message, sync))
   }
   
   /**
