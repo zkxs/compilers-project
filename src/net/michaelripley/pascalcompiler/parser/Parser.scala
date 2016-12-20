@@ -235,11 +235,15 @@ class Parser(
   
   /**
    * Optionally process an IdentifierError
+   * @return true if there was no error
    */
   private def semanticError(
-      err: Option[IdentifierError], sync: SyncSet): Unit = {
+      err: Option[IdentifierError], sync: SyncSet): Boolean = {
     
-    err.fold()(e => semanticError(e.message, sync))
+    err.fold(true)(e => {
+      semanticError(e.message, sync)
+      false
+    })
   }
   
   /**
@@ -446,9 +450,12 @@ class Parser(
     val sync = (Set[Token](SEMICOLON), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PROCEDURE)) {
-      subprogramHead()
+      val success = subprogramHead()
       subprogramDeclarationPrime()
-      semanticError(pop(), sync)
+      
+      if (success) {
+        semanticError(pop(), sync)
+      }
     } else {
       syntaxError("PROCEDURE", sync)
     }
@@ -470,7 +477,8 @@ class Parser(
     }
   }
   
-  private def subprogramHead(): Unit = {
+  // returns True if there was no error
+  private def subprogramHead(): Boolean = {
     val sync = (Set[Token](VAR, PROCEDURE, BEGIN), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PROCEDURE)) {
@@ -480,10 +488,13 @@ class Parser(
       
       if (exists(optId, optParams)) {
         semanticError(addProcedure(optId.get, optParams.get), sync)
+      } else {
+        false
       }
       
     } else {
       syntaxError("PROCEDURE", sync)
+      false
     }
   }
   
