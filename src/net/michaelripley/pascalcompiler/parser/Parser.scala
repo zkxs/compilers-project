@@ -664,21 +664,27 @@ class Parser(
     } else if (isCurrentToken(CALL)) {
       procedureStatement()
     } else if (isCurrentToken(ID)) {
-      variable()
+      val varType = variable()
       matchToken(ASSIGNOP, sync)
-      expression()
-      //TODO: confirm that types are equal
+      val exprType = expression()
+      assertEquals(varType, exprType, "types must match in an assignment", sync)
     } else if (isCurrentToken(IF)) {
       matchToken(IF, sync)
-      expression() //TODO: confirm type is boolean
+      val exprType = expression()
       matchToken(THEN, sync)
       statement()
       optionalElse()
+      
+      assertEquals(exprType, Some(T_Boolean()),
+          "IF conditons must be boolean expressions", sync)
     } else if (isCurrentToken(WHILE)) {
       matchToken(WHILE, sync)
-      expression() //TODO: confirm type is boolean
+      val exprType = expression()
       matchToken(DO, sync)
       statement()
+      
+      assertEquals(exprType, Some(T_Boolean()),
+          "WHILE conditons must be boolean expressions", sync)
     } else {
       syntaxError("BEGIN, CALL, ID, IF, WHILE", sync)
     }
@@ -757,52 +763,71 @@ class Parser(
     
     if (isCurrentToken(CALL)) {
       matchToken(CALL, sync)
-      matchToken(ID, sync)
-      optionalExpressionList()
-      //TODO: check call
+      val optId = extractId(matchToken(ID, sync))
+      val optParams = optionalExpressionList()
+      
+      if (exists(optId, optParams)) {
+        semanticError(checkCall(optId.get, optParams.get), sync)
+      }
     } else {
       syntaxError("CALL", sync)
     }
   }
   
-  private def optionalExpressionList(): Unit = { //TODO: return Option[List[Type]]
+  private def optionalExpressionList(): Option[List[Type]] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
       matchToken(PAREN_OPEN, sync)
-      expressionList()
+      val optList = expressionList()
       matchToken(PAREN_CLOSE, sync)
+      optList
     } else if (isCurrentToken(SEMICOLON)) {
-      Unit
+      Some(List.empty)
     } else {
       syntaxError("'(', ';'", sync)
+      None
     }
   }
   
-  private def expressionList(): Unit = { //TODO: return Option[List[Type]]
+  private def expressionList(): Option[List[Type]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID) || isCurrentToken(NUM) 
         || isCurrentToken(PAREN_OPEN, PLUS, MINUS, NOT)) {
       
-      expression()
-      expressionListTail()
+      val optType = expression()
+      val optList = expressionListTail()
+      
+      if (exists(optType, optList)) {
+        Some(optType.get +: optList.get)
+      } else {
+        None // indicative of errors we've already complained about
+      }
     } else {
       syntaxError("ID, NUM, '(', '+', '-', NOT", sync)
+      None
     }
   }
   
-  private def expressionListTail(): Unit = { //TODO: return Option[List[Type]]
+  private def expressionListTail(): Option[List[Type]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_CLOSE)) {
-      Unit
+      Some(List.empty)
     } else if (isCurrentToken(COMMA)) {
       matchToken(COMMA, sync)
-      expression()
-      expressionListTail()
+      val optType = expression()
+      val optList = expressionListTail()
+      
+      if (exists(optType, optList)) {
+        Some(optType.get +: optList.get)
+      } else {
+        None // indicative of errors we've already complained about
+      }
     } else {
       syntaxError("')', ','", sync)
+      None
     }
   }
   
