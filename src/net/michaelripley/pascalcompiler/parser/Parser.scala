@@ -867,8 +867,11 @@ class Parser(
     } else if (isCurrentToken(RELOP)) {
       matchToken(RELOP, sync)
       val sType = simpleExpression()
-      assertEquals(sType, iType, "cannot RELOP differing types", sync)
-      sType //TODO: should I return None here if the assertions fail?
+      if (assertEquals(sType, iType, "cannot RELOP differing types", sync)) {
+        sType
+      } else {
+        None
+      }
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP", sync)
       None
@@ -908,9 +911,12 @@ class Parser(
       matchToken(ADDOP, sync)
       val sType = term()
       optionalAddop(sType)
-      assertEquals(sType, iType, s"cannot add $sType + $iType", sync)
-      assertNumeric(sType, s"cannot add $sType + $iType", sync)
-      sType //TODO: should I return None here if the assertions fail?
+      if (assertEquals(sType, iType, s"cannot add $sType + $iType", sync)
+          && assertNumeric(sType, s"cannot add $sType + $iType", sync)) {
+        sType
+      } else {
+        None
+      }
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP", sync)
       None
@@ -947,9 +953,12 @@ class Parser(
       matchToken(MULOP, sync)
       val sType = factor()
       optionalMulop(sType)
-      assertEquals(sType, iType, s"cannot multiply $sType * $iType", sync)
-      assertNumeric(sType, s"cannot multiply $sType * $iType", sync)
-      sType //TODO: should I return None here if the assertions fail?
+      if (assertEquals(sType, iType, s"cannot multiply $sType * $iType", sync)
+          && assertNumeric(sType, s"cannot multiply $sType * $iType", sync)) {
+        sType
+      } else {
+        None
+      }
     } else {
       syntaxError(
           "')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP", sync)
