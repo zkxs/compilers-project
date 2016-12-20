@@ -806,7 +806,7 @@ class Parser(
     }
   }
   
-  private def expression(): Unit = { //TODO: return Option[Type]
+  private def expression(): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set.empty[TokenMatcher])
@@ -814,10 +814,11 @@ class Parser(
     if (isCurrentToken(ID) || isCurrentToken(NUM) 
         || isCurrentToken(PAREN_OPEN, PLUS, MINUS, NOT)) {
       
-      simpleExpression()
-      optionalRelop()
+      val simpType = simpleExpression()
+      optionalRelop(simpType) // return this as sType
     } else {
       syntaxError("ID, NUM, '(', '+', '-', NOT", sync)
+      None
     }
   }
   
