@@ -381,11 +381,15 @@ class Parser(
     
     if (isCurrentToken(VAR)) {
       matchToken(VAR, sync)
-      matchToken(ID, sync)
+      val optId = extractId(matchToken(ID, sync))
       matchToken(COLON, sync)
-      anyType()
+      val optType = anyType()
       matchToken(SEMICOLON, sync)
       optionalDeclarations()
+      
+      if (exists(optId, optType)) {
+        semanticError(addVariable(optId.get, optType.get), sync)
+      }
     } else {
       syntaxError("VAR", sync)
     }
