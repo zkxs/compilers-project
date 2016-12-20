@@ -264,6 +264,7 @@ class Parser(
     }
   }
   
+  //TODO: remove this function
   private def assert(b: Boolean, msg: String, sync: SyncSet): Unit = {
     if (!b) {
       semanticError(msg, sync)
@@ -275,6 +276,16 @@ class Parser(
     if (a.isEmpty || b.isEmpty) {
       // we've already complained about this. Do nothing.
     } else if (a != b) {
+      semanticError(msg, sync)
+    }
+  }
+  
+  private val numericTypes = List(T_Integer(), T_Real())
+  private def assertNumeric(
+      someType: Option[Type], msg: String, sync: SyncSet): Unit = {
+    if (someType.isEmpty) {
+      // we've already complained about this. Do nothing.
+    } else if (!numericTypes.contains(someType.get)) {
       semanticError(msg, sync)
     }
   }
@@ -827,7 +838,7 @@ class Parser(
     }
   }
   
-  private def simpleExpression(): Unit = {
+  private def simpleExpression(): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set[TokenMatcher](RELOP))
@@ -835,18 +846,19 @@ class Parser(
     if (isCurrentToken(ID) || isCurrentToken(NUM) 
         || isCurrentToken(PAREN_OPEN, NOT)) {
       
-      term()
-      optionalAddop()
+      val termType = term()
+      optionalAddop(termType) // return this
     } else if (isCurrentToken(PLUS, MINUS)) {
       sign()
-      term()
-      optionalAddop()
+      val termType = term()
+      optionalAddop(termType) // return this
     } else {
       syntaxError("ID, NUM, '(', '+', '-', NOT", sync)
+      None
     }
   }
   
-  private def optionalAddop(): Unit = {
+  private def optionalAddop(iType: Option[Type]): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set[TokenMatcher](RELOP))
@@ -854,13 +866,17 @@ class Parser(
     if (isCurrentToken(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON,
         THEN, ELSE, DO, END) || isCurrentToken(RELOP)) {
       
-      Unit
+      iType
     } else if (isCurrentToken(ADDOP)) {
       matchToken(ADDOP, sync)
-      term()
-      optionalAddop()
+      val sType = term()
+      optionalAddop(sType)
+      assertEquals(sType, iType, s"cannot add $sType + $iType", sync)
+      assertNumeric(sType, s"cannot add $sType + $iType", sync)
+      sType //TODO: should I return None here if the assertions fail?
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP", sync)
+      None
     }
   }
   
@@ -895,7 +911,8 @@ class Parser(
       val sType = factor()
       optionalMulop(sType)
       assertEquals(sType, iType, s"cannot multiply $sType * $iType", sync)
-      sType
+      assertNumeric(sType, s"cannot multiply $sType * $iType", sync)
+      sType //TODO: should I return None here if the assertions fail?
     } else {
       syntaxError(
           "')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP", sync)
@@ -949,7 +966,7 @@ class Parser(
       if (optType.isDefined && optType.get != T_Boolean()) {
         semanticError("NOT can only be applied to booleans", sync)
       }
-      Some(T_Boolean())
+      Some(T_Boolean()) // purposely always return boolean for error recovery
     } else {
       syntaxError("ID, NUM, '(', NOT", sync)
       None
