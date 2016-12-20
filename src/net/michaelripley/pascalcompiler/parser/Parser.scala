@@ -264,6 +264,21 @@ class Parser(
     }
   }
   
+  private def assert(b: Boolean, msg: String, sync: SyncSet): Unit = {
+    if (!b) {
+      semanticError(msg, sync)
+    }
+  }
+  
+  private def assertEquals(
+      a: Option[Any], b: Option[Any], msg: String, sync: SyncSet): Unit = {
+    if (a.isEmpty || b.isEmpty) {
+      // we've already complained about this. Do nothing.
+    } else if (a != b) {
+      semanticError(msg, sync)
+    }
+  }
+  
   /* *************************************************************************
    *      BEGINNING OF RECURSIVE DESCENT PARSER COOKIE-CUTTER FUNCTIONS
    * *************************************************************************/
@@ -849,7 +864,7 @@ class Parser(
     }
   }
   
-  private def term(): Unit = {
+  private def term(): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set[TokenMatcher](RELOP, ADDOP))
@@ -857,14 +872,15 @@ class Parser(
     if (isCurrentToken(ID) || isCurrentToken(NUM) 
         || isCurrentToken(PAREN_OPEN, NOT)) {
       
-      factor()
-      optionalMulop()
+      val factorType = factor()
+      optionalMulop(factorType) // return this as sType
     } else {
       syntaxError("ID, NUM, '(', NOT", sync)
+      None
     }
   }
   
-  private def optionalMulop(): Unit = {
+  private def optionalMulop(iType: Option[Type]): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set[TokenMatcher](RELOP, ADDOP))
@@ -873,14 +889,17 @@ class Parser(
         THEN, ELSE, DO, END)
         || isCurrentToken(RELOP) || isCurrentToken(ADDOP)) {
       
-      Unit
+      iType
     } else if (isCurrentToken(MULOP)) {
       matchToken(MULOP, sync)
-      factor()
-      optionalMulop()
+      val sType = factor()
+      optionalMulop(sType)
+      assertEquals(sType, iType, s"cannot multiply $sType * $iType", sync)
+      sType
     } else {
       syntaxError(
           "')', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP", sync)
+      None
     }
   }
   
