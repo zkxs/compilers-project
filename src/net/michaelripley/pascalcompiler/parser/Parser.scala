@@ -92,16 +92,11 @@ class Parser(
   }
   
   private val tokenIterator = tokens.iterator
-  private var previousToken: Token = _
   private var currentToken: Token = _
   private var lineNumber = 0
   
   @tailrec
   private def nextToken(): Unit = {
-    if (currentToken != EOL) {
-      previousToken = currentToken
-    }
-    
     currentToken = tokenIterator.next()
     
     if (currentToken == EOL) {
@@ -232,7 +227,7 @@ class Parser(
   }
   
   private def semanticError(message: String, sync: SyncSet): Unit = {
-    val lexeme = previousToken match {
+    val lexeme = currentToken match {
       case at: AttributeToken  => at.lexeme
       case id: IdentifierToken => id.lexeme
     }
