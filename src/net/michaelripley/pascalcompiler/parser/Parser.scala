@@ -233,6 +233,9 @@ class Parser(
     error(space + "^ SEMERR: " + message, sync)
   }
   
+  /**
+   * Optionally process an IdentifierError
+   */
   private def semanticError(
       err: Option[IdentifierError], sync: SyncSet): Unit = {
     
@@ -246,6 +249,13 @@ class Parser(
     things.forall(_.isDefined)
   }
   
+  private def extractId(tok: Option[Token]): Option[Identifier] = {
+    tok match {
+      case Some(it: IdentifierToken) => Some(it.identifier)
+      case _ => None
+    }
+  }
+  
   /* *************************************************************************
    *      BEGINNING OF RECURSIVE DESCENT PARSER COOKIE-CUTTER FUNCTIONS
    * *************************************************************************/
@@ -257,22 +267,12 @@ class Parser(
     
     if (isCurrentToken(PROGRAM)) {
       matchToken(PROGRAM, sync)
-      val optId = matchToken(ID, sync)
+      val optId = extractId(matchToken(ID, sync))
       matchToken(PAREN_OPEN, sync)
       val optParams = identifierList()
       
-      optId match {
-        case Some(id: IdentifierToken) => {
-          // ok, now to grab the params
-          optParams match {
-            case Some(params) => {
-              semanticError(addProgram(id.identifier, params), sync)
-            }
-            case _ => //error?
-          }
-        }
-        case Some(x) => throw new AssertionError(s"What is $x?")
-        case _ => //error?
+      if (exists(optId, optParams)) {
+        semanticError(addProgram(optId.get, optParams.get), sync)
       }
       
       matchToken(PAREN_CLOSE, sync)
@@ -308,10 +308,7 @@ class Parser(
     
     if (isCurrentToken(ID)) {
       matchToken(ID, sync)
-      identifierListTail() match {
-        case Some(list) => Some(T_ProgramParam() +: list)
-        case _ => None
-      }
+      identifierListTail().map(T_ProgramParam() +: _)
     } else {
       syntaxError("ID", sync)
       None
@@ -326,10 +323,7 @@ class Parser(
     } else if (isCurrentToken(COMMA)) {
       matchToken(COMMA, sync)
       matchToken(ID, sync)
-      identifierListTail() match {
-        case Some(list) => Some(T_ProgramParam() +: list)
-        case _ => None
-      }
+      identifierListTail().map(T_ProgramParam() +: _)
     } else {
       syntaxError("')', ','", sync)
       None
@@ -355,7 +349,7 @@ class Parser(
     val sync = (Set[Token](PROCEDURE, BEGIN), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PROCEDURE, BEGIN)) {
-      Unit
+      ()
     } else if (isCurrentToken(VAR)) {
       declarations()
     } else {
@@ -368,10 +362,7 @@ class Parser(
     val sync = (Set[Token](SEMICOLON, PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(INTEGER, REAL)) {
-      standardType() match {
-        case Some(t) => Some(t)
-        case _ => None
-      }
+      standardType()
     } else if (isCurrentToken(ARRAY)) {
       matchToken(ARRAY, sync)
       matchToken(SQUAREBRACKET_OPEN, sync)
@@ -403,7 +394,7 @@ class Parser(
       if (exists(optNum1, optNum2, optType)) {
         Some(T_Array(optNum2.get - optNum1.get, optType.get))
       } else {
-        None
+        None // indicative of errors we've already complained about
       }
       
     } else {
@@ -445,7 +436,7 @@ class Parser(
     if (isCurrentToken(PROCEDURE)) {
       subprogramDeclarations()
     } else if (isCurrentToken(BEGIN)) {
-      Unit
+      ()
     } else {
       syntaxError("PROCEDURE, BEGIN", sync)
     }
@@ -484,64 +475,88 @@ class Parser(
     
     if (isCurrentToken(PROCEDURE)) {
       matchToken(PROCEDURE, sync)
-      matchToken(ID, sync)
-      subprogramHeadPrime()
+      val optId = extractId(matchToken(ID, sync))
+      val optParams = subprogramHeadPrime()
+      
+      if (exists(optId, optParams)) {
+        semanticError(addProcedure(optId.get, optParams.get), sync)
+      }
+      
     } else {
       syntaxError("PROCEDURE", sync)
     }
   }
   
-  private def subprogramHeadPrime(): Unit = {
+  private def subprogramHeadPrime(): Option[List[Type]] = {
     val sync = (Set[Token](VAR, PROCEDURE, BEGIN), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
-      arguments()
+      val optParams = arguments()
       matchToken(SEMICOLON, sync)
+      optParams
     } else if (isCurrentToken(SEMICOLON)) {
       matchToken(SEMICOLON, sync)
+      Some(List.empty)
     } else {
       syntaxError("'(', ';'", sync)
+      None
     }
   }
   
-  private def arguments(): Unit = {
+  private def arguments(): Option[List[Type]] = {
     val sync = (Set[Token](SEMICOLON), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
       matchToken(PAREN_OPEN, sync)
-      parameterList()
+      val optParams = parameterList()
       matchToken(PAREN_CLOSE, sync)
+      optParams
     } else {
       syntaxError("'('", sync)
+      None
     }
   }
   
-  private def parameterList(): Unit = {
+  private def parameterList(): Option[List[Type]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
       matchToken(ID, sync)
       matchToken(COLON, sync)
-      anyType()
-      parameterListTail()
+      val optType = anyType()
+      val optParams = parameterListTail()
+      
+      if (exists(optType, optParams)) {
+        Some(optType.get +: optParams.get)
+      } else {
+        None // indicative of errors we've already complained about
+      }
     } else {
       syntaxError("ID", sync)
+      None
     }
   }
   
-  private def parameterListTail(): Unit = {
+  private def parameterListTail(): Option[List[Type]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_CLOSE)) {
-      Unit
+      Some(List.empty)
     } else if (isCurrentToken(SEMICOLON)) {
       matchToken(SEMICOLON, sync)
       matchToken(ID, sync)
       matchToken(COLON, sync)
-      anyType()
-      parameterListTail()
+      val optType = anyType()
+      val optParams = parameterListTail()
+      
+      if (exists(optType, optParams)) {
+        Some(optType.get +: optParams.get)
+      } else {
+        None // indicative of errors we've already complained about
+      }
     } else {
       syntaxError("')', ';'", sync)
+      None
     }
   }
   
