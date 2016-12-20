@@ -51,7 +51,7 @@ private[identifiers] class SubProgram(
   }
   
   private def getSubProgram(idName: String, params: List[Type]) = {
-    subPrograms.find( s => s.idName == idName && paramsEqual(s.params) )
+    subPrograms.find( s => s.idName == idName && s.paramsEqual(params) )
   }
   
   private def hasSubProgram(idName: String, params: List[Type]) = {
