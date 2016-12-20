@@ -264,13 +264,6 @@ class Parser(
     }
   }
   
-  //TODO: remove this function
-  private def assert(b: Boolean, msg: String, sync: SyncSet): Unit = {
-    if (!b) {
-      semanticError(msg, sync)
-    }
-  }
-  
   private def assertEquals(
       a: Option[Any], b: Option[Any], msg: String, sync: SyncSet): Unit = {
     if (a.isEmpty || b.isEmpty) {
