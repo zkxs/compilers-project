@@ -125,18 +125,21 @@ class IdentifierManager {
   def pop(): Err = {
     currentScope match {
       case Some(scope) => {
+        // if we are in a scope
         scope.parent match {
           case parent: Some[SubProgram] => {
+            // if parent exists, update scope to it
             currentScope = parent
             None
           }
           case _ => {
+            // if no parent, scope is now None
             currentScope = None
             None
           }
         }
       }
-      case _ => error("pop(): no scope defined")
+      case _ => error("pop(): no scope defined") // we are not in a scope.
     }
   }
   
