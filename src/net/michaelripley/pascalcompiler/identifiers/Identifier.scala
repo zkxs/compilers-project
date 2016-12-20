@@ -21,4 +21,8 @@ class Identifier(val name: String, val number: Int) {
   override def hashCode(): Int = {
     number.hashCode()
   }
+  
+  override def toString(): String = {
+    name
+  }
 }

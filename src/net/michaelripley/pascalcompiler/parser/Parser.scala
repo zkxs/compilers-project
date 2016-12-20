@@ -1,10 +1,15 @@
 package net.michaelripley.pascalcompiler.parser
 
+private object Parser {
+  val q = '"'
+}
+
 import scala.annotation.tailrec
 import java.io.PrintWriter
 import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.identifiers._
 import Type._
+import Parser._
 
 class Parser(
     tokens: List[Token],
@@ -214,7 +219,6 @@ class Parser(
         et.errorString()
       }
       case _ => {
-        val q = '"'
         s"^ SYNERR: expected one of: $expectedTokens but got $q${lexeme.lexeme}$q"
       }
     }
@@ -620,7 +624,7 @@ class Parser(
       statement()
       statementListTail()
     } else if (isCurrentToken(END)) {
-      Unit
+      ()
     } else {
       syntaxError("';', END", sync)
     }
@@ -637,15 +641,16 @@ class Parser(
       variable()
       matchToken(ASSIGNOP, sync)
       expression()
+      //TODO: confirm that types are equal
     } else if (isCurrentToken(IF)) {
       matchToken(IF, sync)
-      expression()
+      expression() //TODO: confirm type is boolean
       matchToken(THEN, sync)
       statement()
       optionalElse()
     } else if (isCurrentToken(WHILE)) {
       matchToken(WHILE, sync)
-      expression()
+      expression() //TODO: confirm type is boolean
       matchToken(DO, sync)
       statement()
     } else {
@@ -657,7 +662,7 @@ class Parser(
     val sync = (Set[Token](SEMICOLON, END, ELSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(SEMICOLON, END)) {
-      Unit
+      ()
     } else if (isCurrentToken(ELSE)) {
       matchToken(ELSE, sync)
       statement()
@@ -666,28 +671,58 @@ class Parser(
     }
   }
   
-  private def variable(): Unit = {
+  private def variable(): Option[Type] = {
     val sync = (Set[Token](ASSIGNOP), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      matchToken(ID, sync)
-      arrayVariable()
+      val optId = extractId(matchToken(ID, sync))
+      val isArrayVar = arrayVariable()
+      
+      if (exists(optId, isArrayVar)) {
+        
+        getVariable(optId.get).fold( error => { // if failure
+          semanticError(error.message, sync)
+          None
+        }, id => { // if success
+          if (isArrayVar.get) {
+            // it was an array assignment
+            id.idType match {
+              case T_Array(_, innerType) => Some(innerType)
+              case _ => {
+                // this array assignment was not to an array!
+                semanticError(s"array assignment to non-array $q$id$q", sync)
+                None
+              }
+            }
+          } else {
+            // it was not an array assignment
+            Some(id.idType)
+          }
+        })
+      } else {
+        None
+      }
+      
     } else {
       syntaxError("ID", sync)
+      None
     }
   }
   
-  private def arrayVariable(): Unit = {
+  // returns true if this is an arrayvar, false otherwise
+  private def arrayVariable(): Option[Boolean] = {
     val sync = (Set[Token](ASSIGNOP), Set.empty[TokenMatcher])
     
     if (isCurrentToken(SQUAREBRACKET_OPEN)) {
       matchToken(SQUAREBRACKET_OPEN, sync)
       expression()
       matchToken(SQUAREBRACKET_CLOSE, sync)
+      Some(true)
     } else if (isCurrentToken(ASSIGNOP)) {
-      Unit
+      Some(false)
     } else {
       syntaxError("SQUAREBRACKET_OPEN, ASSIGNOP", sync)
+      None
     }
   }
   
