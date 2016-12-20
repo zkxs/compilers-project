@@ -821,7 +821,7 @@ class Parser(
     }
   }
   
-  private def optionalRelop(): Unit = { //TODO: return Option[Type]
+  private def optionalRelop(iType: Option[Type]): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set.empty[TokenMatcher])
@@ -829,12 +829,15 @@ class Parser(
     if (isCurrentToken(PAREN_CLOSE, SQUAREBRACKET_CLOSE, COMMA, SEMICOLON,
         THEN, ELSE, DO, END)) {
       
-      Unit
+      iType
     } else if (isCurrentToken(RELOP)) {
       matchToken(RELOP, sync)
-      simpleExpression()
+      val sType = simpleExpression()
+      assertEquals(sType, iType, "cannot RELOP differing types", sync)
+      sType //TODO: should I return None here if the assertions fail?
     } else {
       syntaxError("')', ']', ',', ';', THEN, ELSE, DO, END, RELOP", sync)
+      None
     }
   }
   
