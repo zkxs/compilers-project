@@ -29,12 +29,8 @@ private[identifiers] class SubProgram(
     getParam(idName).isDefined
   }
   
-  private def paramsEqual(a: List[Type]): Boolean = {
-    a == params.map( _.idType )
-  }
-  
   private def paramsEqual(a: List[TypedIdentifier]): Boolean = {
-    paramsEqual(a.map( _.idType ))
+    params.map( p => p.idType ) == a.map( p => p.idType )
   }
   
   /**
