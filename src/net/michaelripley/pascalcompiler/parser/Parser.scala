@@ -177,16 +177,7 @@ class Parser(
         sync2.find(_(currentToken)._1).isDefined
   }
   
-  /**
-   * Perform generic error reporting and recovery
-   * @param message Error message
-   * @param sync1 Sync set
-   * @param sync2 Extra sync set of TokenMatchers
-   */
-  private def error(message: String, sync: SyncSet): Unit = {
-    
-    listWriter.println(message)
-    
+  private def gobbleTokens(sync: SyncSet): Unit = {
     while (!isCurrentTokenInSync(sync)) {
       nextToken()
       currentToken match {
@@ -194,6 +185,17 @@ class Parser(
         case _ =>
       }
     }
+  }
+  
+  /**
+   * Perform generic error reporting and recovery
+   * @param message Error message
+   * @param sync1 Sync set
+   * @param sync2 Extra sync set of TokenMatchers
+   */
+  private def error(message: String, sync: SyncSet): Unit = {
+    listWriter.println(message)
+    gobbleTokens(sync)
   }
   
   /**
@@ -226,15 +228,37 @@ class Parser(
     error(space + errorString, sync)
   }
   
-  private def semanticError(message: String, sync: SyncSet): Unit = {
+  private def printError(errorType: String, message: String): Unit = {
     val lexeme = currentToken match {
       case at: AttributeToken  => at.lexeme
       case id: IdentifierToken => id.lexeme
     }
-    
     val space = " " * (lexeme.location.columnOffset + 7)
+    listWriter.println(space + "^ " + errorType + ": " + message)
+  }
+  
+  private def printSemanticError(message: String): Unit = {
+    printError("SEMERR", message)
+  }
+  
+  private def semanticError(message: String, sync: SyncSet): Unit = {
+    printSemanticError(message)
+    gobbleTokens(sync)
+  }
+  
+  private def semanticErrorDeferred(
+      message: String, sync: SyncSet): () => Unit = {
+        
+    printSemanticError(message)
+    () => gobbleTokens(sync)
+  }
+  
+  private def semanticErrorDeferred(
+      err: Option[IdentifierError], sync: SyncSet): Option[() => Unit] = {
     
-    error(space + "^ SEMERR: " + message, sync)
+    err.fold[Option[() => Unit]](None)(e => {
+      Some(semanticErrorDeferred(e.message, sync))
+    })
   }
   
   /**
@@ -242,12 +266,8 @@ class Parser(
    * @return true if there was no error
    */
   private def semanticError(
-      err: Option[IdentifierError], sync: SyncSet): Boolean = {
-    
-    err.fold(true)(e => {
-      semanticError(e.message, sync)
-      false
-    })
+      err: Option[IdentifierError], sync: SyncSet): Unit = {
+    err.map(e => semanticError(e.message, sync))
   }
   
   /**
@@ -313,17 +333,18 @@ class Parser(
       matchToken(PAREN_OPEN, sync)
       val optParams = identifierList()
       
-      val success = if (exists(optId, optParams)) {
-        semanticError(addProgram(optId.get, optParams.get), sync)
+      val deferred = if (exists(optId, optParams)) {
+        semanticErrorDeferred(addProgram(optId.get, optParams.get), sync)
       } else {
-        false
+        None
       }
       
       matchToken(PAREN_CLOSE, sync)
       matchToken(SEMICOLON, sync)
       programPrime()
       
-      if (success) {
+      if (deferred.isDefined) {
+        deferred.get() // perform deferred gobbling
         semanticError(pop(), sync)
       }
     } else {
@@ -544,11 +565,14 @@ class Parser(
       val optId = extractId(matchToken(ID, sync))
       val optParams = subprogramHeadPrime()
       
-      if (exists(optId, optParams)) {
-        semanticError(addProcedure(optId.get, optParams.get), sync)
+      val deferred = if (exists(optId, optParams)) {
+        semanticErrorDeferred(addProcedure(optId.get, optParams.get), sync)
       } else {
-        false
+        None
       }
+      
+      deferred.map(f => f())
+      deferred.isEmpty
       
     } else {
       syntaxError("PROCEDURE", sync)
