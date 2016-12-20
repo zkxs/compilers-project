@@ -154,4 +154,8 @@ private[identifiers] class SubProgram(
     Util.hash(idName, params)
   }
   
+  override def toString(): String = {
+    s"$idName(${params.mkString(", ")})"
+  }
+  
 }
