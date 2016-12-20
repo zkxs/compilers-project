@@ -926,7 +926,11 @@ class Parser(
       sType
     } else if (isCurrentToken(NOT)) {
       matchToken(NOT, sync)
-      factor()
+      val optType = factor()
+      if (optType.isDefined && optType.get != T_Boolean()) {
+        semanticError("NOT can only be applied to booleans", sync)
+      }
+      Some(T_Boolean())
     } else {
       syntaxError("ID, NUM, '(', NOT", sync)
       None
