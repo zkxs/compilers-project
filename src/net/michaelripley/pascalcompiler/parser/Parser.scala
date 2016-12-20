@@ -1040,6 +1040,8 @@ class Parser(
       matchToken(NUM, sync) match {
         case Some(t: IntegerToken) => Some(T_Integer())
         case Some(t: AttributeToken) => Some(T_Real())
+        case _ => throw new AssertionError(
+            "NUM matcher somehow matched a non-numeric")
       }
     } else if (isCurrentToken(PAREN_OPEN)) {
       matchToken(PAREN_OPEN, sync)
