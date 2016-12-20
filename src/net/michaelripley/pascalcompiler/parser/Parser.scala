@@ -733,12 +733,13 @@ class Parser(
       matchToken(CALL, sync)
       matchToken(ID, sync)
       optionalExpressionList()
+      //TODO: check call
     } else {
       syntaxError("CALL", sync)
     }
   }
   
-  private def optionalExpressionList(): Unit = {
+  private def optionalExpressionList(): Unit = { //TODO: return Option[List[Type]]
     val sync = (Set[Token](SEMICOLON, END, ELSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
@@ -752,7 +753,7 @@ class Parser(
     }
   }
   
-  private def expressionList(): Unit = {
+  private def expressionList(): Unit = { //TODO: return Option[List[Type]]
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID) || isCurrentToken(NUM) 
@@ -765,7 +766,7 @@ class Parser(
     }
   }
   
-  private def expressionListTail(): Unit = {
+  private def expressionListTail(): Unit = { //TODO: return Option[List[Type]]
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_CLOSE)) {
@@ -779,7 +780,7 @@ class Parser(
     }
   }
   
-  private def expression(): Unit = {
+  private def expression(): Unit = { //TODO: return Option[Type]
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set.empty[TokenMatcher])
@@ -794,7 +795,7 @@ class Parser(
     }
   }
   
-  private def optionalRelop(): Unit = {
+  private def optionalRelop(): Unit = { //TODO: return Option[Type]
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set.empty[TokenMatcher])
@@ -883,29 +884,57 @@ class Parser(
     }
   }
   
-  private def factor(): Unit = {
+  private def factor(): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set[TokenMatcher](RELOP, ADDOP, MULOP))
     
     if (isCurrentToken(ID)) {
-      matchToken(ID, sync)
-      arrayExpression()
+      val optId = extractId(matchToken(ID, sync))
+      val isArray = arrayExpression()
+      
+      if (exists(optId, isArray)) {
+        getVariable(optId.get).fold(error => {
+          semanticError(error.message, sync)
+          None
+        }, id => {
+          if (isArray.get) {
+            id.idType match {
+              case T_Array(_, innerType) => Some(innerType)
+              case _ => {
+                semanticError(s"array access to non-array $q$id$q", sync)
+                None
+              }
+            }
+          } else {
+            Some(id.idType)
+          }
+        })
+      } else {
+        None
+      }
+      
     } else if (isCurrentToken(NUM)) {
-      matchToken(NUM, sync)
+      matchToken(NUM, sync) match {
+        case Some(t: IntegerToken) => Some(T_Integer())
+        case Some(t: AttributeToken) => Some(T_Real())
+      }
     } else if (isCurrentToken(PAREN_OPEN)) {
       matchToken(PAREN_OPEN, sync)
-      expression()
+      val sType = expression()
       matchToken(PAREN_CLOSE, sync)
+      sType
     } else if (isCurrentToken(NOT)) {
       matchToken(NOT, sync)
       factor()
     } else {
       syntaxError("ID, NUM, '(', NOT", sync)
+      None
     }
   }
   
-  private def arrayExpression(): Unit = {
+  // return true if arrayExpression
+  private def arrayExpression(): Option[Boolean] = {
     val sync = (Set[Token](SEMICOLON, END, ELSE, THEN, DO, SQUAREBRACKET_CLOSE,
         PAREN_CLOSE, COMMA),
       Set[TokenMatcher](RELOP, ADDOP, MULOP))
@@ -914,15 +943,17 @@ class Parser(
         THEN, ELSE, DO, END)
         || isCurrentToken(RELOP) || isCurrentToken(ADDOP)
         || isCurrentToken(MULOP)) {
-      Unit
+      Some(false)
     } else if (isCurrentToken(SQUAREBRACKET_OPEN)) {
       matchToken(SQUAREBRACKET_OPEN, sync)
       expression()
       matchToken(SQUAREBRACKET_CLOSE, sync)
+      Some(true)
     } else {
       syntaxError(
           "')', '[', ']', ',', ';', THEN, ELSE, DO, END, RELOP, ADDOP, MULOP",
           sync)
+      None
     }
   }
   
