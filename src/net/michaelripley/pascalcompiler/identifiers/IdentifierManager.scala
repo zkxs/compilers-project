@@ -7,7 +7,6 @@ private object IdentifierManager {
 
 import IdentifierManager._
 import scala.collection.mutable.Map
-import scala.collection.mutable.MutableList
 
 /**
  * 2nd generation symbol table.  This is a complete rewrite of the old
