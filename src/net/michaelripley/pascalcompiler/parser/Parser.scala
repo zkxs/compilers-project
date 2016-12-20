@@ -264,22 +264,37 @@ class Parser(
     }
   }
   
+  /**
+   * Return false if assertion was bad
+   */
   private def assertEquals(
-      a: Option[Any], b: Option[Any], msg: String, sync: SyncSet): Unit = {
+      a: Option[Any], b: Option[Any], msg: String, sync: SyncSet): Boolean = {
     if (a.isEmpty || b.isEmpty) {
       // we've already complained about this. Do nothing.
+      true
     } else if (a != b) {
       semanticError(msg, sync)
+      false
+    } else {
+      true
     }
   }
   
   private val numericTypes = List(T_Integer(), T_Real())
+  
+  /**
+   * Return false if assertion was bad
+   */
   private def assertNumeric(
-      someType: Option[Type], msg: String, sync: SyncSet): Unit = {
+      someType: Option[Type], msg: String, sync: SyncSet): Boolean = {
     if (someType.isEmpty) {
       // we've already complained about this. Do nothing.
+      true
     } else if (!numericTypes.contains(someType.get)) {
       semanticError(msg, sync)
+      false
+    } else {
+      true
     }
   }
   
