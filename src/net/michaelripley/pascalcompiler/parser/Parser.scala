@@ -222,22 +222,28 @@ class Parser(
     error(space + errorString, sync)
   }
   
+  private def semanticError(message: String, sync: SyncSet): Unit = {
+    val lexeme = currentToken match {
+      case at: AttributeToken  => at.lexeme
+      case id: IdentifierToken => id.lexeme
+    }
+    
+    val space = " " * (lexeme.location.columnOffset + 7)
+    
+    error(space + "^ SEMERR: " + message, sync)
+  }
+  
   private def semanticError(
       err: Option[IdentifierError], sync: SyncSet): Unit = {
     
-    err match {
-      case Some(err) => {
-        val lexeme = currentToken match {
-          case at: AttributeToken  => at.lexeme
-          case id: IdentifierToken => id.lexeme
-        }
-        
-        val space = " " * (lexeme.location.columnOffset + 7)
-        
-        error(space + "^ " + err.message, sync)
-      }
-      case _ => Unit
-    }
+    err.fold()(e => error(e.message, sync))
+  }
+  
+  /**
+   * @return true if all options exist
+   */
+  private def exists(things: Option[Any]*): Boolean = {
+    things.forall(_.isDefined)
   }
   
   /* *************************************************************************
@@ -358,22 +364,51 @@ class Parser(
   }
   
   // could not name this function type, as type is a reserved word in Scala
-  private def anyType(): Unit = {
+  private def anyType(): Option[Type] = {
     val sync = (Set[Token](SEMICOLON, PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(INTEGER, REAL)) {
-      standardType()
+      standardType() match {
+        case Some(t) => Some(t)
+        case _ => None
+      }
     } else if (isCurrentToken(ARRAY)) {
       matchToken(ARRAY, sync)
       matchToken(SQUAREBRACKET_OPEN, sync)
-      matchToken(NUM, sync)
+      val optNum1 = matchToken(NUM, sync) match {
+        case Some(it: IntegerToken) => Some(it.value)
+        case _ => {
+          semanticError("array bound must be an integer", sync);
+          None
+        }
+      }
       matchToken(ARRAYRANGE, sync)
-      matchToken(NUM, sync)
+      val optNum2 = matchToken(NUM, sync) match {
+        case Some(it: IntegerToken) => Some(it.value)
+        case _ => {
+          semanticError("array bound must be an integer", sync);
+          None
+        }
+      }
       matchToken(SQUAREBRACKET_CLOSE, sync)
       matchToken(OF, sync)
-      standardType()
+      val optType = standardType() match {
+        case Some(t: ArrayableType) => Some(t)
+        case _ => {
+          semanticError("arrays can only contain integers or reals", sync)
+          None
+        }
+      }
+      
+      if (exists(optNum1, optNum2, optType)) {
+        Some(T_Array(optNum2.get - optNum1.get, optType.get))
+      } else {
+        None
+      }
+      
     } else {
       syntaxError("INTEGER, REAL, ARRAY", sync)
+      None
     }
   }
   
