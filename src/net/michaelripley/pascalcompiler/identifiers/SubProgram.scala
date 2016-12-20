@@ -112,15 +112,20 @@ private[identifiers] class SubProgram(
   private def findSubProgram(
       idName: String,
       params: List[Type]): Option[SubProgram] = {
-    // first try to see if this scope contains an appropriately named subprogram
-    getSubProgram(idName, params) match {
-      case m: Some[SubProgram] => m // if so, we're done
-      case _ => {
-        parent match { // otherwise, check if we have a parent
-          case Some(p) => { // if so, have it do the same thing we're doing now
-            p.findSubProgram(idName, params)
+    // first check for recursive calls
+    if (idName == this.idName && paramsEqual(params)) {
+      Some(this)
+    } else {
+      // next try to see if this scope contains an appropriately named subprogram
+      getSubProgram(idName, params) match {
+        case m: Some[SubProgram] => m // if so, we're done
+        case _ => {
+          parent match { // otherwise, check if we have a parent
+            case Some(p) => { // if so, have it do the same thing we're doing now
+              p.findSubProgram(idName, params)
+            }
+            case _ => None // if no more parents, we're done
           }
-          case _ => None // if no more parents, we're done
         }
       }
     }
