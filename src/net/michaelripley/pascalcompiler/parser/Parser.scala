@@ -349,27 +349,39 @@ class Parser(
     }
   }
   
-  private def identifierList(): Option[List[Type]] = {
+  private def identifierList(): Option[List[TypedIdentifier]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      matchToken(ID, sync)
-      identifierListTail().map(T_ProgramParam() +: _)
+      val optId = extractId(matchToken(ID, sync))
+      val optList = identifierListTail()
+      
+      if (exists(optId, optList)) {
+        Some(TypedIdentifier(optId.get.name, T_ProgramParam()) +: optList.get)
+      } else {
+        None
+      }
     } else {
       syntaxError("ID", sync)
       None
     }
   }
   
-  private def identifierListTail(): Option[List[Type]] = {
+  private def identifierListTail(): Option[List[TypedIdentifier]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_CLOSE)) {
       Some(List.empty)
     } else if (isCurrentToken(COMMA)) {
       matchToken(COMMA, sync)
-      matchToken(ID, sync)
-      identifierListTail().map(T_ProgramParam() +: _)
+      val optId = extractId(matchToken(ID, sync))
+      val optList = identifierListTail()
+      
+      if (exists(optId, optList)) {
+        Some(TypedIdentifier(optId.get.name, T_ProgramParam()) +: optList.get)
+      } else {
+        None
+      }
     } else {
       syntaxError("')', ','", sync)
       None
@@ -544,7 +556,7 @@ class Parser(
     }
   }
   
-  private def subprogramHeadPrime(): Option[List[Type]] = {
+  private def subprogramHeadPrime(): Option[List[TypedIdentifier]] = {
     val sync = (Set[Token](VAR, PROCEDURE, BEGIN), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
@@ -560,7 +572,7 @@ class Parser(
     }
   }
   
-  private def arguments(): Option[List[Type]] = {
+  private def arguments(): Option[List[TypedIdentifier]] = {
     val sync = (Set[Token](SEMICOLON), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_OPEN)) {
@@ -574,17 +586,17 @@ class Parser(
     }
   }
   
-  private def parameterList(): Option[List[Type]] = {
+  private def parameterList(): Option[List[TypedIdentifier]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      matchToken(ID, sync)
+      val optId = extractId(matchToken(ID, sync))
       matchToken(COLON, sync)
       val optType = anyType()
       val optParams = parameterListTail()
       
-      if (exists(optType, optParams)) {
-        Some(optType.get +: optParams.get)
+      if (exists(optId, optType, optParams)) {
+        Some(TypedIdentifier(optId.get.name, optType.get) +: optParams.get)
       } else {
         None // indicative of errors we've already complained about
       }
@@ -594,20 +606,20 @@ class Parser(
     }
   }
   
-  private def parameterListTail(): Option[List[Type]] = {
+  private def parameterListTail(): Option[List[TypedIdentifier]] = {
     val sync = (Set[Token](PAREN_CLOSE), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PAREN_CLOSE)) {
       Some(List.empty)
     } else if (isCurrentToken(SEMICOLON)) {
       matchToken(SEMICOLON, sync)
-      matchToken(ID, sync)
+      val optId = extractId(matchToken(ID, sync))
       matchToken(COLON, sync)
       val optType = anyType()
       val optParams = parameterListTail()
       
-      if (exists(optType, optParams)) {
-        Some(optType.get +: optParams.get)
+      if (exists(optId, optType, optParams)) {
+        Some(TypedIdentifier(optId.get.name, optType.get) +: optParams.get)
       } else {
         None // indicative of errors we've already complained about
       }

@@ -7,7 +7,7 @@ import net.michaelripley.Util
 
 private[identifiers] class SubProgram(
     val idName: String,
-    val params: List[Type],
+    val params: List[TypedIdentifier],
     val parent: Option[SubProgram]) {
   
   private val variables   = MutableList.empty[TypedIdentifier]
@@ -19,6 +19,14 @@ private[identifiers] class SubProgram(
   
   private def hasVariable(idName: String) = {
     getVariable(idName).isDefined
+  }
+  
+  private def paramsEqual(a: List[Type]): Boolean = {
+    a == params.map( _.idType )
+  }
+  
+  private def paramsEqual(a: List[TypedIdentifier]): Boolean = {
+    paramsEqual(a.map( _.idType ))
   }
   
   /**
@@ -35,7 +43,7 @@ private[identifiers] class SubProgram(
   }
   
   private def getSubProgram(idName: String, params: List[Type]) = {
-    subPrograms.find { s => s.idName == idName && s.params == params }
+    subPrograms.find { s => s.idName == idName && paramsEqual(s.params) }
   }
   
   private def hasSubProgram(idName: String, params: List[Type]) = {
@@ -46,12 +54,13 @@ private[identifiers] class SubProgram(
    * Try to add a subprogram
    * @return Optionally return the newly added subprogram
    */
-  def addSubProgram(idName: String, params: List[Type]): Option[SubProgram] = {
+  def addSubProgram(
+      idName: String, params: List[TypedIdentifier]): Option[SubProgram] = {
     
     // first, check if we are allowed to add a procedure
     // aka, is there already an identical one in scope?
     
-    if (isSubProgramInScope(idName, params)) {
+    if (isSubProgramInScope(idName, params.map(_.idType))) {
       None
     } else {
       // now, insert the new subprogram
@@ -66,7 +75,8 @@ private[identifiers] class SubProgram(
    */
   @tailrec
   final def findVariable(idName: String): Option[TypedIdentifier] = {
-    // first try to see if this scope contains an appropriately named variable
+    // TODO first check to see if there is a matching parameter
+    // next try to see if this scope contains an appropriately named variable
     getVariable(idName) match {
       case m: Some[TypedIdentifier] => m // if so, we're done
       case _ => {
@@ -118,7 +128,7 @@ private[identifiers] class SubProgram(
       case other: SubProgram => {
         (other canEqual this) && ((other eq this) || (
             other.idName == idName
-            && other.params == params
+            && paramsEqual(other.params)
         ))
       }
       case _ => false

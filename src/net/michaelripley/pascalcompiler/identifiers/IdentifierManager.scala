@@ -37,7 +37,7 @@ class IdentifierManager {
     Some(IdentifierError(message))
   }
   
-  def addProgram(id: Identifier, params: List[Type]): Err = {
+  def addProgram(id: Identifier, params: List[TypedIdentifier]): Err = {
     if (program.isEmpty) {
       program = Some(new SubProgram(id.name, params, None))
       currentScope = program
@@ -86,7 +86,7 @@ class IdentifierManager {
     }
   }
   
-  def addProcedure(id: Identifier, params: List[Type]): Err = {
+  def addProcedure(id: Identifier, params: List[TypedIdentifier]): Err = {
     currentScope match {
       case Some(scope) => {
         scope.addSubProgram(id.name, params) match {
