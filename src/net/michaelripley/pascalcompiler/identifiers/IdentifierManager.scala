@@ -72,7 +72,7 @@ class IdentifierManager {
   def getVariable(id: Identifier): Either[IdentifierError, TypedIdentifier] = {
     currentScope match {
       case Some(scope) => {
-        scope.getVariable(id.name) match {
+        scope.findVariable(id.name) match {
           case Some(v) => {
             // record the new id that points to this variable
             tokenLocations.put(id, variableLocations(v))

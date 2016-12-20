@@ -13,7 +13,7 @@ private[identifiers] class SubProgram(
   private val variables   = MutableList.empty[TypedIdentifier]
   private val subPrograms = MutableList.empty[SubProgram]
   
-  def getVariable(idName: String) = {
+  private def getVariable(idName: String) = {
     variables.find { _.name == idName }
   }
   
@@ -58,6 +58,25 @@ private[identifiers] class SubProgram(
       val subProgram = new SubProgram(idName, params, Some(this))
       subPrograms += subProgram
       Some(subProgram)
+    }
+  }
+  
+  /**
+   * Recursively check if a variable is in scope
+   */
+  @tailrec
+  final def findVariable(idName: String): Option[TypedIdentifier] = {
+    // first try to see if this scope contains an appropriately named variable
+    getVariable(idName) match {
+      case m: Some[TypedIdentifier] => m // if so, we're done
+      case _ => {
+        parent match { // otherwise, check if we have a parent
+          case Some(p) => { // if so, have it do the same thing we're doing now
+            p.findVariable(idName)
+          }
+          case _ => None // if no more parents, we're done
+        }
+      }
     }
   }
   
