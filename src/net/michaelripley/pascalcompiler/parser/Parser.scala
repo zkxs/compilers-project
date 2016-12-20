@@ -275,15 +275,19 @@ class Parser(
       matchToken(PAREN_OPEN, sync)
       val optParams = identifierList()
       
-      if (exists(optId, optParams)) {
+      val success = if (exists(optId, optParams)) {
         semanticError(addProgram(optId.get, optParams.get), sync)
+      } else {
+        false
       }
       
       matchToken(PAREN_CLOSE, sync)
       matchToken(SEMICOLON, sync)
       programPrime()
       
-      semanticError(pop(), sync)
+      if (success) {
+        semanticError(pop(), sync)
+      }
     } else {
       syntaxError("PROGRAM", sync)
     }
