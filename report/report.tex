@@ -42,6 +42,10 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
+\lstset{
+	basicstyle=\small\ttfamily
+}
+
 \lstdefinestyle{myStyle}{
   frame=tb,
   aboveskip=3mm,
@@ -78,7 +82,7 @@
 % ------------------------------------------------------------------------------
 % Set up title
 
-\newcommand{\ptitle}{Project 2 Report}
+\newcommand{\ptitle}{Project 3+4 Report}
 \newcommand{\pauthor}{Michael Ripley}
 \newcommand{\pschool}{University of Tulsa}
 \newcommand{\pteacher}{Dr. Shenoi}
@@ -147,29 +151,29 @@
 
 \section{Introduction}\label{intro}
 
-Project 2 adds syntax analysis on top of the lexing framework created in project 1.  The syntax analyzer identifies and reports syntax errors.  Additionally, it implements error recovery.  
+Project 3 involves adding a semantic analyzer on top of the existing parser from the previous projects.  The semantic analyzer handles typechecking and declaration processing.  The semantic analyzer must also support some level of error recovery.  
+
+Project 4 involves computing memory addresses for variables in each scope.
 
 \section{Methodology}\label{meth}
 
-Before work on the parser could even begin, the grammar had to undergo significant massaging.  Finally, after all massaging, the firsts and follows had to be computed.  The grammar after each step is included at the end of this report.  The steps are as follows: 
-\begin{enumerate}
-  \item Project-specific modifications applied and all productions split
-  \item Removal of $\epsilon$ productions
-  \item Removal of left recursion
-  \item Left factoring, final clean-up, and computation of firsts and follows
-\end{enumerate}
-
-Using the final massaged grammar with firsts and follows, the parse table is created.  Note that while normally only the follows of $\epsilon$ productions must be computed, we need all of the follows for use in error recovery, which will be discussed later.  
-
-Next, ambiguity must be removed.  The easiest way to do this is in the parse table.  Ambiguities appear as cells with two possible productions, one of which must be removed to resolve the ambiguity.  The \textit{optional\_else} production upon seeing terminal \textbf{else} becomes either \textbf{else} \textit{statement} OR \textbf{$\epsilon$}. The $\epsilon$ production is removed, as we want dangling-else clauses to bind to the nearest if statement.  
+To begin project 3 and 4, our massaged grammar from project 2 had to be annotated to include types and declarations.  I performed this annotation twice: once to get the hang of it, and again to fix all the silly things I'd done the first time through.  Type checking was relatively easy, with the notable exception being the slightly more difficult table annotations for ADDOP, MULOP, and RELOP.  With the annotation done, the only thing left is implementing it into the parser. 
 
 \section{Implementation}\label{impl}
 
-With all the pen-and-paper work complete, let us move on to the actual implementation.  First, I reviewed the project 3 and 4 assignment to ensure that my program would be structured in such a way to be easily extended for later projects.  Then, I began the grunt work of transcribing the parse table to the recursive descent parser functions as discussed in class.  To accelerate this process and reduce redundant code, I developed a number of helper functions for common tasks, such as token comparison and error handling.  After the initial parser code was complete, I performed a second pass to add error handling to each function.  Next, I created a unique sync set for each production using the follows of that production as well as \$ (End of File).  Wrapping up, a few bugs were fixed and I plugged the new parser code into the existing lexer code.  This required a small reworking of where the printing happened.  
+To begin, I set up a system for type comparison and declaration processing.  With this framework laid down, I began transcribing the annotations from my grammar into the recursive descent parser.  This was complicated by my error recovery technique, where any production that would typically always return a synthesized attribute could optionally return nothing.  This allowed the parser to continue if a semantic error was encountered, and prevented printing a cascade of errors due to a single problem.  However, it required me to check at each production if I was actually receiving a synthesized attribute from child productions.  Because of this, it took my longer than I expected to completely transcribe my annotations.  
+
+As the lexer already has different token types for INTEGER, REAL, and LONGREAL, obtaining the type of terminals proved relatively simple.  INTEGER required a bit more work, as there are a couple points where the value of IntegerToken is required for use in type checking of arrays.  
+
+Declaration processing was simple once I set up my data structure to contain subprograms and variables.  I ran into a couple of issues at edge cases, such as the allowing of recursive calls, but nothing was too difficult to fix.  
+
+Error recovery uses the same sync sets as project 2 (the follows of each production and EOF), in addition to the previously described optional synthesized attributs.
+
+Finally for project 4, memory addresses had to be computed for variables.  As I had designed my type system with this in mind, it was an extremely simple addition.  It did, however, leave the question of what to do with non-addressed variables (notably procedure parameters).  Addressed variables are printed in the form \lstinline{memloc(0, 72)}, where the first number is the scope index and the second number is the memory offset for that scope.  Non-addressed variables are printed in the form \lstinline{tokidx(8)}, where the number is a simple index starting from zero.  A new .locations output file was added listing the locations of addressed variables.
 
 \section{Discussion and Conclusions}\label{conclusions}
 
-The recursive descent parser is pretty amazing.  Testing it was actually quite entertaining, as it's starting to feel like an actual compiler.  I also noticed that most of the immediately-recursive functions are in fact tail recursive, meaning it is even more memory efficient than it appears to be.  
+It's pretty cool to have all this working.
 
 \section{References}\label{ref}
 
