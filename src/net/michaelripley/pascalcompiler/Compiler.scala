@@ -8,15 +8,23 @@ import net.michaelripley.pascalcompiler.lexer.Lexer
  */
 object Compiler {
   
+  val version = "2.1.0"
+  
   def main(args: Array[String]): Unit = {
     
-    val lexer = new Lexer(
-        resource("/reservedwords.dat"),
-        resource("/operators.dat"),
-        resource("/punctuation.dat")
-    )
+    val versionPrompts = """(?i)^--?v(?:ersion)?$""".r
     
-    args.foreach(lexer.lex)
+    if (args.length == 1 && versionPrompts.findPrefixOf(args(0)).isDefined) {
+      println("MichaelCompiler v" + version)
+    } else {
+      val lexer = new Lexer(
+          resource("/reservedwords.dat"),
+          resource("/operators.dat"),
+          resource("/punctuation.dat")
+      )
+      
+      args.foreach(lexer.lex)
+    }
   }
   
   private def resource(path: String): Source = {
