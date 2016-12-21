@@ -980,6 +980,9 @@ class Parser(
           if (assertEquals(sType, iType,
               s"cannot ADDOP differing types: $iType, $sType", sync)) {
             if (addop.attribute.get == "OR") {
+              if (sType.get != T_Boolean()) {
+                semanticError("cannot OR non-booleans", sync)
+              }
               Some(T_Boolean())
             } else {
               if (assertNumeric(sType,
@@ -1037,6 +1040,9 @@ class Parser(
           if (assertEquals(sType, iType,
               s"cannot MULOP differning types: $iType, $sType", sync)) {
             if (mulop.attribute.get == "AND") {
+              if (sType.get != T_Boolean()) {
+                semanticError("cannot AND non-booleans", sync)
+              }
               Some(T_Boolean())
             } else {
               if (assertNumeric(sType,
