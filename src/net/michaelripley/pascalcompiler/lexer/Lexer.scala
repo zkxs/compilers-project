@@ -238,6 +238,7 @@ class Lexer(
     listWriter.close()
     
     val tokenLocations = idManager.getTokenLocations()
+    val variableLocations = idManager.getVariableLocations()
     
     // print all tokens to token file
     val tokenWriter = new PrintWriter(filename + ".tokens")
@@ -255,6 +256,13 @@ class Lexer(
       case t => tokenWriter.println(t)
     })
     tokenWriter.close()
+    
+    // print all locations to location file
+    val locationWriter = new PrintWriter(filename + ".locations")
+    variableLocations.toVector.sortBy(x => x._2).foreach(kv => {
+      locationWriter.println(f"${kv._1}%-20s ${kv._2}")
+    })
+    locationWriter.close()
 
     // Unit
   }

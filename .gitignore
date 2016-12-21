@@ -22,6 +22,7 @@ target/
 # Program output
 *.listing
 *.tokens
+*.locations
 
 # Program input
 *.pas

@@ -31,7 +31,7 @@ object Type {
   case class T_Array(val length: Int, val elementType: ArrayableType)
       extends Type {
     override def size = {length * elementType.size}
-    override def toString() = s"ARRAY[$elementType]"
+    override def toString() = s"$elementType[$length]"
   }
   
 }
