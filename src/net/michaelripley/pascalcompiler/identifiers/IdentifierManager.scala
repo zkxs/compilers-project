@@ -20,10 +20,11 @@ class IdentifierManager {
   
   // offset in memory of next variable
   private var offset: Int = 0
+  private var scopeIndex: Int = 0
   
   // maps to keep track of variable locations
-  private val tokenLocations = Map.empty[Identifier, Int]
-  private val variableLocations = Map.empty[TypedIdentifier, Int]
+  private val tokenLocations = Map.empty[Identifier, (Int, Int)]
+  private val variableLocations = Map.empty[TypedIdentifier, (Int, Int)]
   
   def getTokenLocations() = {
     tokenLocations.toMap
@@ -53,8 +54,8 @@ class IdentifierManager {
         val typedId = TypedIdentifier(id.name, idType)
         if (scope.addVariable(typedId)) {
           // add successful
-          tokenLocations.put(id, offset)
-          variableLocations.put(typedId, offset)
+          tokenLocations.put(id, (scopeIndex, offset))
+          variableLocations.put(typedId, (scopeIndex, offset))
           offset += typedId.idType.size
           None 
         } else {
@@ -129,6 +130,8 @@ class IdentifierManager {
           case parent: Some[SubProgram] => {
             // if parent exists, update scope to it
             currentScope = parent
+            offset = 0
+            scopeIndex += 1
             None
           }
           case _ => {

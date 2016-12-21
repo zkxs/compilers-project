@@ -260,7 +260,7 @@ class Lexer(
     // print all locations to location file
     val locationWriter = new PrintWriter(filename + ".locations")
     variableLocations.toVector.sortBy(x => x._2).foreach(kv => {
-      locationWriter.println(f"${kv._1}%-20s ${kv._2}")
+      locationWriter.println(f"${kv._1}%-20s ${kv._2._2}")
     })
     locationWriter.close()
 
