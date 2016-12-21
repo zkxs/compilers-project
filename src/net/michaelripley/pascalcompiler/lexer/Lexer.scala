@@ -3,6 +3,7 @@ package net.michaelripley.pascalcompiler.lexer
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import scala.collection.mutable.MutableList
+import scala.collection.mutable.Set
 import scala.io.Source
 import scala.util.matching.Regex.Match
 import scala.annotation.tailrec
@@ -11,6 +12,7 @@ import net.michaelripley.pascalcompiler.tokens._
 import net.michaelripley.pascalcompiler.lexer._
 import net.michaelripley.pascalcompiler.parser.Parser
 import net.michaelripley.pascalcompiler.identifiers.IdentifierManager
+import net.michaelripley.pascalcompiler.identifiers.Identifier
 
 // only Lexer._ is imported here. All other imports are above the object.
 import Lexer._
@@ -239,6 +241,8 @@ class Lexer(
     
     val tokenLocations = idManager.getTokenLocations()
     val variableLocations = idManager.getVariableLocations()
+    val printedTokens = Set.empty[Identifier]
+    var printedTokenNumer = -1
     
     // print all tokens to token file
     val tokenWriter = new PrintWriter(filename + ".tokens")
@@ -248,8 +252,13 @@ class Lexer(
       case t if t == eolToken => ()
       case t: IdentifierToken => {
         val locationString = tokenLocations.get(t.identifier) match {
-          case Some(x) => "loc" + x
-          case _ => "itk" + t.identifier.number //TODO: this should probably be null
+          case Some(x) => "memloc" + x
+          case _ => {
+            if (printedTokens.add(t.identifier)) {
+              printedTokenNumer += 1
+            }
+            s"tokidx($printedTokenNumer)"
+          }
         }
         tokenWriter.println(t.toString() + locationString)
       }
