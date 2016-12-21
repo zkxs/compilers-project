@@ -14,3 +14,5 @@ The compiler will output three files for each input pascal source.
 - A `filename.listing` file that includes any lexical, syntax, or semantic errors found
 - A `filename.tokens` file listing all tokens output by the lexer
 - A `filename.locations` file listing the type and memory offset of all variables
+
+Note that nothing being written to standard out is expected behavior.
