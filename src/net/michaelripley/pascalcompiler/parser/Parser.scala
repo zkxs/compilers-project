@@ -795,8 +795,13 @@ class Parser(
     
     if (isCurrentToken(SQUAREBRACKET_OPEN)) {
       matchToken(SQUAREBRACKET_OPEN, sync)
-      expression()
+      val deferred = expression() match {
+        case Some(T_Integer()) => None
+        case _ => Some(semanticErrorDeferred("array indices must be integers", sync))
+      }
       matchToken(SQUAREBRACKET_CLOSE, sync)
+      
+      deferred.map(f => f())
       Some(true)
     } else if (isCurrentToken(ASSIGNOP)) {
       Some(false)
@@ -1122,8 +1127,13 @@ class Parser(
       Some(false)
     } else if (isCurrentToken(SQUAREBRACKET_OPEN)) {
       matchToken(SQUAREBRACKET_OPEN, sync)
-      expression()
+      val deferred = expression() match {
+        case Some(T_Integer()) => None
+        case _ => Some(semanticErrorDeferred("array indices must be integers", sync))
+      }
       matchToken(SQUAREBRACKET_CLOSE, sync)
+      
+      deferred.map(f => f())
       Some(true)
     } else {
       syntaxError(
