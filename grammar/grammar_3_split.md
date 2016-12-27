@@ -3,7 +3,7 @@
 |  1     | *program* →                 | **program** **id** **(** *identifier_list* **)** **;** *declarations* *subprogram_declarations* *compound_statement* **.** |
 |  2.1   | *identifier_list* →         | **id** |
 |  2.2   | *identifier_list* →         | *identifier_list* **,** **id** |
-|  3.1   | *declarations* →            | *declarations* **var** **id** **:** type **;** |
+|  3.1   | *declarations* →            | *declarations* **var** **id** **:** *type* **;** |
 |  3.2   | *declarations* →            | **ϵ** |
 |  4.1   | *type* →                    | *standard_type* |
 |  4.2   | *type* →                    | **array** **[** **num** **\.\.** **num** **]** **of** *standard_type* |
