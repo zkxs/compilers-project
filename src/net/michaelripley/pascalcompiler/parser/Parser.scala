@@ -91,19 +91,14 @@ class Parser(
   }
   
   private val tokenIterator = tokens.iterator
-  private var lastBadToken: Token = _
   private var currentToken: Token = _
   
-  private def nextToken(gobbling: Boolean): Unit = { 
-    if (!gobbling) {
-      lastBadToken = currentToken
-    }
-    
+  private def nextToken(): Unit = {
     currentToken = tokenIterator.next()
   }
 		  
   def parse() = {
-    nextToken(false)
+    nextToken()
     program()
     matchToken(EOF, (Set.empty[Token], Set.empty[TokenMatcher]))
     listingPrinter.finishPrinting()
@@ -114,7 +109,7 @@ class Parser(
     if (matched) {
       if (currentToken != EOF) {
         val toReturn = currentToken
-        nextToken(false)
+        nextToken()
         Some(toReturn)
       } else {
         /* Typically, you would exit the parser after reading an expected EOF,
@@ -168,9 +163,8 @@ class Parser(
   }
   
   private def gobbleTokens(sync: SyncSet): Unit = {
-    lastBadToken = currentToken
     while (!isCurrentTokenInSync(sync)) {
-      nextToken(true)
+      nextToken()
       currentToken match {
         case et: ErrorToken => listingPrinter.printError(et)
         case _ =>
