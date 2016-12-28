@@ -92,11 +92,16 @@ class Parser(
   }
   
   private val tokenIterator = tokens.iterator
+  private var previousToken: Token = _
   private var currentToken: Token = _
   private var lineNumber = 0
   
   @tailrec
   private def nextToken(): Unit = {
+    if (currentToken != EOL) {
+      previousToken = currentToken
+    }
+    
     currentToken = tokenIterator.next()
     
     if (currentToken == EOL) {
@@ -229,7 +234,7 @@ class Parser(
   }
   
   private def printError(errorType: String, message: String): Unit = {
-    val lexeme = currentToken match {
+    val lexeme = previousToken match {
       case at: AttributeToken  => at.lexeme
       case id: IdentifierToken => id.lexeme
     }
