@@ -19,11 +19,6 @@ import Lexer._
 
 object Lexer {
   
-  // EOL token (a fake thing we make to insert EOL's into token list)
-  private val eolToken = new Token("EOL"){
-    override def toString(): String = ""
-  }
-  
   // tokenizes garbage
   private val garbageTokenizer = new CatchAllTokenizer()
   
@@ -250,7 +245,6 @@ class Lexer(
     tokenWriter.println(
         "Line No.    Lexeme                 Token-Type        Attribute")
     tokens.foreach(token => token match {
-      case t if t == eolToken => ()
       case t: IdentifierToken => {
         val locationString = tokenLocations.get(t.identifier) match {
           case Some(x) => "memloc" + x
@@ -283,9 +277,7 @@ class Lexer(
       lineNumber: Int): MutableList[Token] = {
     
     // Now, tokenize the line
-    val tokens = tokenizeLine(superTokenizer, line, lineNumber)
-    tokens += eolToken
-    tokens
+    tokenizeLine(superTokenizer, line, lineNumber)
   }
   
   /**

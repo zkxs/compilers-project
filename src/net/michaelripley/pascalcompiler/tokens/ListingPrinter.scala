@@ -1,62 +1,41 @@
 package net.michaelripley.pascalcompiler.tokens
 
 import java.io.PrintWriter
-import scala.collection.mutable.Queue
+import scala.collection.mutable.{Map, Queue}
 
 class ListingPrinter(tokens: List[Token],
     lines: Array[String],
     listWriter: PrintWriter) {
   
-  case class Line(val number: Int, val line: String)
+  val lineBuffer = Map.empty[Int, Queue[String]]
   
-  val lineBuffer = Queue.empty[Line]
+  lines.indices.foreach(printLine)
   
-  private def realPrintLine(line: Line) = {
-    listWriter.println(f"${line.number + 0}%5d: ${line.line}")
-  }
-  
-  private def printBuffer(newLine: Line): Unit = {
-    printBuffer()
-    lineBuffer.enqueue(newLine)
-  }
-  
-  private def printBuffer(): Unit = {
-    lineBuffer.foreach(realPrintLine)
-    lineBuffer.clear()
-    if (!lineBuffer.isEmpty) {
-      throw new AssertionError("couldn't empty line buffer")
-    }
-  }
-  
-  private def printBufferTo(lineNumber: Int): Unit = {
-    lineBuffer.dequeueAll( l => l.number <= lineNumber ).foreach(realPrintLine)
+  private def putLine(lineNumber: Int, line: String): Unit = {
+    val lineNBuffer = lineBuffer.getOrElseUpdate(lineNumber, Queue.empty)
+    lineNBuffer.enqueue(line)
   }
   
   // print LEXERR token
   def printError(errorToken: ErrorToken): Unit = {
-    printBuffer()
-    listWriter.println(errorToken.fullErrorString())
+    putLine(errorToken.lexeme.location.lineNumber, errorToken.fullErrorString())
   }
   
   // print generic error
-  def printError(errorLine: String): Unit = {
-    printBuffer()
-    listWriter.println(errorLine)
-  }
-  
-  // print semantic error
-  def printSemanticError(lineNumber: Int, errorLine: String): Unit = {
-    printBufferTo(lineNumber)
-    listWriter.println(s"$errorLine [$lineNumber]")
+  def printError(lineNumber: Int, errorLine: String): Unit = {
+    putLine(lineNumber, errorLine)
   }
   
   // print entire line
-  def printLine(lineNumber: Int): Unit = {
-    lineBuffer.enqueue(Line(lineNumber, lines(lineNumber)))
+  private def printLine(lineNumber: Int): Unit = {
+    putLine(lineNumber, f"${lineNumber + 1}%5d: ${lines(lineNumber)}")
   }
   
   def finishPrinting(): Unit = {
-    printBuffer()
+    lineBuffer
+        .toVector
+        .sortBy(x => x._1)
+        .foreach(tup => tup._2.foreach(line => listWriter.println(line)))
   }
   
 }

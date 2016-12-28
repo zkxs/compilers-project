@@ -47,7 +47,6 @@ class Parser(
   private val WHILE = new AttributeToken("WHILE")
   private val END = new AttributeToken("END")
   private val EOF = new AttributeToken("EOF")
-  private val EOL = new Token("EOL") // fake shenanigans to make printing work
   
   // harder tokens to match (they can be different literals)
   
@@ -94,31 +93,16 @@ class Parser(
   private val tokenIterator = tokens.iterator
   private var lastBadToken: Token = _
   private var currentToken: Token = _
-  private var lineNumber = 0
   
-  @tailrec
   private def nextToken(gobbling: Boolean): Unit = { 
-    if (!gobbling && currentToken != EOL) {
+    if (!gobbling) {
       lastBadToken = currentToken
     }
     
     currentToken = tokenIterator.next()
-    
-    if (currentToken == EOL) {
-      lineNumber += 1
-      if (lineNumber < lines.size) {
-        printLine(lineNumber)
-      }
-      nextToken(gobbling)
-    }
-  }
-  
-  private def printLine(lineNumber: Int) = {
-    listingPrinter.printLine(lineNumber)
   }
 		  
   def parse() = {
-    printLine(0)
     nextToken(false)
     program()
     matchToken(EOF, (Set.empty[Token], Set.empty[TokenMatcher]))
@@ -201,7 +185,7 @@ class Parser(
    * @param sync2 Extra sync set of TokenMatchers
    */
   private def error(errorType: String, message: String, sync: SyncSet): Unit = {
-    printError(errorType, message)
+    printError(currentToken, errorType, message)
     gobbleTokens(sync)
   }
   
@@ -235,42 +219,41 @@ class Parser(
     
   }
   
-  private def printError(errorType: String, message: String): Unit = {
-    val lexeme = currentToken match {
-      case at: AttributeToken  => at.lexeme
-      case id: IdentifierToken => id.lexeme
-    }
-    val space = " " * (lexeme.location.columnOffset + 7)
-    listingPrinter.printError(space + "^ " + errorType + ": " + message)
-  }
-  
-  private def printSemanticError(message: String): Unit = { 
-    val lexeme = lastBadToken match {
+  private def printError(token: Token, errorType: String, message: String): Unit = {
+    val lexeme = token match {
       case at: AttributeToken  => at.lexeme
       case id: IdentifierToken => id.lexeme
     }
     val line = lexeme.location.lineNumber
     val space = " " * (lexeme.location.columnOffset + 7)
-    listingPrinter.printSemanticError(line, space + "^ " + "SEMERR" + ": " + message)
+    
+    listingPrinter.printError(line, space + "^ " + errorType + ": " + message)
   }
   
-  private def semanticError(message: String, sync: SyncSet): Unit = {
-    printSemanticError(message)
+  private def printSemanticError(token: Token, message: String): Unit = { 
+    printError(token, "SEMERR", message)
+  }
+  
+  private def semanticError(
+      token: Token, message: String, sync: SyncSet): Unit = {
+    printSemanticError(token, message)
     gobbleTokens(sync)
   }
   
   private def semanticErrorDeferred(
-      message: String, sync: SyncSet): () => Unit = {
+      token: Token, message: String, sync: SyncSet): () => Unit = {
         
-    printSemanticError(message)
+    printSemanticError(token, message)
     () => gobbleTokens(sync)
   }
   
   private def semanticErrorDeferred(
-      err: Option[IdentifierError], sync: SyncSet): Option[() => Unit] = {
+      token: Token,
+      err: Option[IdentifierError],
+      sync: SyncSet): Option[() => Unit] = {
     
     err.fold[Option[() => Unit]](None)(e => {
-      Some(semanticErrorDeferred(e.message, sync))
+      Some(semanticErrorDeferred(token, e.message, sync))
     })
   }
   
@@ -279,8 +262,8 @@ class Parser(
    * @return true if there was no error
    */
   private def semanticError(
-      err: Option[IdentifierError], sync: SyncSet): Unit = {
-    err.map(e => semanticError(e.message, sync))
+      token: Token, err: Option[IdentifierError], sync: SyncSet): Unit = {
+    err.map(e => semanticError(token, e.message, sync))
   }
   
   /**
@@ -301,12 +284,16 @@ class Parser(
    * Return false if assertion was bad
    */
   private def assertEquals(
-      a: Option[Any], b: Option[Any], msg: String, sync: SyncSet): Boolean = {
+      token: Token,
+      a: Option[Any],
+      b: Option[Any],
+      msg: String,
+      sync: SyncSet): Boolean = {
     if (a.isEmpty || b.isEmpty) {
       // we've already complained about this. Do nothing.
       true
     } else if (a != b) {
-      semanticError(msg, sync)
+      semanticError(token, msg, sync)
       false
     } else {
       true
@@ -319,12 +306,15 @@ class Parser(
    * Return false if assertion was bad
    */
   private def assertNumeric(
-      someType: Option[Type], msg: String, sync: SyncSet): Boolean = {
+      token: Token,
+      someType: Option[Type],
+      msg: String,
+      sync: SyncSet): Boolean = {
     if (someType.isEmpty) {
       // we've already complained about this. Do nothing.
       true
     } else if (!numericTypes.contains(someType.get)) {
-      semanticError(msg, sync)
+      semanticError(token, msg, sync)
       false
     } else {
       true
@@ -342,12 +332,14 @@ class Parser(
     
     if (isCurrentToken(PROGRAM)) {
       matchToken(PROGRAM, sync)
-      val optId = extractId(matchToken(ID, sync))
+      val idToken = matchToken(ID, sync)
+      val optId = extractId(idToken)
       matchToken(PAREN_OPEN, sync)
       val optParams = identifierList()
       
       val deferred = if (exists(optId, optParams)) {
-        semanticErrorDeferred(addProgram(optId.get, optParams.get), sync)
+        semanticErrorDeferred(idToken.get,
+            addProgram(optId.get, optParams.get), sync)
       } else {
         None
       }
@@ -358,7 +350,7 @@ class Parser(
       
       if (deferred.isDefined) {
         deferred.get() // perform deferred gobbling
-        semanticError(pop(), sync)
+        semanticError(idToken.get, pop(), sync)
       }
     } else {
       syntaxError("PROGRAM", sync)
@@ -427,14 +419,15 @@ class Parser(
     
     if (isCurrentToken(VAR)) {
       matchToken(VAR, sync)
-      val optId = extractId(matchToken(ID, sync))
+      val idToken = matchToken(ID, sync)
+      val optId = extractId(idToken)
       matchToken(COLON, sync)
       val optType = anyType()
       matchToken(SEMICOLON, sync)
       optionalDeclarations()
       
       if (exists(optId, optType)) {
-        semanticError(addVariable(optId.get, optType.get), sync)
+        semanticError(idToken.get, addVariable(optId.get, optType.get), sync)
       }
     } else {
       syntaxError("VAR", sync)
@@ -464,25 +457,30 @@ class Parser(
       matchToken(SQUAREBRACKET_OPEN, sync)
       val optNum1 = matchToken(NUM, sync) match {
         case Some(it: IntegerToken) => Some(it.value)
-        case _ => {
-          semanticError("array bound must be an integer", sync);
+        case Some(token: Token) => {
+          semanticError(token, "array bound must be an integer", sync);
           None
         }
+        case _ => None
       }
       matchToken(ARRAYRANGE, sync)
       val optNum2 = matchToken(NUM, sync) match {
         case Some(it: IntegerToken) => Some(it.value)
-        case _ => {
-          semanticError("array bound must be an integer", sync);
+        case Some(token:Token) => {
+          semanticError(token, "array bound must be an integer", sync);
           None
         }
+        case _ => None
       }
       matchToken(SQUAREBRACKET_CLOSE, sync)
       matchToken(OF, sync)
+      
+      val savedToken = currentToken
       val optType = standardType() match {
         case Some(t: ArrayableType) => Some(t)
         case _ => {
-          semanticError("arrays can only contain integers or reals", sync)
+          semanticError(savedToken,
+              "arrays can only contain integers or reals", sync)
           None
         }
       }
@@ -542,11 +540,12 @@ class Parser(
     val sync = (Set[Token](SEMICOLON), Set.empty[TokenMatcher])
     
     if (isCurrentToken(PROCEDURE)) {
+      val savedToken = currentToken
       val success = subprogramHead()
       subprogramDeclarationPrime()
       
       if (success) {
-        semanticError(pop(), sync)
+        semanticError(savedToken, pop(), sync)
       }
     } else {
       syntaxError("PROCEDURE", sync)
@@ -575,11 +574,13 @@ class Parser(
     
     if (isCurrentToken(PROCEDURE)) {
       matchToken(PROCEDURE, sync)
-      val optId = extractId(matchToken(ID, sync))
+      val idToken = matchToken(ID, sync)
+      val optId = extractId(idToken)
       val optParams = subprogramHeadPrime()
       
       val deferred = if (exists(optId, optParams)) {
-        semanticErrorDeferred(addProcedure(optId.get, optParams.get), sync)
+        semanticErrorDeferred(
+            idToken.get, addProcedure(optId.get, optParams.get), sync)
       } else {
         None
       }
@@ -726,25 +727,30 @@ class Parser(
       procedureStatement()
     } else if (isCurrentToken(ID)) {
       val varType = variable()
-      matchToken(ASSIGNOP, sync)
+      val assignOp = matchToken(ASSIGNOP, sync)
       val exprType = expression()
-      assertEquals(varType, exprType, "types must match in an assignment", sync)
+      
+      assignOp.map(tok => assertEquals(
+          tok, varType, exprType, "types must match in an assignment", sync))
+      
     } else if (isCurrentToken(IF)) {
       matchToken(IF, sync)
+      val exprStart = currentToken
       val exprType = expression()
       matchToken(THEN, sync)
       statement()
       optionalElse()
       
-      assertEquals(exprType, Some(T_Boolean()),
+      assertEquals(exprStart, exprType, Some(T_Boolean()),
           "IF conditons must be boolean expressions", sync)
     } else if (isCurrentToken(WHILE)) {
       matchToken(WHILE, sync)
+      val exprStart = currentToken
       val exprType = expression()
       matchToken(DO, sync)
       statement()
       
-      assertEquals(exprType, Some(T_Boolean()),
+      assertEquals(exprStart, exprType, Some(T_Boolean()),
           "WHILE conditons must be boolean expressions", sync)
     } else {
       syntaxError("BEGIN, CALL, ID, IF, WHILE", sync)
@@ -768,13 +774,14 @@ class Parser(
     val sync = (Set[Token](ASSIGNOP), Set.empty[TokenMatcher])
     
     if (isCurrentToken(ID)) {
-      val optId = extractId(matchToken(ID, sync))
+      val idToken = matchToken(ID, sync)
+      val optId = extractId(idToken)
       val isArrayVar = arrayVariable()
       
       if (exists(optId, isArrayVar)) {
         
         getVariable(optId.get).fold( error => { // if failure
-          semanticError(error.message, sync)
+          semanticError(idToken.get, error.message, sync)
           None
         }, id => { // if success
           if (isArrayVar.get) {
@@ -783,7 +790,8 @@ class Parser(
               case T_Array(_, innerType) => Some(innerType)
               case _ => {
                 // this array assignment was not to an array!
-                semanticError(s"array assignment to non-array $q$id$q", sync)
+                semanticError(idToken.get,
+                    s"array assignment to non-array $q$id$q", sync)
                 None
               }
             }
@@ -808,9 +816,11 @@ class Parser(
     
     if (isCurrentToken(SQUAREBRACKET_OPEN)) {
       matchToken(SQUAREBRACKET_OPEN, sync)
+      val exprStart = currentToken
       val deferred = expression() match {
         case Some(T_Integer()) => None
-        case _ => Some(semanticErrorDeferred("array indices must be integers", sync))
+        case _ => Some(semanticErrorDeferred(
+            exprStart, "array indices must be integers", sync))
       }
       matchToken(SQUAREBRACKET_CLOSE, sync)
       
@@ -829,11 +839,12 @@ class Parser(
     
     if (isCurrentToken(CALL)) {
       matchToken(CALL, sync)
-      val optId = extractId(matchToken(ID, sync))
+      val idToken = matchToken(ID, sync)
+      val optId = extractId(idToken)
       val optParams = optionalExpressionList()
       
       if (exists(optId, optParams)) {
-        semanticError(checkCall(optId.get, optParams.get), sync)
+        semanticError(idToken.get, checkCall(optId.get, optParams.get), sync)
       }
     } else {
       syntaxError("CALL", sync)
@@ -928,13 +939,13 @@ class Parser(
       
       optRelop match {
         case Some(relop: AttributeToken) => {
-          if (assertEquals(exprType, iType,
+          if (assertEquals(relop, exprType, iType,
               s"cannot RELOP differing types: $iType, $exprType", sync)) {
             val opType = relop.attribute.get
             if (opType == "EQUALS" || opType == "NOTEQUALS") {
               Some(T_Boolean())
             } else {
-              if (assertNumeric(exprType,
+              if (assertNumeric(relop, exprType,
                   "cannot compare non-numeric types", sync)) {
                 Some(T_Boolean())
               } else {
@@ -990,15 +1001,15 @@ class Parser(
       
       optAddop match {
         case Some(addop: AttributeToken) => {
-          if (assertEquals(sType, iType,
+          if (assertEquals(addop, sType, iType,
               s"cannot ADDOP differing types: $iType, $sType", sync)) {
             if (addop.attribute.get == "OR") {
               if (sType.get != T_Boolean()) {
-                semanticError("cannot OR non-booleans", sync)
+                semanticError(addop, "cannot OR non-booleans", sync)
               }
               Some(T_Boolean())
             } else {
-              if (assertNumeric(sType,
+              if (assertNumeric(addop, sType,
                   "cannot add non-numeric types", sync)) {
                 sType
               } else {
@@ -1050,15 +1061,15 @@ class Parser(
       
       optMulop match {
         case Some(mulop: AttributeToken) => {
-          if (assertEquals(sType, iType,
+          if (assertEquals(mulop, sType, iType,
               s"cannot MULOP differning types: $iType, $sType", sync)) {
             if (mulop.attribute.get == "AND") {
               if (sType.get != T_Boolean()) {
-                semanticError("cannot AND non-booleans", sync)
+                semanticError(mulop, "cannot AND non-booleans", sync)
               }
               Some(T_Boolean())
             } else {
-              if (assertNumeric(sType,
+              if (assertNumeric(mulop, sType,
                   s"cannot multiply ${iType.fold("")(_.toString())}", sync)) {
                 sType
               } else {
@@ -1084,19 +1095,21 @@ class Parser(
       Set[TokenMatcher](RELOP, ADDOP, MULOP))
     
     if (isCurrentToken(ID)) {
-      val optId = extractId(matchToken(ID, sync))
+      val idToken = matchToken(ID, sync)
+      val optId = extractId(idToken)
       val isArray = arrayExpression()
       
       if (exists(optId, isArray)) {
         getVariable(optId.get).fold(error => {
-          semanticError(error.message, sync)
+          semanticError(idToken.get, error.message, sync)
           None
         }, id => {
           if (isArray.get) {
             id.idType match {
               case T_Array(_, innerType) => Some(innerType)
               case _ => {
-                semanticError(s"array access to non-array $q$id$q", sync)
+                semanticError(
+                    idToken.get, s"array access to non-array $q$id$q", sync)
                 None
               }
             }
@@ -1122,9 +1135,10 @@ class Parser(
       sType
     } else if (isCurrentToken(NOT)) {
       matchToken(NOT, sync)
+      val factorToken = currentToken
       val optType = factor()
       if (optType.isDefined && optType.get != T_Boolean()) {
-        semanticError("NOT can only be applied to booleans", sync)
+        semanticError(factorToken, "NOT can only be applied to booleans", sync)
       }
       Some(T_Boolean()) // purposely always return boolean for error recovery
     } else {
@@ -1146,9 +1160,11 @@ class Parser(
       Some(false)
     } else if (isCurrentToken(SQUAREBRACKET_OPEN)) {
       matchToken(SQUAREBRACKET_OPEN, sync)
+      val exprToken = currentToken
       val deferred = expression() match {
         case Some(T_Integer()) => None
-        case _ => Some(semanticErrorDeferred("array indices must be integers", sync))
+        case _ => Some(semanticErrorDeferred(
+            exprToken, "array indices must be integers", sync))
       }
       matchToken(SQUAREBRACKET_CLOSE, sync)
       
