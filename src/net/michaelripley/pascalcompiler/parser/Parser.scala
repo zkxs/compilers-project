@@ -92,14 +92,14 @@ class Parser(
   }
   
   private val tokenIterator = tokens.iterator
-  private var previousToken: Token = _
+  private var lastBadToken: Token = _
   private var currentToken: Token = _
   private var lineNumber = 0
   
   @tailrec
-  private def nextToken(): Unit = {
-    if (currentToken != EOL) {
-      previousToken = currentToken
+  private def nextToken(gobbling: Boolean): Unit = { 
+    if (!gobbling && currentToken != EOL) {
+      lastBadToken = currentToken
     }
     
     currentToken = tokenIterator.next()
@@ -109,7 +109,7 @@ class Parser(
       if (lineNumber < lines.size) {
         printLine(lineNumber)
       }
-      nextToken()
+      nextToken(gobbling)
     }
   }
   
@@ -119,9 +119,10 @@ class Parser(
 		  
   def parse() = {
     printLine(0)
-    nextToken()
+    nextToken(false)
     program()
     matchToken(EOF, (Set.empty[Token], Set.empty[TokenMatcher]))
+    listingPrinter.finishPrinting()
   }
   
   private def matchToken(m: TokenMatcher, sync: SyncSet): Option[Token] = {
@@ -129,7 +130,7 @@ class Parser(
     if (matched) {
       if (currentToken != EOF) {
         val toReturn = currentToken
-        nextToken()
+        nextToken(false)
         Some(toReturn)
       } else {
         /* Typically, you would exit the parser after reading an expected EOF,
@@ -183,8 +184,9 @@ class Parser(
   }
   
   private def gobbleTokens(sync: SyncSet): Unit = {
+    lastBadToken = currentToken
     while (!isCurrentTokenInSync(sync)) {
-      nextToken()
+      nextToken(true)
       currentToken match {
         case et: ErrorToken => listingPrinter.printError(et)
         case _ =>
@@ -234,7 +236,7 @@ class Parser(
   }
   
   private def printError(errorType: String, message: String): Unit = {
-    val lexeme = previousToken match {
+    val lexeme = currentToken match {
       case at: AttributeToken  => at.lexeme
       case id: IdentifierToken => id.lexeme
     }
@@ -242,8 +244,14 @@ class Parser(
     listingPrinter.printError(space + "^ " + errorType + ": " + message)
   }
   
-  private def printSemanticError(message: String): Unit = {
-    printError("SEMERR", message)
+  private def printSemanticError(message: String): Unit = { 
+    val lexeme = lastBadToken match {
+      case at: AttributeToken  => at.lexeme
+      case id: IdentifierToken => id.lexeme
+    }
+    val line = lexeme.location.lineNumber
+    val space = " " * (lexeme.location.columnOffset + 7)
+    listingPrinter.printSemanticError(line, space + "^ " + "SEMERR" + ": " + message)
   }
   
   private def semanticError(message: String, sync: SyncSet): Unit = {
