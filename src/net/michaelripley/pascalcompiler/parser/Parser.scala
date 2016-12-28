@@ -14,7 +14,7 @@ import Parser._
 class Parser(
     tokens: List[Token],
     lines: Array[String],
-    listWriter: PrintWriter,
+    listingPrinter: ListingPrinter,
     idMan: IdentifierManager) {
   
   // easy tokens to match
@@ -109,7 +109,7 @@ class Parser(
   }
   
   private def printLine(lineNumber: Int) = {
-    listWriter.println(f"${lineNumber + 1}%5d: ${lines(lineNumber)}")
+    listingPrinter.printLine(lineNumber)
   }
 		  
   def parse() = {
@@ -181,7 +181,7 @@ class Parser(
     while (!isCurrentTokenInSync(sync)) {
       nextToken()
       currentToken match {
-        case et: ErrorToken => listWriter.println(et.fullErrorString())
+        case et: ErrorToken => listingPrinter.printError(et)
         case _ =>
       }
     }
@@ -193,8 +193,8 @@ class Parser(
    * @param sync1 Sync set
    * @param sync2 Extra sync set of TokenMatchers
    */
-  private def error(message: String, sync: SyncSet): Unit = {
-    listWriter.println(message)
+  private def error(errorType: String, message: String, sync: SyncSet): Unit = {
+    printError(errorType, message)
     gobbleTokens(sync)
   }
   
@@ -203,8 +203,8 @@ class Parser(
    * @param message Error message
    * @param sync Sync set
    */
-  private def error(message: String, sync: Set[Token]): Unit = {
-    error(message, (sync, Set.empty[TokenMatcher]))
+  private def error(errorType: String, message: String, sync: Set[Token]): Unit = {
+    error(errorType, message, (sync, Set.empty[TokenMatcher]))
   }
   
   private def syntaxError(expectedTokens: String, sync: SyncSet): Unit = {
@@ -214,18 +214,18 @@ class Parser(
       case id: IdentifierToken => id.lexeme
     }
     
-    val space = " " * (lexeme.location.columnOffset + 7)
-    
-    val errorString = currentToken match {
+    currentToken match {
       case et: ErrorToken => {
-        et.errorString()
+        error("LEXERR", et.errorString(), sync)
       }
       case _ => {
-        s"^ SYNERR: expected one of: $expectedTokens but got $q${lexeme.lexeme}$q"
+        error("SYNERR",
+            s"expected one of: $expectedTokens but got $q${lexeme.lexeme}$q",
+            sync)
       }
     }
     
-    error(space + errorString, sync)
+    
   }
   
   private def printError(errorType: String, message: String): Unit = {
@@ -234,7 +234,7 @@ class Parser(
       case id: IdentifierToken => id.lexeme
     }
     val space = " " * (lexeme.location.columnOffset + 7)
-    listWriter.println(space + "^ " + errorType + ": " + message)
+    listingPrinter.printError(space + "^ " + errorType + ": " + message)
   }
   
   private def printSemanticError(message: String): Unit = {

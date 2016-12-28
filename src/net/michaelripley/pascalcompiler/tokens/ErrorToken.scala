@@ -37,13 +37,13 @@ class ErrorToken(
   def errorString(): String = {
     val q = '"'
     attribute match {
-      case Some(attr) => s"^ $tokenName: $attr: $q${lexeme.lexeme}$q"
-      case None       => s"^ $tokenName: $q${lexeme.lexeme}$q"
+      case Some(attr) => s"$attr: $q${lexeme.lexeme}$q"
+      case None       => s"$q${lexeme.lexeme}$q"
     }
   }
   
   def fullErrorString(): String = {
     val space = " " * (lexeme.location.columnOffset + 7)
-    space + errorString()
+    space + s"^ $tokenName: " + errorString()
   }
 }

@@ -235,7 +235,8 @@ class Lexer(
      * This also writes out the listing file
      */
     val listWriter = new PrintWriter(filename + ".listing")
-    val parser = new Parser(tokens, lines, listWriter, idManager)
+    val listingPrinter = new ListingPrinter(tokens, lines, listWriter)
+    val parser = new Parser(tokens, lines, listingPrinter, idManager)
     parser.parse()
     listWriter.close()
     
