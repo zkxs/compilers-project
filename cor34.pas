@@ -3,6 +3,7 @@ program test (input, output);
   var a : integer;
   var b : real;
   var c : array [1..2] of integer;
+  var b : real;
 
   procedure proc1(x:integer; y:real; 
                   z:array [1..2] of integer; q: real);
@@ -16,7 +17,8 @@ program test (input, output);
    procedure proc2(x: integer; y: integer);
      var e: real;
 
-     procedure proc3(n: integer; z: real);
+     procedure proc2(n: integer; z: real);
+       var e: real;
        var e: integer;
 
        procedure proc4(a: integer; z: array [1..3] of real);
