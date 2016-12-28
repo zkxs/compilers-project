@@ -29,14 +29,6 @@ private[identifiers] class SubProgram(
     getParam(idName).isDefined
   }
   
-  private def paramsEqual(a: List[Type]): Boolean = {
-    a == params.map( _.idType )
-  }
-  
-  private def paramsEqual(a: List[TypedIdentifier]): Boolean = {
-    paramsEqual(a.map( _.idType ))
-  }
-  
   /**
    * Try to add a variable
    * @return true if variable was added, false otherwise
@@ -51,7 +43,7 @@ private[identifiers] class SubProgram(
   }
   
   private def getSubProgram(idName: String, params: List[Type]) = {
-    subPrograms.find( s => s.idName == idName && s.paramsEqual(params) )
+    subPrograms.find( s => s.idName == idName )
   }
   
   private def hasSubProgram(idName: String, params: List[Type]) = {
@@ -113,7 +105,7 @@ private[identifiers] class SubProgram(
       idName: String,
       params: List[Type]): Option[SubProgram] = {
     // first check for recursive calls
-    if (idName == this.idName && paramsEqual(params)) {
+    if (idName == this.idName) {
       Some(this)
     } else {
       // next try to see if this scope contains an appropriately named subprogram
@@ -148,7 +140,6 @@ private[identifiers] class SubProgram(
       case other: SubProgram => {
         (other canEqual this) && ((other eq this) || (
             other.idName == idName
-            && paramsEqual(other.params)
         ))
       }
       case _ => false
