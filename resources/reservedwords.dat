@@ -19,3 +19,5 @@ real        TYPENAME   REAL
 then        THEN
 var         VAR
 while       WHILE
+div         MULOP      DIV
+mod         MULOP      MOD

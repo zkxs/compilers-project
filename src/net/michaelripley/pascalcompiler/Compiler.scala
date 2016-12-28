@@ -8,7 +8,7 @@ import net.michaelripley.pascalcompiler.lexer.Lexer
  */
 object Compiler {
   
-  val version = "3.0.2"
+  val version = "3.1.0"
   
   def main(args: Array[String]): Unit = {
     
