@@ -19,8 +19,7 @@ class IdentifierManager {
   private var currentScope: Option[SubProgram] = None
   
   // offset in memory of next variable
-  private var offset: Int = 0
-  private var scopeIndex: Int = 0
+  private var nextScopeIndex: Int = 0
   
   // maps to keep track of variable locations
   private val tokenLocations = Map.empty[Identifier, (Int, Int)]
@@ -40,7 +39,8 @@ class IdentifierManager {
   
   def addProgram(id: Identifier, params: List[TypedIdentifier]): Err = {
     if (program.isEmpty) {
-      program = Some(new SubProgram(id.name, params, None))
+      program = Some(new SubProgram(id.name, params, None, nextScopeIndex))
+      nextScopeIndex += 1
       currentScope = program
       None
     } else {
@@ -54,9 +54,9 @@ class IdentifierManager {
         val typedId = TypedIdentifier(id.name, idType)
         if (scope.addVariable(typedId)) {
           // add successful
-          tokenLocations.put(id, (scopeIndex, offset))
-          variableLocations.put(typedId, (scopeIndex, offset))
-          offset += typedId.idType.size
+          tokenLocations.put(id, (scope.scopeIndex, scope.offset))
+          variableLocations.put(typedId, (scope.scopeIndex, scope.offset))
+          scope.offset += typedId.idType.size
           None 
         } else {
           // add failed
@@ -90,7 +90,7 @@ class IdentifierManager {
   def addProcedure(id: Identifier, params: List[TypedIdentifier]): Err = {
     currentScope match {
       case Some(scope) => {
-        scope.addSubProgram(id.name, params) match {
+        val err = scope.addSubProgram(id.name, params, nextScopeIndex) match {
           case sp: Some[SubProgram] => {
             // add successful
             currentScope = sp
@@ -101,6 +101,8 @@ class IdentifierManager {
             error(s"procedure ${id.name}(${params.mkString(", ")}) already exists in this scope")
           }
         }
+        nextScopeIndex += 1
+        err // return
       }
       case _ => error("addProcedure(): no scope defined")
     }
@@ -130,8 +132,6 @@ class IdentifierManager {
           case parent: Some[SubProgram] => {
             // if parent exists, update scope to it
             currentScope = parent
-            offset = 0
-            scopeIndex += 1
             None
           }
           case _ => {

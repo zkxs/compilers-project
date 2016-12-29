@@ -8,10 +8,12 @@ import net.michaelripley.Util
 private[identifiers] class SubProgram(
     val idName: String,
     val params: List[TypedIdentifier],
-    val parent: Option[SubProgram]) {
+    val parent: Option[SubProgram],
+    val scopeIndex: Int) {
   
   private val variables   = MutableList.empty[TypedIdentifier]
   private val subPrograms = MutableList.empty[SubProgram]
+  var offset: Int = 0
   
   private def getVariable(idName: String) = {
     variables.find( _.name == idName )
@@ -55,7 +57,9 @@ private[identifiers] class SubProgram(
    * @return Optionally return the newly added subprogram
    */
   def addSubProgram(
-      idName: String, params: List[TypedIdentifier]): Option[SubProgram] = {
+      idName: String,
+      params: List[TypedIdentifier],
+      scopeIndex: Int): Option[SubProgram] = {
     
     // first, check if we are allowed to add a procedure
     // aka, is there already an identical one in scope?
@@ -64,7 +68,7 @@ private[identifiers] class SubProgram(
       None
     } else {
       // now, insert the new subprogram
-      val subProgram = new SubProgram(idName, params, Some(this))
+      val subProgram = new SubProgram(idName, params, Some(this), scopeIndex)
       subPrograms += subProgram
       Some(subProgram)
     }
