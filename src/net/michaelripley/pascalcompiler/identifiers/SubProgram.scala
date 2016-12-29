@@ -31,6 +31,14 @@ private[identifiers] class SubProgram(
     getParam(idName).isDefined
   }
   
+  private def paramsEqual(a: List[Type]): Boolean = {
+    a == params.map( _.idType )
+  }
+  
+  private def paramsEqual(a: List[TypedIdentifier]): Boolean = {
+    paramsEqual(a.map( _.idType ))
+  }
+  
   /**
    * Try to add a variable
    * @return true if variable was added, false otherwise
@@ -44,11 +52,13 @@ private[identifiers] class SubProgram(
     }
   }
   
-  private def getSubProgram(idName: String, params: List[Type]) = {
-    subPrograms.find( s => s.idName == idName )
+  private def getSubProgram(idName: String, params: Option[List[Type]]) = {
+    subPrograms.find(
+        s => s.idName == idName && params.fold(true)(p => s.paramsEqual(p))
+    )
   }
   
-  private def hasSubProgram(idName: String, params: List[Type]) = {
+  private def hasSubProgram(idName: String, params: Option[List[Type]]) = {
     getSubProgram(idName, params).isDefined
   }
   
@@ -64,7 +74,7 @@ private[identifiers] class SubProgram(
     // first, check if we are allowed to add a procedure
     // aka, is there already an identical one in scope?
     
-    if (isSubProgramInScope(idName, params.map(_.idType))) {
+    if (isSubProgramInScope(idName, None)) {
       None
     } else {
       // now, insert the new subprogram
@@ -107,9 +117,9 @@ private[identifiers] class SubProgram(
   @tailrec
   private def findSubProgram(
       idName: String,
-      params: List[Type]): Option[SubProgram] = {
+      params: Option[List[Type]]): Option[SubProgram] = {
     // first check for recursive calls
-    if (idName == this.idName) {
+    if (idName == this.idName && params.fold(true)(p => paramsEqual(p))) {
       Some(this)
     } else {
       // next try to see if this scope contains an appropriately named subprogram
@@ -127,7 +137,7 @@ private[identifiers] class SubProgram(
     }
   }
   
-  def isSubProgramInScope( idName: String, params: List[Type]) = {
+  def isSubProgramInScope( idName: String, params: Option[List[Type]]) = {
     findSubProgram(idName, params).isDefined
   }
   
@@ -144,6 +154,7 @@ private[identifiers] class SubProgram(
       case other: SubProgram => {
         (other canEqual this) && ((other eq this) || (
             other.idName == idName
+            && paramsEqual(other.params)
         ))
       }
       case _ => false

@@ -114,7 +114,7 @@ class IdentifierManager {
   def checkCall(id: Identifier, params: List[Type]): Err = {
     currentScope match {
       case Some(scope) => {
-        if (scope.isSubProgramInScope(id.name, params)) {
+        if (scope.isSubProgramInScope(id.name, Some(params))) {
           None
         } else {
           error(s"procedure ${id.name}(${params.mkString(", ")}) does not exist in this scope")
