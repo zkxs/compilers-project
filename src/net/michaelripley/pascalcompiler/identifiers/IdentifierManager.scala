@@ -117,7 +117,11 @@ class IdentifierManager {
         if (scope.isSubProgramInScope(id.name, Some(params))) {
           None
         } else {
-          error(s"procedure ${id.name}(${params.mkString(", ")}) does not exist in this scope")
+          if (scope.isSubProgramInScope(id.name, None)) {
+            error(s"procedure ${id.name}(${params.mkString(", ")}) has incorrect parameters")
+          } else {
+        	  error(s"procedure ${id.name}(${params.mkString(", ")}) does not exist in this scope")
+          }
         }
       }
       case _ => error("checkCall(): no scope defined")
