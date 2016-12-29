@@ -418,11 +418,12 @@ class Parser(
       matchToken(COLON, sync)
       val optType = anyType()
       matchToken(SEMICOLON, sync)
-      optionalDeclarations()
       
       if (exists(optId, optType)) {
         semanticError(idToken.get, addVariable(optId.get, optType.get), sync)
       }
+      
+      optionalDeclarations()
     } else {
       syntaxError("VAR", sync)
     }
